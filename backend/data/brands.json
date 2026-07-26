@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Ferrari",
+    "country": "Italy",
+    "foundedYear": 1939,
+    "description": "Thương hiệu siêu xe nổi tiếng của Ý.",
+    "isFeatured": true,
+    "displayOrder": 1
+  },
+  {
+    "name": "Lamborghini",
+    "country": "Italy",
+    "foundedYear": 1963,
+    "description": "Hãng siêu xe biểu tượng của Ý.",
+    "isFeatured": true,
+    "displayOrder": 2
+  },
+  {
+    "name": "Porsche",
+    "country": "Germany",
+    "foundedYear": 1931,
+    "description": "Hãng xe thể thao cao cấp của Đức.",
+    "displayOrder": 3
+  },
+  {
+    "name": "BMW",
+    "country": "Germany",
+    "foundedYear": 1916,
+    "description": "Hãng xe sang đến từ Đức.",
+    "displayOrder": 4
+  },
+  {
+    "name": "Mercedes-Benz",
+    "country": "Germany",
+    "foundedYear": 1926,
+    "description": "Thương hiệu xe sang nổi tiếng thế giới.",
+    "displayOrder": 5
+  },
+  {
+    "name": "Audi",
+    "country": "Germany",
+    "foundedYear": 1909,
+    "description": "Hãng xe cao cấp thuộc Volkswagen Group.",
+    "displayOrder": 6
+  },
+  {
+    "name": "McLaren",
+    "country": "United Kingdom",
+    "foundedYear": 1963,
+    "description": "Hãng siêu xe hiệu năng cao của Anh.",
+    "displayOrder": 7
+  },
+  {
+    "name": "Bentley",
+    "country": "United Kingdom",
+    "foundedYear": 1919,
+    "description": "Thương hiệu xe siêu sang của Anh.",
+    "displayOrder": 8
+  },
+  {
+    "name": "Rolls-Royce",
+    "country": "United Kingdom",
+    "foundedYear": 1906,
+    "description": "Biểu tượng của sự sang trọng.",
+    "displayOrder": 9
+  },
+  {
+    "name": "Land Rover",
+    "country": "United Kingdom",
+    "foundedYear": 1948,
+    "description": "Hãng SUV hạng sang nổi tiếng.",
+    "displayOrder": 10
+  }
+]

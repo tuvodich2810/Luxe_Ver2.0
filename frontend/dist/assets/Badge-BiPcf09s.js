@@ -1,0 +1,1 @@
+import{j as u}from"./index-mAnSYlr8.js";const e={default:"lux-badge-default",gold:"lux-badge-gold",new:"lux-badge-new",used:"lux-badge-used",certified:"lux-badge-default",danger:"lux-badge-danger",featured:"lux-badge-fill-gold"},t=({children:a,variant:d="default",className:l=""})=>u.jsx("span",{className:`lux-badge ${e[d]||e.default} ${l}`,children:a});export{t as B};

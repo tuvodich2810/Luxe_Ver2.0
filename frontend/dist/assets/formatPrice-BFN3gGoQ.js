@@ -1,0 +1,1 @@
+const r=t=>typeof t!="number"||isNaN(t)?"Liên hệ":new Intl.NumberFormat("vi-VN",{style:"currency",currency:"VND",minimumFractionDigits:0}).format(t),n=t=>typeof t!="number"||isNaN(t)?"Liên hệ":t>=1e9?`${(t/1e9).toFixed(1).replace(/\.0$/,"")} tỷ ₫`:t>=1e6?`${Math.round(t/1e6)} triệu ₫`:r(t);export{r as a,n as f};
