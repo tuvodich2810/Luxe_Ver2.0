@@ -116,7 +116,7 @@ const carSchema = new mongoose.Schema(
     // Loại xe
     category: {
       type: String,
-      enum: ['sedan', 'suv', 'coupe', 'convertible', 'supercar', 'hypercar', 'truck'],
+      enum: ['sedan', 'suv', 'coupe', 'convertible', 'supercar', 'hypercar', 'truck', 'luxury_sedan', 'grand_tourer'],
       required: [true, 'Loại xe là bắt buộc'],
     },
 
@@ -204,9 +204,9 @@ carSchema.pre('save', function (next) {
 // VIRTUAL: Ảnh đại diện chính
 // ===================================
 carSchema.virtual('mainImage').get(function () {
-  // Tìm ảnh có isMain = true, nếu không có thì lấy ảnh đầu tiên
-  const main = this.images.find((img) => img.isMain);
-  return main ? main.url : (this.images[0] ? this.images[0].url : null);
+  const images = this.images || [];
+  const main = images.find((img) => img && img.isMain);
+  return main ? main.url : (images[0] ? images[0].url : null);
 });
 
 // ===================================

@@ -1,180 +1,163 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import Navbar  from '@/components/common/Navbar';
-import Footer  from '@/components/common/Footer';
-import Badge   from '@/components/common/Badge';
-import Button  from '@/components/common/Button';
-import { formatPrice, formatPriceShort } from '@/utils/formatPrice';
-import api from '@/services/api';
-
-const STATUS = {
-  pending:    { l: 'Chờ xác nhận', v: 'used'      },
-  confirmed:  { l: 'Đã xác nhận',  v: 'certified' },
-  processing: { l: 'Đang xử lý',   v: 'default'   },
-  delivered:  { l: 'Đã giao xe',   v: 'new'       },
-  cancelled:  { l: 'Đã hủy',       v: 'danger'    },
-};
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
+import Chatbot from '@/components/common/Chatbot';
+import orderService from '@/services/orderService';
+import { ShoppingBag, Sparkles, Clock, CheckCircle2, ShieldCheck, XCircle, ArrowRight } from 'lucide-react';
 
 export default function MyOrders() {
-  const [orders,     setOrders]     = useState([]);
-  const [loading,    setLoading]    = useState(true);
-  const [cancelling, setCancelling] = useState(null);
+  const [orders, setOrders] = useState(orderService.getOrders());
 
-  const fetchOrders = useCallback(async () => {
-    setLoading(true);
-    try { const r = await api.get('/orders/my'); setOrders(r.data || []); }
-    catch { setOrders([]); }
-    finally { setLoading(false); }
+  useEffect(() => {
+    const handleUpdate = (e) => {
+      setOrders(e.detail || []);
+    };
+    window.addEventListener('luxe_orders_updated', handleUpdate);
+    return () => window.removeEventListener('luxe_orders_updated', handleUpdate);
   }, []);
 
-  useEffect(() => { fetchOrders(); }, [fetchOrders]);
-
-  const handleCancel = async (id) => {
-    if (!window.confirm('Hủy đơn hàng này?')) return;
-    setCancelling(id);
-    try {
-      await api.delete(`/orders/${id}`);
-      setOrders(prev => prev.map(o =>
-        o._id === id ? { ...o, orderStatus: 'cancelled' } : o
-      ));
-    } catch (e) { alert(e.message || 'Hủy thất bại'); }
-    finally { setCancelling(null); }
+  const handleCancel = (orderId) => {
+    if (window.confirm('Bạn có chắc chắn muốn hủy đơn đặt cọc giữ xe này?')) {
+      orderService.cancelOrder(orderId);
+    }
   };
 
-  const canCancel = (status) => ['pending', 'confirmed'].includes(status);
-
   return (
-    <>
+    <div className="min-h-screen bg-[#070709] text-slate-100 flex flex-col font-sans">
       <Navbar />
-      <main style={{ paddingTop: 64, background: 'var(--black)', minHeight: '100vh' }}>
 
-        <div style={{ padding: '48px 0 36px', borderBottom: '1px solid var(--border)' }}>
-          <div className="lux-container">
-            <p className="eyebrow mb-3">Lịch sử giao dịch</p>
-            <h1 style={{
-              fontFamily: 'Cormorant Garamond',
-              fontSize: 'clamp(2rem,4vw,3rem)',
-              fontWeight: 300, color: 'var(--white)',
-            }}>
-              Đơn hàng của tôi
-            </h1>
-          </div>
-        </div>
-
-        <div className="lux-container"
-          style={{ padding: '40px 40px 80px', maxWidth: 900 }}>
-
-          {loading ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="skeleton"
-                  style={{ height: 120, background: 'var(--card)' }} />
-              ))}
+      <main className="flex-1 pt-28 pb-24">
+        <div className="lux-container space-y-10">
+          {/* Header */}
+          <div className="border-b border-white/10 pb-6 space-y-2">
+            <div className="lux-eyebrow">
+              <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+              MY RESERVATIONS & ORDERS
             </div>
-          ) : orders.length > 0 ? (
-            <div style={{
-              display: 'flex', flexDirection: 'column',
-              gap: 2, background: 'var(--border)',
-            }}>
-              {orders.map((o, i) => {
-                const cfg = STATUS[o.orderStatus] || STATUS.pending;
-                return (
-                  <motion.div key={o._id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    style={{
-                      display: 'flex', gap: 20, padding: '24px 28px',
-                      background: 'var(--black)', alignItems: 'center',
-                    }}>
+            <h1 className="font-serif-lux text-4xl sm:text-5xl font-bold text-white">
+              Đơn Đặt Cọc <span className="lux-gradient-gold-text italic">Của Tôi</span>
+            </h1>
+            <p className="text-xs text-slate-400">
+              Theo dõi tiến độ xử lý hồ sơ, tình trạng cọc giữ xe và thông tin bàn giao siêu xe tận nhà.
+            </p>
+          </div>
 
-                    {/* Thumbnail */}
-                    <div style={{
-                      width: 100, height: 64,
-                      background: 'var(--card)', overflow: 'hidden', flexShrink: 0,
-                    }}>
+          {/* Orders List */}
+          {orders.length > 0 ? (
+            <div className="space-y-6">
+              {orders.map((ord) => (
+                <div
+                  key={ord._id}
+                  className="bg-[#0E0E12] border border-[#D4AF37]/30 rounded-lg p-6 space-y-6 shadow-2xl"
+                >
+                  {/* Top Bar Order Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                    <div>
+                      <span className="text-[10px] font-mono-lux text-slate-500 uppercase">
+                        Mã Đơn Cọc:
+                      </span>
+                      <h3 className="font-mono-lux text-sm font-bold text-[#D4AF37]">{ord._id}</h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Ngày đặt: {new Date(ord.orderDate).toLocaleString('vi-VN')}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {ord.status === 'cancelled' ? (
+                        <span className="lux-badge lux-badge-crimson">
+                          <XCircle className="w-3.5 h-3.5" /> Đã Hủy Cọc
+                        </span>
+                      ) : (
+                        <span className="lux-badge lux-badge-gold">
+                          <Clock className="w-3.5 h-3.5 animate-spin" /> Đang Xử Lý Hồ Sơ
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Body Content */}
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div className="md:col-span-3">
                       <img
-                        src={
-                          o.carSnapshot?.image ||
-                          o.car?.mainImage ||
-                          'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=200'
-                        }
-                        alt={o.carSnapshot?.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        src={ord.carImage || 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=600'}
+                        alt={ord.carName}
+                        className="w-full aspect-[16/10] object-cover rounded border border-white/10"
                       />
                     </div>
 
-                    {/* Info */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        display: 'flex', alignItems: 'flex-start',
-                        justifyContent: 'space-between', gap: 12, marginBottom: 8,
-                      }}>
-                        <div>
-                          <p className="eyebrow text-lux-gold mb-1"
-                            style={{ fontSize: 9 }}>
-                            {o.orderNumber}
-                          </p>
-                          <p style={{ fontSize: 16, fontWeight: 300, color: 'var(--white)' }}>
-                            {o.carSnapshot?.name || o.car?.name}
-                          </p>
-                        </div>
-                        <Badge variant={cfg.v}>{cfg.l}</Badge>
-                      </div>
-                      <div style={{
-                        display: 'flex', gap: 24,
-                        fontSize: 12, color: 'var(--muted)',
-                      }}>
-                        <span>
-                          Tổng:{' '}
-                          <strong style={{ color: 'var(--silver)' }}>
-                            {formatPriceShort(o.totalAmount)}
-                          </strong>
-                        </span>
-                        <span>
-                          Cọc:{' '}
-                          <strong style={{ color: 'var(--gold)' }}>
-                            {formatPrice(o.depositAmount)}
-                          </strong>
-                        </span>
-                        <span>{new Date(o.createdAt).toLocaleDateString('vi-VN')}</span>
-                      </div>
+                    <div className="md:col-span-5 space-y-2">
+                      <span className="text-[10px] font-mono-lux text-[#D4AF37] uppercase">
+                        SIÊU XE ĐẶT CỌC
+                      </span>
+                      <h4 className="font-serif-lux text-2xl font-bold text-white">{ord.carName}</h4>
+                      <p className="text-xs text-slate-400">
+                        Showroom bàn giao: <strong className="text-white">{ord.showroomLocation === 'hanoi' ? 'Hà Nội Flagship' : 'TP. Hồ Chí Minh Flagship'}</strong>
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        Phương thức thanh toán: <strong className="text-[#D4AF37] uppercase">{ord.paymentMethod}</strong>
+                      </p>
                     </div>
 
-                    {/* Cancel */}
-                    {canCancel(o.orderStatus) && (
+                    <div className="md:col-span-4 p-4 rounded bg-[#15151B] border border-white/5 space-y-3 text-right">
+                      <div>
+                        <span className="text-[10px] font-mono-lux text-slate-400 uppercase block">
+                          Tổng Giá Trị Xe:
+                        </span>
+                        <span className="font-serif-lux text-lg font-bold text-slate-200">
+                          ${ord.totalPrice?.toLocaleString()} USD
+                        </span>
+                      </div>
+                      <div className="border-t border-white/10 pt-2">
+                        <span className="text-[10px] font-mono-lux text-[#D4AF37] uppercase block">
+                          Số Tiền Đã Cọc ({ord.depositPercent}%):
+                        </span>
+                        <span className="font-serif-lux text-2xl font-bold text-[#D4AF37]">
+                          ${ord.depositAmount?.toLocaleString()} USD
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions Footer */}
+                  {ord.status !== 'cancelled' && (
+                    <div className="flex justify-end gap-4 border-t border-white/5 pt-4">
                       <button
-                        onClick={() => handleCancel(o._id)}
-                        disabled={cancelling === o._id}
-                        className="btn btn-danger btn-sm"
-                        style={{ flexShrink: 0 }}>
-                        {cancelling === o._id ? 'Đang hủy...' : 'Hủy đơn'}
+                        onClick={() => handleCancel(ord._id)}
+                        className="px-4 py-2 rounded text-xs font-mono-lux text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all"
+                      >
+                        Hủy đơn cọc này
                       </button>
-                    )}
-                  </motion.div>
-                );
-              })}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <p style={{
-                fontFamily: 'Cormorant Garamond', fontSize: 32,
-                fontWeight: 300, color: 'rgba(255,255,255,0.15)', marginBottom: 12,
-              }}>
-                Chưa có đơn hàng nào
-              </p>
-              <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 28 }}>
-                Khám phá bộ sưu tập và đặt mua chiếc xe mơ ước
-              </p>
-              <Link to="/cars">
-                <Button variant="primary" size="md">Khám phá ngay</Button>
+            <div className="py-24 text-center space-y-6 bg-[#0E0E12] border border-white/10 rounded-lg max-w-xl mx-auto">
+              <div className="w-16 h-16 rounded-full bg-[#15151B] border border-white/10 text-slate-500 mx-auto flex items-center justify-center">
+                <ShoppingBag className="w-8 h-8" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-serif-lux text-2xl font-bold text-white">
+                  Bạn Chưa Có Đơn Đặt Cọc Nào
+                </h3>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  Hãy chọn siêu xe yêu thích và tiến hành đặt cọc trực tuyến để giữ xe ngay hôm nay.
+                </p>
+              </div>
+
+              <Link to="/cars" className="btn-lux-gold px-8 py-3">
+                <span>Khám phá Showroom xe</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           )}
         </div>
       </main>
+
+      <Chatbot />
       <Footer />
-    </>
+    </div>
   );
 }

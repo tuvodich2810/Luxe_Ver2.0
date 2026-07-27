@@ -1,186 +1,110 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import api from '@/services/api';
+import React from 'react';
+import { Search, Filter, RotateCcw, SlidersHorizontal } from 'lucide-react';
 
-const CATEGORIES = [
-  { value: '', label: 'Tất cả' },
-  { value: 'supercar', label: 'Supercar' },
-  { value: 'hypercar', label: 'Hypercar' },
-  { value: 'suv', label: 'SUV' },
-  { value: 'sedan', label: 'Sedan' },
-  { value: 'coupe', label: 'Coupe' },
-  { value: 'convertible', label: 'Convertible' },
-];
-
-const CONDITIONS = [
-  { value: '', label: 'Tất cả' },
-  { value: 'new', label: 'Xe mới' },
-  { value: 'used', label: 'Xe cũ' },
-  { value: 'certified', label: 'Certified' },
-];
-
-const CarFilter = ({ initialFilters = {}, onFilterChange }) => {
-  const [brands, setBrands] = useState([]);
-  const [filters, setFilters] = useState({
-    brand: '',
-    category: '',
-    condition: '',
-    minPrice: '',
-    maxPrice: '',
-    search: '',
-    ...initialFilters,
-  });
-
-  // Fetch brands cho dropdown
-  useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const response = await api.get('/brands');
-        setBrands(response.data || []);
-      } catch {
-        setBrands([]);
-      }
-    };
-    fetchBrands();
-  }, []);
-
-  const handleChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-
-    // Loại bỏ các filter rỗng trước khi gọi callback
-    const cleanFilters = Object.fromEntries(
-      Object.entries(newFilters).filter(([, v]) => v !== '' && v !== null)
-    );
-    onFilterChange(cleanFilters);
-  };
-
-  const handleReset = () => {
-    const emptyFilters = {
-      brand: '', category: '', condition: '',
-      minPrice: '', maxPrice: '', search: '',
-    };
-    setFilters(emptyFilters);
-    onFilterChange({});
-  };
+export default function CarFilter({
+  filters,
+  onChange,
+  onReset,
+  brands = [],
+}) {
+  const categories = [
+    { label: 'Hypercar', value: 'hypercar' },
+    { label: 'Supercar', value: 'supercar' },
+    { label: 'Luxury Sedan', value: 'luxury_sedan' },
+    { label: 'Grand Tourer', value: 'grand_tourer' },
+  ];
 
   return (
-    <div className="bg-graphite border border-white/5 p-6 sticky top-24">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="eyebrow">Bộ lọc</h3>
+    <div className="bg-[#0E0E12] border border-[#D4AF37]/20 rounded-md p-6 space-y-6 shadow-2xl">
+      <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="w-4 h-4 text-[#D4AF37]" />
+          <h3 className="font-mono-lux text-xs uppercase tracking-widest text-white font-semibold">
+            Bộ Lọc Showroom Đa Chiều
+          </h3>
+        </div>
         <button
-          onClick={handleReset}
-          className="font-label text-xs text-silver hover:text-gold transition-colors"
+          onClick={onReset}
+          className="flex items-center gap-1.5 text-xs font-mono-lux text-slate-400 hover:text-[#D4AF37] transition-colors"
         >
-          Xóa tất cả
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Đặt lại</span>
         </button>
       </div>
 
-      <div className="space-y-6">
-        {/* Tìm kiếm */}
-        <div>
-          <label className="block eyebrow text-[10px] text-silver mb-3">
-            Tìm kiếm
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Search Input */}
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+            Từ khóa xe (Tên, Model, Động cơ...)
           </label>
-          <input
-            type="text"
-            value={filters.search}
-            onChange={(e) => handleChange('search', e.target.value)}
-            placeholder="Tên xe, model..."
-            className="input-luxury text-sm"
-          />
+          <div className="relative">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="VD: Chiron, SF90, Phantom, GT3..."
+              value={filters.search || ''}
+              onChange={(e) => onChange({ ...filters, search: e.target.value })}
+              className="lux-input pl-9 text-xs"
+            />
+          </div>
         </div>
 
-        {/* Thương hiệu */}
-        <div>
-          <label className="block eyebrow text-[10px] text-silver mb-3">
+        {/* Brand Dropdown */}
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
             Thương hiệu
           </label>
           <select
-            value={filters.brand}
-            onChange={(e) => handleChange('brand', e.target.value)}
-            className="input-luxury text-sm appearance-none cursor-pointer"
+            value={filters.brand || ''}
+            onChange={(e) => onChange({ ...filters, brand: e.target.value })}
+            className="lux-input text-xs appearance-none bg-[#15151B]"
           >
             <option value="">Tất cả thương hiệu</option>
-            {brands.map((brand) => (
-              <option key={brand._id} value={brand._id}>
-                {brand.name}
+            {brands.map((b) => (
+              <option key={b._id || b.name} value={b._id || b.name}>
+                {b.name}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Loại xe */}
-        <div>
-          <label className="block eyebrow text-[10px] text-silver mb-3">
-            Loại xe
+        {/* Category Dropdown */}
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+            Phân loại dòng xe
           </label>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => handleChange('category', cat.value)}
-                className={[
-                  'px-3 py-1.5 font-label text-[10px] tracking-wider uppercase transition-all duration-200',
-                  filters.category === cat.value
-                    ? 'bg-gold text-black'
-                    : 'border border-white/10 text-silver hover:border-gold/30 hover:text-gold',
-                ].join(' ')}
-              >
-                {cat.label}
-              </button>
+          <select
+            value={filters.category || ''}
+            onChange={(e) => onChange({ ...filters, category: e.target.value })}
+            className="lux-input text-xs appearance-none bg-[#15151B]"
+          >
+            <option value="">Tất cả kiểu dáng</option>
+            {categories.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
             ))}
-          </div>
+          </select>
         </div>
 
-        {/* Tình trạng */}
-        <div>
-          <label className="block eyebrow text-[10px] text-silver mb-3">
-            Tình trạng
+        {/* Sort By Dropdown */}
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+            Sắp xếp theo
           </label>
-          <div className="flex flex-wrap gap-2">
-            {CONDITIONS.map((cond) => (
-              <button
-                key={cond.value}
-                onClick={() => handleChange('condition', cond.value)}
-                className={[
-                  'px-3 py-1.5 font-label text-[10px] tracking-wider uppercase transition-all duration-200',
-                  filters.condition === cond.value
-                    ? 'bg-gold text-black'
-                    : 'border border-white/10 text-silver hover:border-gold/30 hover:text-gold',
-                ].join(' ')}
-              >
-                {cond.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Khoảng giá */}
-        <div>
-          <label className="block eyebrow text-[10px] text-silver mb-3">
-            Khoảng giá (đồng)
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              type="number"
-              value={filters.minPrice}
-              onChange={(e) => handleChange('minPrice', e.target.value)}
-              placeholder="Từ"
-              className="input-luxury text-sm"
-            />
-            <input
-              type="number"
-              value={filters.maxPrice}
-              onChange={(e) => handleChange('maxPrice', e.target.value)}
-              placeholder="Đến"
-              className="input-luxury text-sm"
-            />
-          </div>
+          <select
+            value={filters.sort || ''}
+            onChange={(e) => onChange({ ...filters, sort: e.target.value })}
+            className="lux-input text-xs appearance-none bg-[#15151B]"
+          >
+            <option value="-createdAt">Mới nhất trong kho</option>
+            <option value="price_asc">Giá từ thấp đến cao</option>
+            <option value="price_desc">Giá từ cao đến thấp</option>
+            <option value="-year">Năm sản xuất mới nhất</option>
+          </select>
         </div>
       </div>
     </div>
   );
-};
-
-export default CarFilter;
+}

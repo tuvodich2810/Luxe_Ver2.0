@@ -1,129 +1,93 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import Navbar  from '@/components/common/Navbar';
-import Footer  from '@/components/common/Footer';
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
+import Chatbot from '@/components/common/Chatbot';
 import CarCard from '@/components/cars/CarCard';
-import Button  from '@/components/common/Button';
-import { useFavorites } from '@/hooks/useFavorites';
-import api from '@/services/api';
+import favoriteService from '@/services/favoriteService';
+import { Heart, Sparkles, Trash2, ArrowRight } from 'lucide-react';
 
 export default function Favorites() {
-  const [cars,    setCars]    = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { isFavorited, isPending, toggleFavorite } = useFavorites();
+  const [favorites, setFavorites] = useState(favoriteService.getFavorites());
 
-  const fetchFavorites = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/favorites');
-      setCars((res.data || []).filter(f => f.car).map(f => f.car));
-    } catch { setCars([]); }
-    finally  { setLoading(false); }
+  useEffect(() => {
+    const handleUpdate = (e) => {
+      setFavorites(e.detail || []);
+    };
+    window.addEventListener('luxe_favorites_updated', handleUpdate);
+    return () => window.removeEventListener('luxe_favorites_updated', handleUpdate);
   }, []);
 
-  useEffect(() => { fetchFavorites(); }, [fetchFavorites]);
-
-  const handleToggle = async (carId) => {
-    const result = await toggleFavorite(carId);
-    if (result?.success && !result.isFavorited) {
-      setCars(prev => prev.filter(c => c._id !== carId));
-    }
-    return result;
+  const handleClearAll = () => {
+    localStorage.removeItem('luxe_favorites');
+    setFavorites([]);
+    window.dispatchEvent(new CustomEvent('luxe_favorites_updated', { detail: [] }));
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-[#070709] text-slate-100 flex flex-col font-sans">
       <Navbar />
-      <main style={{ paddingTop: 64, background: 'var(--black)', minHeight: '100vh' }}>
 
-        <div style={{ padding: '48px 0 36px', borderBottom: '1px solid var(--border)' }}>
-          <div className="lux-container">
-            <p className="eyebrow mb-3">Bộ sưu tập cá nhân</p>
-            <div style={{
-              display: 'flex', alignItems: 'flex-end',
-              justifyContent: 'space-between', gap: 12,
-            }}>
-              <h1 style={{
-                fontFamily: 'Cormorant Garamond',
-                fontSize: 'clamp(2rem,4vw,3rem)',
-                fontWeight: 300, color: 'var(--white)',
-              }}>
-                Xe yêu thích
+      <main className="flex-1 pt-28 pb-24">
+        <div className="lux-container space-y-10">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
+            <div className="space-y-2">
+              <div className="lux-eyebrow">
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                SAVED VEHICLES
+              </div>
+              <h1 className="font-serif-lux text-4xl sm:text-5xl font-bold text-white">
+                Danh Sách <span className="lux-gradient-gold-text italic">Xe Yêu Thích</span>
               </h1>
-              {!loading && (
-                <p style={{
-                  fontFamily: 'Space Grotesk', fontSize: 11,
-                  color: 'var(--muted)', letterSpacing: '0.1em',
-                }}>
-                  {cars.length} xe
-                </p>
-              )}
+              <p className="text-xs text-slate-400">
+                Lưu giữ những chiếc siêu xe bạn yêu thích để dễ dàng so sánh thông số và đăng ký lái thử.
+              </p>
             </div>
-          </div>
-        </div>
 
-        <div className="lux-container" style={{ padding: '40px 40px 80px' }}>
-          {loading ? (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: 18,
-            }}>
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="lux-card" style={{ overflow: 'hidden' }}>
-                  <div className="skeleton" style={{ aspectRatio: '16/9' }} />
-                  <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div className="skeleton" style={{ height: 9,  width: '35%' }} />
-                    <div className="skeleton" style={{ height: 20, width: '65%' }} />
-                  </div>
-                </div>
+            {favorites.length > 0 && (
+              <button
+                onClick={handleClearAll}
+                className="flex items-center gap-2 text-xs font-mono-lux text-rose-400 hover:text-rose-300 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Xóa toàn bộ khỏi danh sách</span>
+              </button>
+            )}
+          </div>
+
+          {/* Favorites List */}
+          {favorites.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {favorites.map((car) => (
+                <CarCard key={car._id} car={car} />
               ))}
             </div>
-          ) : cars.length > 0 ? (
-            <motion.div layout style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: 18,
-            }}>
-              <AnimatePresence>
-                {cars.map((car, i) => (
-                  <motion.div key={car._id} layout
-                    exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.25 } }}>
-                    <CarCard car={car} index={i}
-                      isFavorited={isFavorited(car._id)}
-                      isFavoritePending={isPending(car._id)}
-                      onToggleFavorite={handleToggle}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <svg width="48" height="48" fill="none" stroke="currentColor"
-                strokeWidth="1" viewBox="0 0 24 24"
-                style={{ color: 'rgba(255,255,255,0.1)', margin: '0 auto 16px' }}>
-                <path d="M12 21s-6.7-4.35-9.3-8.2C.8 9.94 1.4 6.2 4.4 4.7
-                         c2.3-1.15 4.8-.3 6.1 1.5l1.5 2 1.5-2
-                         c1.3-1.8 3.8-2.65 6.1-1.5
-                         3 1.5 3.6 5.24 1.7 8.1C18.7 16.65 12 21 12 21z"/>
-              </svg>
-              <p style={{
-                fontFamily: 'Cormorant Garamond', fontSize: 32,
-                fontWeight: 300, color: 'rgba(255,255,255,0.18)', marginBottom: 12,
-              }}>
-                Chưa có xe yêu thích nào
-              </p>
-              <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 28 }}>
-                Nhấn biểu tượng trái tim trên các mẫu xe bạn quan tâm
-              </p>
-              <Link to="/cars">
-                <Button variant="primary" size="md">Khám phá bộ sưu tập</Button>
+            <div className="py-24 text-center space-y-6 bg-[#0E0E12] border border-white/10 rounded-lg max-w-xl mx-auto">
+              <div className="w-16 h-16 rounded-full bg-[#15151B] border border-white/10 text-slate-500 mx-auto flex items-center justify-center">
+                <Heart className="w-8 h-8" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-serif-lux text-2xl font-bold text-white">
+                  Chưa Có Siêu Xe Nào Trong Bộ Sưu Tập
+                </h3>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  Hãy lướt qua Showroom và bấm vào biểu tượng trái tim trên các mẫu xe bạn ưng ý.
+                </p>
+              </div>
+
+              <Link to="/cars" className="btn-lux-gold px-8 py-3">
+                <span>Khám phá Showroom ngay</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           )}
         </div>
       </main>
+
+      <Chatbot />
       <Footer />
-    </>
+    </div>
   );
 }

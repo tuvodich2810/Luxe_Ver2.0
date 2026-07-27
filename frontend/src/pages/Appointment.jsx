@@ -1,276 +1,238 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import Navbar  from '@/components/common/Navbar';
-import Footer  from '@/components/common/Footer';
-import Button  from '@/components/common/Button';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
+import Chatbot from '@/components/common/Chatbot';
 import { useAuth } from '@/context/AuthContext';
-import { sendAppointmentForm } from '@/services/sheetsService';
-import api from '@/services/api';
-
-const SLOTS = [
-  '09:00','09:30','10:00','10:30','11:00','11:30',
-  '14:00','14:30','15:00','15:30','16:00','16:30',
-];
-
-const CheckIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor"
-    strokeWidth="1.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
-  </svg>
-);
+import carService from '@/services/carService';
+import appointmentService from '@/services/appointmentService';
+import { Calendar, Clock, MapPin, Sparkles, CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 export default function Appointment() {
-  const { carId }  = useParams();
-  const navigate   = useNavigate();
-  const { user }   = useAuth();
+  const { carId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const [car,        setCar]        = useState(null);
-  const [loading,    setLoading]    = useState(true);
+  const [car, setCar] = useState(null);
+  const [visitorName, setVisitorName] = useState(user?.fullName || '');
+  const [visitorPhone, setVisitorPhone] = useState(user?.phone || '');
+  const [visitorEmail, setVisitorEmail] = useState(user?.email || '');
+  const [appointmentDate, setAppointmentDate] = useState('');
+  const [timeSlot, setTimeSlot] = useState('10:00 AM');
+  const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [done,       setDone]       = useState(false);
-  const [error,      setError]      = useState('');
-  const [form,       setForm]       = useState({
-    appointmentDate: '',
-    timeSlot:        '',
-    visitorName:     user?.fullName || '',
-    visitorPhone:    user?.phone    || '',
-    visitorEmail:    user?.email    || '',
-    notes:           '',
-  });
-
-  const set = (k, v) => { setForm(p => ({ ...p, [k]: v })); setError(''); };
+  const [successData, setSuccessData] = useState(null);
 
   useEffect(() => {
-    api.get(`/cars/${carId}`)
-      .then(r  => setCar(r.data))
-      .catch(() => navigate('/cars'))
-      .finally(() => setLoading(false));
-  }, [carId, navigate]);
+    if (carId && carId !== 'my') {
+      const fetchCar = async () => {
+        try {
+          const res = await carService.getCarByIdOrSlug(carId);
+          if (res?.data) setCar(res.data);
+        } catch {}
+      };
+      fetchCar();
+    }
+  }, [carId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.appointmentDate || !form.timeSlot) {
-      setError('Vui lòng chọn ngày và khung giờ.'); return;
-    }
-    if (new Date(form.appointmentDate) <= new Date()) {
-      setError('Ngày hẹn phải là ngày trong tương lai.'); return;
-    }
-    setSubmitting(true); setError('');
+    setSubmitting(true);
+
     try {
-      await api.post('/appointments', { car: carId, ...form });
-      sendAppointmentForm(form, car?.name);
-      setDone(true);
+      const payload = {
+        car: car?._id || carId,
+        appointmentDate,
+        timeSlot,
+        visitorName,
+        visitorPhone,
+        visitorEmail,
+        notes,
+      };
+
+      const res = await appointmentService.createAppointment(payload);
+      setSuccessData(res.data || payload);
     } catch (err) {
-      setError(err.message || 'Đặt lịch thất bại.');
-    } finally { setSubmitting(false); }
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  if (loading) return (
-    <>
-      <Navbar />
-      <div style={{
-        minHeight: '100vh', background: 'var(--black)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 64,
-      }}>
-        <div style={{
-          width: 40, height: 40, border: '1px solid var(--gold)',
-          animation: 'spin 1s linear infinite', transform: 'rotate(45deg)',
-        }} />
-      </div>
-    </>
-  );
-
   return (
-    <>
+    <div className="min-h-screen bg-[#070709] text-slate-100 flex flex-col font-sans">
       <Navbar />
-      <main style={{ paddingTop: 64, background: 'var(--black)', minHeight: '100vh' }}>
 
-        {/* Header */}
-        <div style={{ padding: '48px 0 36px', borderBottom: '1px solid var(--border)' }}>
-          <div className="lux-container">
-            <p className="eyebrow mb-3">Đặt lịch xem xe</p>
-            <h1 style={{
-              fontFamily: 'Cormorant Garamond',
-              fontSize: 'clamp(2rem,4vw,3rem)',
-              fontWeight: 300, color: 'var(--white)',
-            }}>
-              Lên lịch trải nghiệm
-            </h1>
-          </div>
-        </div>
+      <main className="flex-1 pt-28 pb-24">
+        <div className="lux-container max-w-3xl space-y-10">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-xs font-mono-lux text-slate-400 hover:text-[#D4AF37] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Quay lại</span>
+          </button>
 
-        <div className="lux-container" style={{ padding: '40px 40px 80px' }}>
-          {!done ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 40 }}>
+          {!successData ? (
+            <div className="bg-[#0E0E12] border border-[#D4AF37]/30 rounded-lg p-8 space-y-8 shadow-2xl">
+              {/* Header */}
+              <div className="border-b border-white/10 pb-6 space-y-2">
+                <div className="lux-eyebrow">
+                  <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  PRIVATE TEST DRIVE & SHOWROOM VISIT
+                </div>
+                <h1 className="font-serif-lux text-3xl sm:text-4xl font-bold text-white">
+                  Đăng Ký Trải Nghiệm Lái Thử Siêu Xe
+                </h1>
+                <p className="text-xs text-slate-400">
+                  Dịch vụ Concierge riêng phục vụ quý khách lái thử tận nhà hoặc đón tiếp riêng tại Flagship Showroom.
+                </p>
+              </div>
 
-              {/* Car info */}
+              {/* Selected Car Preview */}
               {car && (
-                <div style={{ position: 'sticky', top: 88 }}>
-                  <div style={{
-                    background: 'var(--card)',
-                    border: '1px solid var(--border)', overflow: 'hidden',
-                  }}>
-                    <div style={{ aspectRatio: '16/9', background: 'var(--mid)' }}>
-                      <img
-                        src={car.mainImage || 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=600'}
-                        alt={car.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
-                    <div style={{ padding: 20 }}>
-                      <p className="eyebrow text-lux-muted mb-1" style={{ fontSize: 8 }}>
-                        {car.brand?.name}
-                      </p>
-                      <p style={{
-                        fontFamily: 'Cormorant Garamond', fontSize: 20,
-                        fontWeight: 300, color: 'var(--white)', marginBottom: 4,
-                      }}>
-                        {car.name}
-                      </p>
-                      <p style={{ fontSize: 12, color: 'var(--muted)' }}>
-                        {car.model} · {car.year}
-                      </p>
-                    </div>
+                <div className="flex items-center gap-4 p-4 rounded bg-[#15151B] border border-white/5">
+                  <img
+                    src={car.mainImage || car.images?.[0]}
+                    alt={car.name}
+                    className="w-20 h-14 object-cover rounded border border-white/10"
+                  />
+                  <div>
+                    <span className="text-[10px] font-mono-lux text-[#D4AF37] uppercase">
+                      {typeof car.brand === 'object' ? car.brand?.name : car.brand}
+                    </span>
+                    <h4 className="font-serif-lux text-lg text-white font-bold">{car.name}</h4>
                   </div>
                 </div>
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmit}
-                style={{
-                  display: 'flex', flexDirection: 'column',
-                  gap: 20, maxWidth: 520,
-                }}>
-                {error && (
-                  <p style={{
-                    fontSize: 13, color: '#F87171',
-                    background: 'rgba(248,113,113,0.06)',
-                    border: '1px solid rgba(248,113,113,0.2)',
-                    padding: '12px 16px',
-                  }}>
-                    {error}
-                  </p>
-                )}
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label className="lux-label">Họ và tên *</label>
-                    <input className="lux-input" required
-                      value={form.visitorName}
-                      onChange={e => set('visitorName', e.target.value)}
-                      placeholder="Nguyễn Văn A"
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                      Họ và tên khách hàng VIP *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={visitorName}
+                      onChange={(e) => setVisitorName(e.target.value)}
+                      className="lux-input text-xs"
+                      placeholder="VD: Nguyễn Văn A"
                     />
                   </div>
-                  <div>
-                    <label className="lux-label">Số điện thoại *</label>
-                    <input className="lux-input" required
-                      value={form.visitorPhone}
-                      onChange={e => set('visitorPhone', e.target.value)}
-                      placeholder="0901 234 567"
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                      Số điện thoại liên hệ *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={visitorPhone}
+                      onChange={(e) => setVisitorPhone(e.target.value)}
+                      className="lux-input text-xs"
+                      placeholder="VD: 0988 888 888"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="lux-label">Email</label>
-                  <input className="lux-input" type="email"
-                    value={form.visitorEmail}
-                    onChange={e => set('visitorEmail', e.target.value)}
-                    placeholder="email@domain.com"
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                    Email xác nhận lịch hẹn *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={visitorEmail}
+                    onChange={(e) => setVisitorEmail(e.target.value)}
+                    className="lux-input text-xs"
+                    placeholder="vip@domain.com"
                   />
                 </div>
 
-                <div>
-                  <label className="lux-label">Ngày hẹn *</label>
-                  <input className="lux-input" type="date" required
-                    value={form.appointmentDate}
-                    min={new Date().toISOString().split('T')[0]}
-                    onChange={e => set('appointmentDate', e.target.value)}
-                    style={{ colorScheme: 'dark' }}
-                  />
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                      Ngày dự kiến lái thử *
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={appointmentDate}
+                      onChange={(e) => setAppointmentDate(e.target.value)}
+                      className="lux-input text-xs bg-[#15151B]"
+                    />
+                  </div>
 
-                <div>
-                  <label className="lux-label" style={{ marginBottom: 10 }}>Khung giờ *</label>
-                  <div style={{
-                    display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8,
-                  }}>
-                    {SLOTS.map(s => (
-                      <button key={s} type="button"
-                        onClick={() => set('timeSlot', s)}
-                        className={`btn btn-sm ${form.timeSlot === s ? 'btn-gold' : 'btn-outline'}`}>
-                        {s}
-                      </button>
-                    ))}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                      Khung giờ tiếp đón *
+                    </label>
+                    <select
+                      value={timeSlot}
+                      onChange={(e) => setTimeSlot(e.target.value)}
+                      className="lux-input text-xs bg-[#15151B]"
+                    >
+                      <option value="09:00 AM">09:00 AM - Buổi Sáng</option>
+                      <option value="11:00 AM">11:00 AM - Buổi Sáng</option>
+                      <option value="02:00 PM">02:00 PM - Buổi Chiều</option>
+                      <option value="04:00 PM">04:00 PM - Buổi Chiều</option>
+                      <option value="07:00 PM">07:00 PM - Buổi Tối VIP</option>
+                    </select>
                   </div>
                 </div>
 
-                <div>
-                  <label className="lux-label">Ghi chú</label>
-                  <textarea className="lux-textarea lux-input" rows={4}
-                    value={form.notes}
-                    onChange={e => set('notes', e.target.value)}
-                    placeholder="Yêu cầu đặc biệt..."
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                    Ghi chú địa điểm hoặc yêu cầu đặc biệt
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="VD: Yêu cầu đưa xe đến biệt thự tại Vinhomes Riverside, lái thử tuyến đại lộ..."
+                    className="lux-input text-xs"
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                  <Link to={`/cars/${car?.slug || carId}`} style={{ flex: 1 }}>
-                    <Button variant="outline" size="lg" full>Quay lại</Button>
-                  </Link>
-                  <Button type="submit" variant="primary" size="lg"
-                    loading={submitting} style={{ flex: 2 }}>
-                    Xác nhận đặt lịch
-                  </Button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="btn-lux-gold w-full py-4 text-xs tracking-[0.2em]"
+                >
+                  {submitting ? 'ĐANG KHỞI TẠO LỊCH HẸN VIP...' : 'XÁC NHẬN ĐẶT LỊCH LÁI THỬ TẬN NHÀ'}
+                </button>
               </form>
             </div>
-
           ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-              style={{
-                maxWidth: 480, margin: '0 auto',
-                textAlign: 'center', padding: '48px 0',
-              }}>
-              <div style={{
-                width: 56, height: 56,
-                border: '1px solid var(--gold)',
-                background: 'rgba(201,169,110,0.08)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--gold)', margin: '0 auto 24px',
-              }}>
-                <CheckIcon />
+            /* Success confirmation */
+            <div className="bg-[#0E0E12] border border-[#D4AF37]/40 rounded-lg p-10 text-center space-y-6">
+              <div className="w-20 h-20 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37] text-[#D4AF37] mx-auto flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10" />
               </div>
-              <p className="eyebrow mb-3">Đặt lịch thành công</p>
-              <h2 style={{
-                fontFamily: 'Cormorant Garamond', fontSize: 32,
-                fontWeight: 300, color: 'var(--white)', marginBottom: 12,
-              }}>
-                Cảm ơn bạn!
-              </h2>
-              <p style={{
-                fontSize: 14, color: 'var(--silver)',
-                fontWeight: 300, lineHeight: 1.75, marginBottom: 32,
-              }}>
-                Nhân viên sẽ liên hệ xác nhận lịch hẹn xem{' '}
-                <strong style={{ color: 'var(--white)' }}>{car?.name}</strong>{' '}
-                trong vòng 2 giờ làm việc.
-              </p>
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                <Link to="/cars">
-                  <Button variant="outline" size="md">Xem thêm xe</Button>
-                </Link>
-                <Link to="/">
-                  <Button variant="primary" size="md">Về trang chủ</Button>
-                </Link>
+              <div className="space-y-2">
+                <h2 className="font-serif-lux text-3xl font-bold text-white">
+                  Đã Đặt Lịch Lái Thử Thành Công!
+                </h2>
+                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  Trợ lý VIP Concierge LuxeMotors sẽ gọi điện thoại xác nhận trong vòng 15 phút tới để sắp xếp chuyên xế đưa xe đến tận dinh thự của bạn.
+                </p>
               </div>
-            </motion.div>
+
+              <div className="flex justify-center gap-4 pt-4">
+                <button onClick={() => navigate('/cars')} className="btn-lux-gold px-8 py-3">
+                  Tiếp tục xem Showroom
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </main>
+
+      <Chatbot />
       <Footer />
-    </>
+    </div>
   );
 }

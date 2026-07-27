@@ -1,359 +1,530 @@
 [
   {
-    "name": "Ferrari SF90 Stradale",
-    "brand": "Ferrari",
-    "model": "SF90",
-    "year": 2023,
-    "excerpt": "Siêu xe hybrid mạnh mẽ của Ferrari.",
-    "description": "Ferrari SF90 Stradale sở hữu động cơ V8 Twin Turbo kết hợp 3 mô-tơ điện.",
-    "price": 36000000000,
+    "name": "Bugatti Chiron Super Sport",
+    "brand": "Bugatti",
+    "model": "Chiron Super Sport",
+    "year": 2026,
+    "excerpt": "Tuyệt tác Hypercar tốc độ 440 km/h mạnh 1,600 mã lực.",
+    "description": "Bugatti Chiron Super Sport sở hữu động cơ 8.0L W16 Quad-Turbo huyền thoại, sinh công suất 1,600 mã lực. Tốc độ tối đa 440 km/h.",
+    "price": 3900000,
     "images": [
-      {
-        "url": "/uploads/cars/ferrari-sf90.jpg",
-        "alt": "Ferrari SF90",
-        "isMain": true
-      }
+      { "url": "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?auto=format&fit=crop&q=80&w=1200", "alt": "Bugatti Chiron Super Sport Góc Chính Diện", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1600793575654-910699b5e4d4?auto=format&fit=crop&q=80&w=1200", "alt": "Bugatti Chiron Góc Sườn Xe Khí Động Học", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200", "alt": "Bugatti Chiron Đuôi Xe & Dải Đèn W16", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200", "alt": "Bugatti Chiron Nội Thất Da Cognac & Carbon", "isMain": false }
     ],
-    "color": "Red",
+    "color": "Black & French Racing Blue",
+    "interior": "Cognac Leather & Carbon",
+    "category": "hypercar",
+    "condition": "new",
+    "specifications": {
+      "engine": "8.0L W16 Quad-Turbo",
+      "horsepower": 1600,
+      "torque": 1600,
+      "transmission": "7-Speed Dual Clutch",
+      "drivetrain": "AWD",
+      "acceleration": 2.4,
+      "topSpeed": 440
+    },
+    "features": ["W16 Quad-Turbo", "Active Aerodynamics", "Full Carbon Monocoque"],
+    "inStock": true,
+    "stockCount": 1,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Ferrari SF90 XX Stradale",
+    "brand": "Ferrari",
+    "model": "SF90 XX",
+    "year": 2026,
+    "excerpt": "Phiên bản Hypercar đường đua giới hạn 799 chiếc toàn thế giới.",
+    "description": "Ferrari SF90 XX Stradale kết hợp động cơ V8 4.0L tăng áp kép cùng 3 mô-tơ điện, đem lại tổng công suất 1,030 mã lực. Tăng tốc 0-100 km/h chỉ trong 2.3 giây.",
+    "price": 890000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari SF90 XX Stradale Góc Đầu Xe", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari SF90 Thân Xe Đỏ Rosso Corsa", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari SF90 Cánh Gió Carbon Đường Đua", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari SF90 Vô Lăng Đua F1 Carbon", "isMain": false }
+    ],
+    "color": "Rosso Corsa Red",
+    "interior": "Black Alcantara & Yellow Stitching",
+    "category": "hypercar",
+    "condition": "new",
+    "specifications": {
+      "engine": "4.0L V8 Twin-Turbo Plug-in Hybrid",
+      "horsepower": 1030,
+      "torque": 804,
+      "transmission": "8-Speed F1 Dual Clutch",
+      "drivetrain": "AWD",
+      "acceleration": 2.3,
+      "topSpeed": 340
+    },
+    "features": ["Fixed Rear Wing", "F1 Electronic Differential", "Assetto Fiorano Package"],
+    "inStock": true,
+    "stockCount": 1,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Aston Martin Valkyrie",
+    "brand": "Aston Martin",
+    "model": "Valkyrie",
+    "year": 2025,
+    "excerpt": "Hypercar F1 hợp tác thiết kế cùng Red Bull Racing.",
+    "description": "Aston Martin Valkyrie mang động cơ V12 6.5L hút khí tự nhiên kết hợp hệ thống Hybrid Cosworth, đạt 1,160 mã lực.",
+    "price": 3500000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin Valkyrie Góc Mặt Trước", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1600793575654-910699b5e4d4?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin Valkyrie Góc Nhìn Nghiêng", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin Valkyrie Khí Động Học Đuôi Xe", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin Valkyrie Khoang Lái Carbon F1", "isMain": false }
+    ],
+    "color": "British Racing Green",
+    "interior": "Pure Carbon Monocoque",
+    "category": "hypercar",
+    "condition": "new",
+    "specifications": {
+      "engine": "6.5L V12 Cosworth Hybrid",
+      "horsepower": 1160,
+      "torque": 900,
+      "transmission": "7-Speed Single Clutch",
+      "drivetrain": "RWD",
+      "acceleration": 2.5,
+      "topSpeed": 355
+    },
+    "features": ["Cosworth V12 Engine", "Ground Effect Aerodynamics", "Active Suspension"],
+    "inStock": true,
+    "stockCount": 1,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Koenigsegg Jesko Absolut",
+    "brand": "Koenigsegg",
+    "model": "Jesko Absolut",
+    "year": 2026,
+    "excerpt": "Xe nhanh nhất lịch sử Koenigsegg đạt 500 km/h.",
+    "description": "Jesko Absolut được tối ưu khí động học siêu phẳng để chinh phục ranh giới tốc độ 500 km/h với khối động cơ 5.0L V8 1,600 mã lực.",
+    "price": 3400000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=1200", "alt": "Koenigsegg Jesko Absolut Mặt Trước", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=1200", "alt": "Koenigsegg Jesko Thân Xe Siêu Phẳng", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=1200", "alt": "Koenigsegg Jesko Mâm Carbon Siêu Nhẹ", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200", "alt": "Koenigsegg Jesko Cửa Xoay Dihedral Interior", "isMain": false }
+    ],
+    "color": "Tang Orange",
+    "interior": "Black Leather & Gold Accents",
+    "category": "hypercar",
+    "condition": "new",
+    "specifications": {
+      "engine": "5.0L V8 Twin-Turbo E85",
+      "horsepower": 1600,
+      "torque": 1500,
+      "transmission": "9-Speed Light Speed Transmission",
+      "drivetrain": "RWD",
+      "acceleration": 2.5,
+      "topSpeed": 500
+    },
+    "features": ["Light Speed Transmission", "Triplex Suspension", "Carbon Rims"],
+    "inStock": true,
+    "stockCount": 1,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Lamborghini Revuelto V12 Hybrid",
+    "brand": "Lamborghini",
+    "model": "Revuelto",
+    "year": 2026,
+    "excerpt": "Siêu xe V12 Hybrid 1,015 mã lực đầu tiên của Lamborghini.",
+    "description": "Lamborghini Revuelto kết hợp động cơ V12 6.5L mới cùng 3 mô-tơ điện, mang lại công suất cực đại 1,015 mã lực và khả năng tăng tốc 0-100 km/h trong 2.5 giây.",
+    "price": 608000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=1200", "alt": "Lamborghini Revuelto Góc Chính Diện Vàng", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?auto=format&fit=crop&q=80&w=1200", "alt": "Lamborghini Revuelto Góc Cửa Cắt Kéo", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=1200", "alt": "Lamborghini Revuelto Đuôi Xe Ống Xả Lục Giác", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200", "alt": "Lamborghini Revuelto Nội Thất Alcantara", "isMain": false }
+    ],
+    "color": "Giallo Inti Yellow",
+    "interior": "Nero Ade Alcantara",
+    "category": "supercar",
+    "condition": "new",
+    "specifications": {
+      "engine": "6.5L V12 Plug-in Hybrid",
+      "horsepower": 1015,
+      "torque": 725,
+      "transmission": "8-Speed Dual Clutch",
+      "drivetrain": "AWD",
+      "acceleration": 2.5,
+      "topSpeed": 350
+    },
+    "features": ["Carbon Monofuselage", "LDVI 2.0 Torque Vectoring", "Corsa Race Mode"],
+    "inStock": true,
+    "stockCount": 2,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Ferrari 296 GTB Assetto Fiorano",
+    "brand": "Ferrari",
+    "model": "296 GTB",
+    "year": 2025,
+    "excerpt": "Siêu xe động cơ V6 Turbo Hybrid 830 mã lực linh hoạt tuyệt đối.",
+    "description": "Ferrari 296 GTB trang bị động cơ V6 120 độ kết hợp mô-tơ điện mang lại cảm giác lái chuẩn đường đua.",
+    "price": 338000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari 296 GTB Góc Mặt Trước Đỏ", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari 296 GTB Thân Xe Khí Động Học", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari 296 GTB Đuôi Xe Ống Xả Trung Tâm", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari 296 GTB Khoang Lái Assetto Fiorano", "isMain": false }
+    ],
+    "color": "Rosso Imola",
     "interior": "Black Leather",
     "category": "supercar",
     "condition": "new",
     "specifications": {
-      "engine": "4.0L V8 Twin Turbo Hybrid",
-      "horsepower": 986,
-      "torque": 800,
-      "transmission": "8-Speed DCT",
-      "drivetrain": "AWD",
-      "acceleration": 2.5,
-      "topSpeed": 340
+      "engine": "2.9L V6 Twin-Turbo Hybrid",
+      "horsepower": 830,
+      "torque": 740,
+      "transmission": "8-Speed F1 Dual Clutch",
+      "drivetrain": "RWD",
+      "acceleration": 2.9,
+      "topSpeed": 330
     },
-    "features": [
-      "Carbon Ceramic Brakes",
-      "Launch Control",
-      "Digital Cockpit"
-    ],
+    "features": ["Side Slip Control 7.0", "eManettino Control", "Carbon Aerodynamics"],
     "inStock": true,
     "stockCount": 1,
     "isFeatured": true,
     "isPublished": true
   },
   {
-    "name": "Lamborghini Aventador SVJ",
-    "brand": "Lamborghini",
-    "model": "SVJ",
-    "year": 2022,
-    "excerpt": "Biểu tượng động cơ V12 của Lamborghini.",
-    "description": "Aventador SVJ nổi tiếng với hiệu suất và thiết kế hầm hố.",
-    "price": 28500000000,
+    "name": "Porsche 911 GT3 RS Weissach Package",
+    "brand": "Porsche",
+    "model": "911 GT3 RS",
+    "year": 2026,
+    "excerpt": "Đỉnh cao xe thể thao khí động học đường đua.",
+    "description": "Porsche 911 GT3 RS sở hữu cánh gió chủ động DRS chuẩn F1 cùng khối động cơ 4.0L Flat-6 hút khí tự nhiên 525 mã lực.",
+    "price": 312000,
     "images": [
-      {
-        "url": "/uploads/cars/lamborghini-aventador.jpg",
-        "alt": "Aventador SVJ",
-        "isMain": true
-      }
+      { "url": "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche 911 GT3 RS Góc Mặt Trước", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche 911 GT3 RS Cánh Gió DRS Đuôi Xe", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1600793575654-910699b5e4d4?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche 911 GT3 RS Mâm Magnesium Pyro Red", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche 911 GT3 RS Khoang Khung Đệm Đua", "isMain": false }
     ],
-    "color": "Yellow",
+    "color": "White & Pyro Red Wheels",
+    "interior": "Full Alcantara Cage",
+    "category": "supercar",
+    "condition": "new",
+    "specifications": {
+      "engine": "4.0L Flat-6 Naturally Aspirated",
+      "horsepower": 525,
+      "torque": 465,
+      "transmission": "7-Speed PDK",
+      "drivetrain": "RWD",
+      "acceleration": 3.2,
+      "topSpeed": 296
+    },
+    "features": ["DRS Active Rear Wing", "Weissach Carbon Package", "Magnesium Wheels"],
+    "inStock": true,
+    "stockCount": 2,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "McLaren 750S Spider",
+    "brand": "McLaren",
+    "model": "750S",
+    "year": 2025,
+    "excerpt": "Siêu xe mui xếp nhẹ nhất và mạnh nhất phân khúc của McLaren.",
+    "description": "McLaren 750S Spider trang bị 750 mã lực từ động cơ V8 4.0L Twin-Turbo, tăng tốc 0-100 km/h trong 2.8 giây.",
+    "price": 345000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&q=80&w=1200", "alt": "McLaren 750S Spider Góc Mặt Trước Cam", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=1200", "alt": "McLaren 750S Spider Mui Xếp Mở", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=1200", "alt": "McLaren 750S Diffuser Carbon Đuôi Xe", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1200", "alt": "McLaren 750S Ghế Đua Alcantara Thể Thao", "isMain": false }
+    ],
+    "color": "McLaren Orange",
     "interior": "Black Alcantara",
     "category": "supercar",
     "condition": "new",
     "specifications": {
-      "engine": "6.5L V12",
-      "horsepower": 770,
-      "torque": 720,
-      "transmission": "7-Speed ISR",
-      "drivetrain": "AWD",
+      "engine": "4.0L V8 Twin-Turbo",
+      "horsepower": 750,
+      "torque": 800,
+      "transmission": "7-Speed Seamless Shift",
+      "drivetrain": "RWD",
       "acceleration": 2.8,
-      "topSpeed": 350
+      "topSpeed": 332
     },
-    "features": [
-      "Carbon Fiber Body",
-      "Launch Control"
+    "features": ["Proactive Chassis Control III", "Retractable Hardtop", "Ultra-Lightweight Carbon Seats"],
+    "inStock": true,
+    "stockCount": 1,
+    "isFeatured": false,
+    "isPublished": true
+  },
+  {
+    "name": "Rolls-Royce Phantom VIII Extended",
+    "brand": "Rolls-Royce",
+    "model": "Phantom VIII",
+    "year": 2026,
+    "excerpt": "Đỉnh cao quý tộc siêu sang dành cho nguyên thủ và tỷ phú.",
+    "description": "Rolls-Royce Phantom VIII Extended cung cấp khoang thương gia Privacy Suite tĩnh lặng nhất thế giới cùng động cơ V12 6.75L Twin-Turbo.",
+    "price": 540000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&q=80&w=1200", "alt": "Rolls-Royce Phantom VIII Lưới Tản Nhiệt Pantheon", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=1200", "alt": "Rolls-Royce Phantom Dáng Xe Kéo Dài Extended", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=1200", "alt": "Rolls-Royce Biểu Tượng Spirit of Ecstasy", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=1200", "alt": "Rolls-Royce Khoang Thương Gia Trần Sao Starlight", "isMain": false }
     ],
+    "color": "Midnight Sapphire",
+    "interior": "Grace White Leather",
+    "category": "luxury_sedan",
+    "condition": "new",
+    "specifications": {
+      "engine": "6.75L V12 Twin-Turbo",
+      "horsepower": 563,
+      "torque": 900,
+      "transmission": "8-Speed Automatic",
+      "drivetrain": "RWD",
+      "acceleration": 5.4,
+      "topSpeed": 250
+    },
+    "features": ["Starlight Headliner", "Privacy Suite Glass", "Magic Carpet Ride Air Suspension"],
     "inStock": true,
     "stockCount": 1,
     "isFeatured": true,
     "isPublished": true
   },
   {
-    "name": "Porsche 911 Turbo S",
-    "brand": "Porsche",
-    "model": "911 Turbo S",
-    "year": 2024,
-    "excerpt": "Chiếc coupe hiệu suất cao của Porsche.",
-    "description": "911 Turbo S cân bằng giữa tốc độ và sự sang trọng.",
-    "price": 17500000000,
+    "name": "Mercedes-Maybach S680 V12 Edition",
+    "brand": "Mercedes-Benz",
+    "model": "Maybach S680",
+    "year": 2026,
+    "excerpt": "Sedan siêu sang V12 6.0L đẳng cấp doanh nhân thành đạt.",
+    "description": "Mercedes-Maybach S680 trang bị động cơ V12 6.0L 621 mã lực cùng khoang sau First-Class âm thanh 4D Burmester 31 loa.",
+    "price": 230000,
     "images": [
-      {
-        "url": "/uploads/cars/porsche911.jpg",
-        "alt": "Porsche 911",
-        "isMain": true
-      }
+      { "url": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=1200", "alt": "Mercedes-Maybach S680 Mặt Trước Sơn 2 Tông Màu", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&q=80&w=1200", "alt": "Mercedes-Maybach S680 Thân Xe Sang Trọng", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=1200", "alt": "Mercedes-Maybach Ghế Hạng Nhất First Class", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=1200", "alt": "Mercedes-Maybach Mâm Đúc Maybach Monogram", "isMain": false }
     ],
-    "color": "White",
-    "interior": "Black",
-    "category": "coupe",
+    "color": "Onyx Black & Kalahari Gold",
+    "interior": "Porcelain Nappa Leather",
+    "category": "luxury_sedan",
     "condition": "new",
     "specifications": {
-      "engine": "3.8L Twin Turbo",
-      "horsepower": 650,
-      "torque": 800,
+      "engine": "6.0L V12 Twin-Turbo",
+      "horsepower": 621,
+      "torque": 900,
+      "transmission": "9G-TRONIC Automatic",
+      "drivetrain": "4MATIC AWD",
+      "acceleration": 4.5,
+      "topSpeed": 250
+    },
+    "features": ["Burmester High-End 4D Surround", "Reclining Executive Seats", "E-ACTIVE BODY CONTROL"],
+    "inStock": true,
+    "stockCount": 2,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Bentley Flying Spur Mulliner W12",
+    "brand": "Bentley",
+    "model": "Flying Spur Mulliner",
+    "year": 2025,
+    "excerpt": "Sedan hạng sang thủ công xa hoa nhất từ Crewe, Anh Quốc.",
+    "description": "Bentley Flying Spur Mulliner W12 kết hợp nội thất thêu kim cương thủ công cùng động cơ W12 6.0L 626 mã lực.",
+    "price": 315000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Flying Spur Mulliner Mặt Trước Trắng", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Flying Spur Thân Xe Quý Tộc", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Flying B Biểu Tượng Nổi", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Nội Thất Da Thêu Kim Cương Mulliner", "isMain": false }
+    ],
+    "color": "Mulliner Glacier White",
+    "interior": "Imperial Blue & Camel Hide",
+    "category": "luxury_sedan",
+    "condition": "new",
+    "specifications": {
+      "engine": "6.0L W12 Twin-Turbo",
+      "horsepower": 626,
+      "torque": 900,
+      "transmission": "8-Speed Dual Clutch",
+      "drivetrain": "AWD",
+      "acceleration": 3.8,
+      "topSpeed": 333
+    },
+    "features": ["Bentley Rotating Display", "Mulliner Diamond Quilting", "Naim 2,200W Audio"],
+    "inStock": true,
+    "stockCount": 1,
+    "isFeatured": false,
+    "isPublished": true
+  },
+  {
+    "name": "Porsche Panamera Turbo E-Hybrid",
+    "brand": "Porsche",
+    "model": "Panamera Turbo",
+    "year": 2026,
+    "excerpt": "Sedan thể thao sang trọng 670 mã lực trang bị phuộc Porsche Active Ride.",
+    "description": "Porsche Panamera Turbo E-Hybrid mang lại trải nghiệm lái tốc độ 315 km/h kết hợp sự êm ái chưa từng có.",
+    "price": 191000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche Panamera Turbo E-Hybrid Mặt Trước Grey", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche Panamera Dáng Thể Thao Fastback", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1600793575654-910699b5e4d4?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche Panamera Đuôi Xe Đèn LED Ngang", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200", "alt": "Porsche Panamera Khoang Lái Turbonite", "isMain": false }
+    ],
+    "color": "Turbonite Grey",
+    "interior": "Smooth-Finish Black Leather",
+    "category": "luxury_sedan",
+    "condition": "new",
+    "specifications": {
+      "engine": "4.0L V8 Twin-Turbo Hybrid",
+      "horsepower": 670,
+      "torque": 930,
       "transmission": "8-Speed PDK",
       "drivetrain": "AWD",
-      "acceleration": 2.7,
-      "topSpeed": 330
+      "acceleration": 3.2,
+      "topSpeed": 315
     },
-    "features": [
-      "Sport Chrono",
-      "Adaptive Suspension"
-    ],
-    "inStock": true,
-    "stockCount": 2,
-    "isFeatured": true,
-    "isPublished": true
-  },
-  {
-    "name": "BMW XM",
-    "brand": "BMW",
-    "model": "XM",
-    "year": 2024,
-    "excerpt": "SUV hiệu suất cao của BMW M.",
-    "description": "BMW XM kết hợp động cơ V8 và hybrid.",
-    "price": 11800000000,
-    "images": [
-      {
-        "url": "/uploads/cars/bmwxm.jpg",
-        "alt": "BMW XM",
-        "isMain": true
-      }
-    ],
-    "color": "Black",
-    "interior": "Brown",
-    "category": "suv",
-    "condition": "new",
-    "specifications": {
-      "engine": "4.4L V8 Hybrid",
-      "horsepower": 644,
-      "torque": 800,
-      "acceleration": 4.3,
-      "topSpeed": 270
-    },
-    "features": [
-      "Panoramic Roof",
-      "BMW iDrive"
-    ],
-    "inStock": true,
-    "stockCount": 3,
-    "isFeatured": false,
-    "isPublished": true
-  },
-  {
-    "name": "Mercedes-Benz S580 Maybach",
-    "brand": "Mercedes-Benz",
-    "model": "S580",
-    "year": 2024,
-    "excerpt": "Sedan siêu sang của Mercedes.",
-    "description": "Maybach S580 mang đến trải nghiệm đẳng cấp.",
-    "price": 14500000000,
-    "images": [
-      {
-        "url": "/uploads/cars/maybach.jpg",
-        "alt": "Maybach S580",
-        "isMain": true
-      }
-    ],
-    "color": "Black",
-    "interior": "Beige",
-    "category": "sedan",
-    "condition": "new",
-    "specifications": {
-      "engine": "4.0L V8",
-      "horsepower": 496,
-      "torque": 700,
-      "acceleration": 4.8,
-      "topSpeed": 250
-    },
-    "features": [
-      "Massage Seats",
-      "Burmester Audio"
-    ],
-    "inStock": true,
-    "stockCount": 2,
-    "isFeatured": true,
-    "isPublished": true
-  },
-  {
-    "name": "Audi RS e-tron GT",
-    "brand": "Audi",
-    "model": "RS e-tron GT",
-    "year": 2023,
-    "excerpt": "Sedan điện hiệu suất cao.",
-    "description": "Audi RS e-tron GT là mẫu xe điện thể thao.",
-    "price": 9800000000,
-    "images": [
-      {
-        "url": "/uploads/cars/audi-rs.jpg",
-        "alt": "Audi RS",
-        "isMain": true
-      }
-    ],
-    "color": "Grey",
-    "interior": "Black",
-    "category": "sedan",
-    "condition": "new",
-    "specifications": {
-      "engine": "Dual Electric Motor",
-      "horsepower": 637,
-      "torque": 830,
-      "acceleration": 3.3,
-      "topSpeed": 250
-    },
-    "features": [
-      "Quattro AWD",
-      "Virtual Cockpit"
-    ],
+    "features": ["Porsche Active Ride Suspension", "Turbonite Accents", "Passenger Screen"],
     "inStock": true,
     "stockCount": 2,
     "isFeatured": false,
     "isPublished": true
   },
   {
-    "name": "McLaren 720S",
-    "brand": "McLaren",
-    "model": "720S",
-    "year": 2022,
-    "excerpt": "Siêu xe Anh Quốc.",
-    "description": "720S nổi tiếng với khung gầm carbon và hiệu suất cực cao.",
-    "price": 23000000000,
-    "images": [
-      {
-        "url": "/uploads/cars/mclaren720s.jpg",
-        "alt": "McLaren 720S",
-        "isMain": true
-      }
-    ],
-    "color": "Orange",
-    "interior": "Black",
-    "category": "supercar",
-    "condition": "new",
-    "specifications": {
-      "engine": "4.0L Twin Turbo V8",
-      "horsepower": 720,
-      "torque": 770,
-      "acceleration": 2.9,
-      "topSpeed": 341
-    },
-    "features": [
-      "Carbon Chassis",
-      "Track Mode"
-    ],
-    "inStock": true,
-    "stockCount": 1,
-    "isFeatured": false,
-    "isPublished": true
-  },
-  {
-    "name": "Bentley Continental GT",
+    "name": "Bentley Continental GT Speed V8",
     "brand": "Bentley",
-    "model": "Continental GT",
-    "year": 2023,
-    "excerpt": "Coupe hạng sang của Bentley.",
-    "description": "Continental GT kết hợp hiệu suất và tiện nghi.",
-    "price": 18500000000,
+    "model": "Continental GT Speed",
+    "year": 2026,
+    "excerpt": "Mẫu Grand Tourer thể thao mạnh mẽ nhất lịch sử Bentley.",
+    "description": "Bentley Continental GT Speed thế hệ mới trang bị khối động cơ Ultra Performance Hybrid V8 782 mã lực.",
+    "price": 298000,
     "images": [
-      {
-        "url": "/uploads/cars/bentley.jpg",
-        "alt": "Bentley Continental GT",
-        "isMain": true
-      }
+      { "url": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Continental GT Speed Mặt Trước Xanh", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Continental GT Dáng Coupe 2 Cửa", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Continental GT Lưới Tản Nhiệt Matrix", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=1200", "alt": "Bentley Continental Màn Hình Xoay Bentley Rotating Display", "isMain": false }
     ],
-    "color": "Blue",
-    "interior": "Cream",
-    "category": "coupe",
+    "color": "Tourmaline Green",
+    "interior": "Gravity Grey Leather",
+    "category": "grand_tourer",
     "condition": "new",
     "specifications": {
-      "engine": "6.0L W12",
-      "horsepower": 650,
-      "torque": 900,
-      "acceleration": 3.6,
+      "engine": "4.0L V8 Ultra Performance Hybrid",
+      "horsepower": 782,
+      "torque": 1000,
+      "transmission": "8-Speed Dual Clutch",
+      "drivetrain": "AWD",
+      "acceleration": 3.2,
       "topSpeed": 335
     },
-    "features": [
-      "Massage Seats",
-      "Adaptive Cruise"
+    "features": ["Electronic Limited Slip Diff", "All-Wheel Steering", "Dark Tint Matrix Grille"],
+    "inStock": true,
+    "stockCount": 1,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Aston Martin DB12 Coupe",
+    "brand": "Aston Martin",
+    "model": "DB12",
+    "year": 2025,
+    "excerpt": "Super Tourer đầu tiên trên thế giới với công suất 680 mã lực.",
+    "description": "Aston Martin DB12 tái định nghĩa dòng xe Grand Tourer truyền thống thành Super Tourer, mang lại tốc độ tối đa 325 km/h.",
+    "price": 248000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin DB12 Coupe Mặt Trước Emerald", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1600793575654-910699b5e4d4?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin DB12 Góc Nhìn Thể Thao", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin DB12 Đuôi Xe Cánh Gió Nổi", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1200", "alt": "Aston Martin DB12 Nội Thất Da Bò Cao Cấp", "isMain": false }
     ],
+    "color": "Iridescent Emerald Green",
+    "interior": "Hairbridge Tan Leather",
+    "category": "grand_tourer",
+    "condition": "new",
+    "specifications": {
+      "engine": "4.0L V8 Twin-Turbo",
+      "horsepower": 680,
+      "torque": 800,
+      "transmission": "8-Speed ZF Automatic",
+      "drivetrain": "RWD",
+      "acceleration": 3.6,
+      "topSpeed": 325
+    },
+    "features": ["Bowers & Wilkins 1,170W Sound", "Electronic Rear Diff", "Michelin Pilot Sport S 5"],
+    "inStock": true,
+    "stockCount": 2,
+    "isFeatured": true,
+    "isPublished": true
+  },
+  {
+    "name": "Ferrari Roma Spider",
+    "brand": "Ferrari",
+    "model": "Roma Spider",
+    "year": 2025,
+    "excerpt": "Vẻ đẹp La Dolce Vita nước Ý mui xếp mềm quyến rũ.",
+    "description": "Ferrari Roma Spider kết hợp sự lãng mạn thanh lịch của mui xếp vải 5 lớp cùng khối động cơ V8 Twin-Turbo 620 mã lực.",
+    "price": 247000,
+    "images": [
+      { "url": "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari Roma Spider Mặt Trước", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari Roma Spider Đường Nét Mềm Mại", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari Roma Spider Mui Xếp Vải 5 Lớp", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1200", "alt": "Ferrari Roma Spider Nội Thất Dual Cockpit", "isMain": false }
+    ],
+    "color": "Celeste Trevi Blue",
+    "interior": "Sabbia Beige Leather",
+    "category": "grand_tourer",
+    "condition": "new",
+    "specifications": {
+      "engine": "3.9L V8 Twin-Turbo",
+      "horsepower": 620,
+      "torque": 760,
+      "transmission": "8-Speed Dual Clutch",
+      "drivetrain": "RWD",
+      "acceleration": 3.4,
+      "topSpeed": 320
+    },
+    "features": ["Tailored 5-Layer Soft Top", "Dual Cockpit Design", "Variable Boost Management"],
     "inStock": true,
     "stockCount": 1,
     "isFeatured": false,
     "isPublished": true
   },
   {
-    "name": "Rolls-Royce Cullinan",
-    "brand": "Rolls-Royce",
-    "model": "Cullinan",
-    "year": 2024,
-    "excerpt": "SUV siêu sang của Rolls-Royce.",
-    "description": "Cullinan là SUV sang trọng hàng đầu thế giới.",
-    "price": 42000000000,
+    "name": "Maserati GranTurismo Folgore EV",
+    "brand": "Maserati",
+    "model": "GranTurismo Folgore",
+    "year": 2026,
+    "excerpt": "Gran Tourer thuần điện 761 mã lực đầu tiên từ nước Ý.",
+    "description": "Maserati GranTurismo Folgore trang bị 3 mô-tơ điện công nghệ Formula E, đạt tổng công suất 761 mã lực và mô-men xoắn tức thì 1,350 Nm.",
+    "price": 205000,
     "images": [
-      {
-        "url": "/uploads/cars/cullinan.jpg",
-        "alt": "Cullinan",
-        "isMain": true
-      }
+      { "url": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=1200", "alt": "Maserati GranTurismo Folgore EV Góc Mặt Trước Đồng", "isMain": true },
+      { "url": "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=1200", "alt": "Maserati GranTurismo Thân Xe Khí Động Học", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200", "alt": "Maserati Biểu Tượng Cây Đinh Ba Trident", "isMain": false },
+      { "url": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200", "alt": "Maserati GranTurismo Khoang Lái Điện Tử Ý", "isMain": false }
     ],
-    "color": "Silver",
-    "interior": "White",
-    "category": "suv",
+    "color": "Rame Folgore Liquid Copper",
+    "interior": "Econyl Sustainable Fabric & Leather",
+    "category": "grand_tourer",
     "condition": "new",
     "specifications": {
-      "engine": "6.75L V12",
-      "horsepower": 592,
-      "torque": 900,
-      "acceleration": 5.2,
-      "topSpeed": 250
+      "engine": "Triple Electric Motors (800V Architecture)",
+      "horsepower": 761,
+      "torque": 1350,
+      "transmission": "Direct Drive",
+      "drivetrain": "AWD",
+      "acceleration": 2.7,
+      "topSpeed": 325
     },
-    "features": [
-      "Spirit of Ecstasy",
-      "Starlight Headliner"
-    ],
+    "features": ["800V Ultra-Fast Charging", "Sonus Faber Audio", "Formula E Silicon Inverters"],
     "inStock": true,
     "stockCount": 1,
-    "isFeatured": true,
-    "isPublished": true
-  },
-  {
-    "name": "Range Rover SV",
-    "brand": "Land Rover",
-    "model": "Range Rover SV",
-    "year": 2024,
-    "excerpt": "SUV hạng sang của Land Rover.",
-    "description": "Range Rover SV mang lại trải nghiệm off-road và sang trọng.",
-    "price": 15500000000,
-    "images": [
-      {
-        "url": "/uploads/cars/rangerover.jpg",
-        "alt": "Range Rover SV",
-        "isMain": true
-      }
-    ],
-    "color": "Green",
-    "interior": "Brown",
-    "category": "suv",
-    "condition": "new",
-    "specifications": {
-      "engine": "4.4L Twin Turbo V8",
-      "horsepower": 615,
-      "torque": 750,
-      "acceleration": 4.5,
-      "topSpeed": 261
-    },
-    "features": [
-      "Terrain Response",
-      "Meridian Audio"
-    ],
-    "inStock": true,
-    "stockCount": 2,
-    "isFeatured": true,
+    "isFeatured": false,
     "isPublished": true
   }
 ]

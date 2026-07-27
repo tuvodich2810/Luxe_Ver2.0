@@ -1,169 +1,201 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import Button from '@/components/common/Button';
+import { Sparkles, Mail, Lock, User, Phone, AlertCircle } from 'lucide-react';
 
 export default function Register() {
-  const [form, setForm] = useState({
-    fullName: '', email: '', phone: '', password: '', confirmPassword: '',
-  });
-  const [error,   setError]   = useState('');
-  const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const set = (k, v) => { setForm(p => ({ ...p, [k]: v })); setError(''); };
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp'); return;
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Mật khẩu nhập lại không trùng khớp');
+      return;
     }
-    if (form.password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự'); return;
-    }
-    setLoading(true); setError('');
+
+    setLoading(true);
     try {
-      await register(form);
+      await register({ fullName, email, phone, password });
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Đăng ký thất bại');
-    } finally { setLoading(false); }
+      setError(err.message || 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--black)', display: 'flex' }}>
-
-      {/* Left — Image */}
-      <div style={{
-        flex: 1, position: 'relative', overflow: 'hidden', display: 'none',
-      }} className="lg:block">
+    <div className="min-h-screen bg-[#070709] flex text-slate-100 font-sans">
+      {/* Left Split Banner */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-black overflow-hidden items-center justify-center p-12">
         <img
-          src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=2070&auto=format"
-          alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }}
+          src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1600"
+          alt="LuxeMotors Supercar"
+          className="absolute inset-0 w-full h-full object-cover filter brightness-50 contrast-125 scale-105"
         />
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(to left,var(--black),transparent)',
-        }} />
-        <div style={{ position: 'absolute', bottom: 64, right: 48, textAlign: 'right' }}>
-          <p style={{
-            fontFamily: 'Cormorant Garamond',
-            fontSize: 'clamp(2.5rem,5vw,4rem)',
-            fontWeight: 300, color: 'var(--white)', lineHeight: 1.1,
-          }}>
-            Trải nghiệm<br/>
-            <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>khác biệt</em>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070709] via-black/40 to-black/80" />
+
+        <div className="relative z-10 max-w-lg space-y-6">
+          <div className="lux-eyebrow">
+            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+            JOIN THE ELITE CLUB
+          </div>
+          <h2 className="font-serif-lux text-5xl font-bold text-white leading-tight">
+            Đăng Ký Trở Thành <span className="lux-gradient-gold-text italic">Thành Viên VIP</span>
+          </h2>
+          <p className="text-xs text-slate-300 leading-relaxed font-light">
+            Nhận thông báo ưu tiên khi có siêu xe phiên bản giới hạn nhập kho và hưởng trọn đặc quyền lái thử tận nhà.
           </p>
         </div>
       </div>
 
-      {/* Right — Form */}
-      <div style={{
-        flex: 1, display: 'flex', flexDirection: 'column',
-        justifyContent: 'center', padding: '48px 64px',
-      }}>
-        <Link to="/" style={{
-          display: 'inline-flex', alignItems: 'center',
-          gap: 10, marginBottom: 48,
-        }}>
-          <div style={{ width: 26, height: 26, position: 'relative', flexShrink: 0 }}>
-            <div style={{
-              position: 'absolute', inset: 0,
-              border: '1px solid var(--gold)', transform: 'rotate(45deg)',
-            }} />
-            <div style={{ position: 'absolute', inset: 5, background: 'var(--gold)' }} />
+      {/* Right Form Container */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 sm:p-16 bg-[#09090D] overflow-y-auto">
+        <div>
+          <Link to="/" className="inline-flex items-center gap-3">
+            <div className="w-9 h-9 rounded bg-[#D4AF37]/20 border border-[#D4AF37]/40 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+            </div>
+            <span className="font-serif-lux text-2xl font-bold tracking-wider text-white">
+              LUXE<span className="text-[#D4AF37] italic">MOTORS</span>
+            </span>
+          </Link>
+        </div>
+
+        <div className="max-w-md w-full mx-auto space-y-8 my-auto py-8">
+          <div className="space-y-2">
+            <h1 className="font-serif-lux text-4xl font-bold text-white">Đăng Ký Thành Viên</h1>
+            <p className="text-xs text-slate-400">
+              Điền thông tin cá nhân để tạo tài khoản VIP LuxeMotors.
+            </p>
           </div>
-          <span style={{
-            fontFamily: 'Helvetica Neue', fontSize: 13, fontWeight: 300,
-            letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--white)',
-          }}>
-            Luxe<span style={{ color: 'var(--gold)' }}>Motors</span>
-          </span>
-        </Link>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          style={{ maxWidth: 400, width: '100%' }}>
-
-          <p className="eyebrow mb-4">Thành viên mới</p>
-          <h1 style={{
-            fontFamily: 'Cormorant Garamond',
-            fontSize: 'clamp(2rem,4vw,2.8rem)',
-            fontWeight: 300, color: 'var(--white)', marginBottom: 8,
-          }}>
-            Đăng ký
-          </h1>
-          <p style={{
-            fontSize: 14, color: 'var(--muted)',
-            fontWeight: 300, marginBottom: 32,
-          }}>
-            Đã có tài khoản?{' '}
-            <Link to="/login" style={{ color: 'var(--gold)' }}>Đăng nhập</Link>
-          </p>
 
           {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-              style={{
-                fontSize: 13, color: '#F87171',
-                background: 'rgba(248,113,113,0.06)',
-                border: '1px solid rgba(248,113,113,0.2)',
-                padding: '12px 16px', marginBottom: 20,
-              }}>
-              {error}
-            </motion.p>
+            <div className="p-4 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
           )}
 
-          <form onSubmit={handleSubmit}
-            style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <div>
-              <label className="lux-label">Họ và tên *</label>
-              <input className="lux-input" required
-                value={form.fullName}
-                onChange={e => set('fullName', e.target.value)}
-                placeholder="Nguyễn Văn A"
-              />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                Họ và tên đầy đủ *
+              </label>
+              <div className="relative">
+                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="lux-input pl-10 text-xs"
+                  placeholder="Nguyễn Văn A"
+                />
+              </div>
             </div>
-            <div>
-              <label className="lux-label">Email *</label>
-              <input className="lux-input" type="email" required
-                value={form.email}
-                onChange={e => set('email', e.target.value)}
-                placeholder="your@email.com"
-              />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                  Địa chỉ Email *
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="lux-input pl-10 text-xs"
+                    placeholder="vip@domain.com"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                  Số điện thoại *
+                </label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="lux-input pl-10 text-xs"
+                    placeholder="0988 888 888"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="lux-label">Số điện thoại</label>
-              <input className="lux-input" type="tel"
-                value={form.phone}
-                onChange={e => set('phone', e.target.value)}
-                placeholder="0901 234 567"
-              />
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                Mật khẩu *
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="lux-input pl-10 text-xs"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
-            <div>
-              <label className="lux-label">Mật khẩu *</label>
-              <input className="lux-input" type="password" required
-                value={form.password}
-                onChange={e => set('password', e.target.value)}
-                placeholder="Ít nhất 6 ký tự"
-              />
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                Xác nhận mật khẩu *
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="lux-input pl-10 text-xs"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
-            <div>
-              <label className="lux-label">Xác nhận mật khẩu *</label>
-              <input className="lux-input" type="password" required
-                value={form.confirmPassword}
-                onChange={e => set('confirmPassword', e.target.value)}
-                placeholder="Nhập lại mật khẩu"
-              />
-            </div>
-            <Button type="submit" variant="primary" size="lg" full
-              loading={loading} style={{ marginTop: 8 }}>
-              Tạo tài khoản
-            </Button>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-lux-gold w-full py-4 text-xs tracking-[0.2em]"
+            >
+              {loading ? 'ĐANG TẠO TÀI KHOẢN VIP...' : 'HOÀN TẤT ĐĂNG KÝ VIP'}
+            </button>
           </form>
-        </motion.div>
+
+          <div className="text-center text-xs text-slate-400 pt-2">
+            Đã có tài khoản?{' '}
+            <Link to="/login" className="text-[#D4AF37] font-semibold hover:underline">
+              Đăng nhập ngay
+            </Link>
+          </div>
+        </div>
+
+        <div className="text-xs text-slate-500 text-center">
+          © 2026 LuxeMotors. Bảo mật thông tin thành viên tuyệt đối.
+        </div>
       </div>
     </div>
   );

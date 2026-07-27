@@ -1,74 +1,90 @@
 [
   {
-    "name": "Ferrari",
-    "country": "Italy",
-    "foundedYear": 1939,
-    "description": "Thương hiệu siêu xe nổi tiếng của Ý.",
+    "name": "Bugatti",
+    "slug": "bugatti",
+    "country": "France",
+    "description": "Thương hiệu Hypercar đỉnh cao thế giới từ Molsheim, Pháp.",
     "isFeatured": true,
-    "displayOrder": 1
+    "isActive": true
+  },
+  {
+    "name": "Ferrari",
+    "slug": "ferrari",
+    "country": "Italy",
+    "description": "Biểu tượng tốc độ Maranello với di sản đua xe F1 lừng lẫy.",
+    "isFeatured": true,
+    "isActive": true
   },
   {
     "name": "Lamborghini",
+    "slug": "lamborghini",
     "country": "Italy",
-    "foundedYear": 1963,
-    "description": "Hãng siêu xe biểu tượng của Ý.",
+    "description": "Siêu xe góc cạnh thể thao từ Sant'Agata Bolognese.",
     "isFeatured": true,
-    "displayOrder": 2
+    "isActive": true
   },
   {
     "name": "Porsche",
+    "slug": "porsche",
     "country": "Germany",
-    "foundedYear": 1931,
-    "description": "Hãng xe thể thao cao cấp của Đức.",
-    "displayOrder": 3
-  },
-  {
-    "name": "BMW",
-    "country": "Germany",
-    "foundedYear": 1916,
-    "description": "Hãng xe sang đến từ Đức.",
-    "displayOrder": 4
-  },
-  {
-    "name": "Mercedes-Benz",
-    "country": "Germany",
-    "foundedYear": 1926,
-    "description": "Thương hiệu xe sang nổi tiếng thế giới.",
-    "displayOrder": 5
-  },
-  {
-    "name": "Audi",
-    "country": "Germany",
-    "foundedYear": 1909,
-    "description": "Hãng xe cao cấp thuộc Volkswagen Group.",
-    "displayOrder": 6
-  },
-  {
-    "name": "McLaren",
-    "country": "United Kingdom",
-    "foundedYear": 1963,
-    "description": "Hãng siêu xe hiệu năng cao của Anh.",
-    "displayOrder": 7
-  },
-  {
-    "name": "Bentley",
-    "country": "United Kingdom",
-    "foundedYear": 1919,
-    "description": "Thương hiệu xe siêu sang của Anh.",
-    "displayOrder": 8
+    "description": "Kỹ nghệ xe thể thao chính xác tuyệt đối từ Stuttgart.",
+    "isFeatured": true,
+    "isActive": true
   },
   {
     "name": "Rolls-Royce",
-    "country": "United Kingdom",
-    "foundedYear": 1906,
-    "description": "Biểu tượng của sự sang trọng.",
-    "displayOrder": 9
+    "slug": "rolls-royce",
+    "country": "UK",
+    "description": "Đỉnh cao xe siêu sang thủ công từ Goodwood, Anh Quốc.",
+    "isFeatured": true,
+    "isActive": true
   },
   {
-    "name": "Land Rover",
-    "country": "United Kingdom",
-    "foundedYear": 1948,
-    "description": "Hãng SUV hạng sang nổi tiếng.",
-    "displayOrder": 10
+    "name": "Bentley",
+    "slug": "bentley",
+    "country": "UK",
+    "description": "Sự kết hợp hoàn hảo giữa hiệu suất mạnh mẽ và tiện nghi thượng lưu.",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "Aston Martin",
+    "slug": "aston-martin",
+    "country": "UK",
+    "description": "Vẻ đẹp thanh lịch quyến rũ phong cách quý tộc Anh.",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "Mercedes-Benz",
+    "slug": "mercedes-benz",
+    "country": "Germany",
+    "description": "Dòng xe siêu sang Maybach và hiệu suất cao AMG.",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "McLaren",
+    "slug": "mclaren",
+    "country": "UK",
+    "description": "Công nghệ khung gầm Carbon Siêu nhẹ từ giải đua Công thức 1.",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "Maserati",
+    "slug": "maserati",
+    "country": "Italy",
+    "description": "Phong cách thời trang Ý kết hợp âm thanh động cơ đầy cảm xúc.",
+    "isFeatured": true,
+    "isActive": true
+  },
+  {
+    "name": "Koenigsegg",
+    "slug": "koenigsegg",
+    "country": "Sweden",
+    "description": "Megacar công nghệ tương lai phá vỡ mọi kỷ lục tốc độ.",
+    "isFeatured": true,
+    "isActive": true
   }
 ]

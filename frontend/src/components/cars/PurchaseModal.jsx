@@ -1,296 +1,219 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import Button from '@/components/common/Button';
-import { formatPrice, formatPriceShort } from '@/utils/formatPrice';
-import api from '@/services/api';
+import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { sendOrderForm } from '@/services/sheetsService';
+import orderService from '@/services/orderService';
+import { X, ShieldCheck, CreditCard, CheckCircle2, Sparkles, Building2 } from 'lucide-react';
 
-// Các mốc đặt cọc gợi ý (phần trăm giá xe)
-const DEPOSIT_PRESETS = [10, 20, 30, 50];
-
-const PAYMENT_METHODS = [
-  { value: 'bank_transfer', label: 'Chuyển khoản ngân hàng' },
-  { value: 'cash', label: 'Tiền mặt' },
-  { value: 'installment', label: 'Trả góp' },
-];
-
-const PurchaseModal = ({ car, isOpen, onClose }) => {
-  const [step, setStep] = useState('form'); // 'form' | 'success'
-  const [depositPercent, setDepositPercent] = useState(20);
-  const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
-  const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [notes, setNotes] = useState('');
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [createdOrder, setCreatedOrder] = useState(null);
-
-  // Giá hiện tại của xe (ưu tiên giá khuyến mãi)
-  const currentPrice = car.salePrice && car.salePrice < car.price ? car.salePrice : car.price;
-
-  // Tính số tiền cọc thực tế từ phần trăm
-  const depositAmount = useMemo(
-    () => Math.round((currentPrice * depositPercent) / 100),
-    [currentPrice, depositPercent]
-  );
-
+export default function PurchaseModal({ car, isOpen, onClose, onSuccess }) {
   const { user } = useAuth();
+  const [depositPercent, setDepositPercent] = useState(10);
+  const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
+  const [showroomLocation, setShowroomLocation] = useState('hanoi');
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(null);
 
-  const handleSubmit = async (e) => {
+  if (!isOpen || !car) return null;
+
+  const totalPrice = typeof car.price === 'number' ? car.price : 500000;
+  const depositAmount = Math.round((totalPrice * depositPercent) / 100);
+
+  const handleSubmitOrder = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
+    setSubmitting(true);
 
     try {
-      const response = await api.post('/orders', {
-        car: car._id,
+      const orderData = {
+        carId: car._id,
+        carName: car.name,
+        carImage: car.mainImage || car.images?.[0],
+        totalPrice,
         depositAmount,
+        depositPercent,
         paymentMethod,
-        deliveryAddress,
+        showroomLocation,
         notes,
-      });
+        customerName: user?.fullName || 'Khách Hàng VIP',
+        customerPhone: user?.phone || '0988888888',
+        customerEmail: user?.email || 'vip@luxemotors.vn',
+      };
 
-      sendOrderForm(
-        {
-          name: user?.fullName || '',
-          phone: user?.phone || '',
-          email: user?.email || '',
-          paymentMethod,
-          deliveryAddress,
-          depositPercent,
-        },
-        car,
-        depositAmount
-      );
-
-      setCreatedOrder(response.data);
-      setStep('success');
+      const order = orderService.createOrder(orderData);
+      setOrderComplete(order);
+      if (onSuccess) onSuccess(order);
     } catch (err) {
-      setError(err.message || 'Tạo đơn hàng thất bại, vui lòng thử lại');
+      console.error(err);
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
-  // Reset state khi đóng modal để lần mở sau sạch sẽ
-  const handleClose = () => {
-    setStep('form');
-    setError('');
-    setCreatedOrder(null);
-    onClose();
-  };
-
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={handleClose}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#0E0E12] border border-[#D4AF37]/30 rounded-lg p-6 sm:p-8 shadow-2xl shadow-black space-y-6">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white transition-colors"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-graphite border border-white/10 max-w-lg w-full my-8 max-h-[90vh] overflow-y-auto"
-          >
-            {/* ===================================
-                STEP: FORM
-                =================================== */}
-            {step === 'form' && (
-              <div className="p-8">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-8">
-                  <div>
-                    <p className="eyebrow text-[10px] mb-2">Đặt mua xe</p>
-                    <h3 className="font-display text-2xl font-light text-white">
-                      {car.name}
-                    </h3>
-                  </div>
-                  <button
-                    onClick={handleClose}
-                    className="text-silver hover:text-white transition-colors p-1"
-                    aria-label="Đóng"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
+          <X className="w-5 h-5" />
+        </button>
 
-                {/* Giá xe */}
-                <div className="flex items-center justify-between py-4 px-5 bg-black/40 border border-white/5 mb-8">
-                  <span className="font-label text-xs text-silver uppercase tracking-wider">
-                    Giá niêm yết
-                  </span>
-                  <span className="font-display text-2xl font-light text-gold">
-                    {formatPriceShort(currentPrice)}
-                  </span>
-                </div>
-
-                {error && (
-                  <div className="mb-6 px-5 py-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                    {error}
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* ===================================
-                      Chọn % đặt cọc
-                      =================================== */}
-                  <div>
-                    <label className="block eyebrow text-[10px] text-silver mb-3">
-                      Số tiền đặt cọc
-                    </label>
-                    <div className="grid grid-cols-4 gap-2 mb-4">
-                      {DEPOSIT_PRESETS.map((percent) => (
-                        <button
-                          key={percent}
-                          type="button"
-                          onClick={() => setDepositPercent(percent)}
-                          className={[
-                            'py-3 font-label text-sm transition-all duration-200',
-                            depositPercent === percent
-                              ? 'bg-gold text-black'
-                              : 'border border-white/10 text-silver hover:border-gold/40',
-                          ].join(' ')}
-                        >
-                          {percent}%
-                        </button>
-                      ))}
-                    </div>
-                    {/* Hiển thị số tiền cọc thực tế quy đổi */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-gold/5 border border-gold/20">
-                      <span className="text-sm text-silver">Số tiền đặt cọc</span>
-                      <span className="font-label text-base font-medium text-gold">
-                        {formatPrice(depositAmount)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Phương thức thanh toán */}
-                  <div>
-                    <label className="block eyebrow text-[10px] text-silver mb-3">
-                      Phương thức thanh toán
-                    </label>
-                    <div className="space-y-2">
-                      {PAYMENT_METHODS.map((method) => (
-                        <label
-                          key={method.value}
-                          className={[
-                            'flex items-center gap-3 px-4 py-3 border cursor-pointer transition-colors duration-200',
-                            paymentMethod === method.value
-                              ? 'border-gold/50 bg-gold/5'
-                              : 'border-white/10 hover:border-white/20',
-                          ].join(' ')}
-                        >
-                          <input
-                            type="radio"
-                            name="paymentMethod"
-                            value={method.value}
-                            checked={paymentMethod === method.value}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                            className="accent-gold"
-                          />
-                          <span className="text-sm text-platinum">{method.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Địa chỉ giao xe */}
-                  <div>
-                    <label className="block eyebrow text-[10px] text-silver mb-2">
-                      Địa chỉ giao xe
-                    </label>
-                    <input
-                      type="text"
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Số nhà, đường, quận, thành phố"
-                      className="input-luxury w-full"
-                    />
-                  </div>
-
-                  {/* Ghi chú */}
-                  <div>
-                    <label className="block eyebrow text-[10px] text-silver mb-2">
-                      Ghi chú thêm
-                    </label>
-                    <textarea
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      rows={3}
-                      placeholder="Yêu cầu đặc biệt..."
-                      className="input-luxury w-full resize-none"
-                    />
-                  </div>
-
-                  <Button type="submit" isLoading={isSubmitting} className="w-full justify-center">
-                    Xác nhận đặt mua
-                  </Button>
-
-                  <p className="text-center text-xs text-silver/60">
-                    Nhân viên tư vấn sẽ liên hệ xác nhận đơn hàng trong vòng 24 giờ
-                  </p>
-                </form>
+        {!orderComplete ? (
+          <>
+            {/* Header */}
+            <div className="border-b border-white/10 pb-4 space-y-1">
+              <div className="lux-eyebrow">
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                ONLINE CAR RESERVATION
               </div>
-            )}
+              <h2 className="font-serif-lux text-2xl sm:text-3xl font-bold text-white">
+                Đặt Cọc Giữ Xe Thượng Lưu
+              </h2>
+              <p className="text-xs text-slate-400">
+                Cam kết giữ xe chính hãng, hoàn tiền 100% nếu thay đổi quyết định trong 7 ngày.
+              </p>
+            </div>
 
-            {/* ===================================
-                STEP: SUCCESS
-                =================================== */}
-            {step === 'success' && createdOrder && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="p-10 text-center"
-              >
-                <div className="w-16 h-16 border border-gold/30 bg-gold/10 flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-
-                <p className="eyebrow mb-3">Đặt mua thành công</p>
-                <h3 className="font-display text-2xl font-light text-white mb-6">
-                  Cảm ơn bạn đã tin tưởng!
-                </h3>
-
-                {/* Mã đơn hàng */}
-                <div className="bg-black/40 border border-white/5 py-4 px-6 mb-6">
-                  <p className="text-xs text-silver uppercase tracking-wider mb-1">Mã đơn hàng</p>
-                  <p className="font-label text-lg text-gold tracking-wider">
-                    {createdOrder.orderNumber}
-                  </p>
-                </div>
-
-                <p className="text-silver text-sm mb-8 leading-relaxed">
-                  Đơn đặt mua <strong className="text-white">{car.name}</strong> với số tiền cọc{' '}
-                  <strong className="text-gold">{formatPrice(depositAmount)}</strong> đã được ghi nhận.
-                  Vui lòng kiểm tra mục "Đơn hàng của tôi" để theo dõi tiến trình.
+            {/* Car Summary Box */}
+            <div className="flex items-center gap-4 p-4 rounded bg-[#15151B] border border-white/5">
+              <img
+                src={car.mainImage || car.images?.[0]}
+                alt={car.name}
+                className="w-24 h-16 object-cover rounded border border-white/10"
+              />
+              <div className="flex-1">
+                <span className="text-[10px] font-mono-lux text-[#D4AF37] uppercase">
+                  {typeof car.brand === 'object' ? car.brand?.name : car.brand}
+                </span>
+                <h4 className="font-serif-lux text-lg text-white font-bold">{car.name}</h4>
+                <p className="text-xs font-mono-lux text-slate-300">
+                  Giá niêm yết: <span className="text-[#D4AF37] font-bold">${totalPrice.toLocaleString()}</span>
                 </p>
+              </div>
+            </div>
 
-                <div className="flex gap-4">
-                  <button onClick={handleClose} className="btn-ghost flex-1 justify-center">
-                    Đóng
-                  </button>
-                  <Link to="/orders" className="btn-primary flex-1 justify-center">
-                    Xem đơn hàng
-                  </Link>
+            {/* Form Fields */}
+            <form onSubmit={handleSubmitOrder} className="space-y-5">
+              {/* Deposit Percentage Selection */}
+              <div className="space-y-2">
+                <label className="text-xs font-mono-lux uppercase tracking-wider text-slate-300">
+                  Tỷ lệ đặt cọc giữ xe
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[10, 20, 30].map((pct) => (
+                    <button
+                      type="button"
+                      key={pct}
+                      onClick={() => setDepositPercent(pct)}
+                      className={`p-3 rounded border text-xs font-mono-lux transition-all ${
+                        depositPercent === pct
+                          ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-[#D4AF37] font-bold'
+                          : 'border-white/10 bg-[#15151B] text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Đặt Cọc {pct}%
+                    </button>
+                  ))}
                 </div>
-              </motion.div>
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
+              </div>
 
-export default PurchaseModal;
+              {/* Deposit Amount Display */}
+              <div className="p-4 rounded bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-between">
+                <span className="text-xs font-mono-lux text-slate-300">
+                  Số tiền cọc thanh toán ngay ({depositPercent}%):
+                </span>
+                <span className="font-serif-lux text-2xl text-[#D4AF37] font-bold">
+                  ${depositAmount.toLocaleString()} USD
+                </span>
+              </div>
+
+              {/* Showroom & Payment Method */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                    Flagship Showroom Bàn Giao
+                  </label>
+                  <select
+                    value={showroomLocation}
+                    onChange={(e) => setShowroomLocation(e.target.value)}
+                    className="lux-input text-xs bg-[#15151B]"
+                  >
+                    <option value="hanoi">Showroom Flagship Hà Nội</option>
+                    <option value="hcm">Showroom Flagship TP. Hồ Chí Minh</option>
+                    <option value="home">Giao Xe Tận Dinh Thự Khách Hàng</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                    Phương Thức Thanh Toán Cọc
+                  </label>
+                  <select
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="lux-input text-xs bg-[#15151B]"
+                  >
+                    <option value="bank_transfer">Chuyển Khoản Ngân Hàng VIP</option>
+                    <option value="credit_card">Thẻ Tín Dụng Quản Lý (Visa/Mastercard Black)</option>
+                    <option value="crypto">Tài Sản Số (USDT / Crypto VIP)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Notes Input */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                  Ghi chú riêng cho Chuyên viên LuxeMotors
+                </label>
+                <textarea
+                  rows={2}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="VD: Yêu cầu giao xe vào giờ đẹp, chuẩn bị hoa chúc mừng..."
+                  className="lux-input text-xs"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn-lux-gold w-full py-4 text-xs tracking-[0.2em]"
+              >
+                {submitting ? 'Đang Khởi Tạo Đơn Cọc...' : `XÁC NHẬN ĐẶT CỌC $${depositAmount.toLocaleString()}`}
+              </button>
+            </form>
+          </>
+        ) : (
+          /* Order Success State */
+          <div className="py-8 text-center space-y-6">
+            <div className="w-16 h-16 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37] text-[#D4AF37] mx-auto flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="font-serif-lux text-3xl font-bold text-white">
+                Đặt Cọc Xe Thành Công!
+              </h3>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Mã đơn hàng cọc của bạn là{' '}
+                <span className="text-[#D4AF37] font-mono-lux font-bold">{orderComplete._id}</span>.
+                Chuyên viên LuxeMotors sẽ liên hệ trong vòng 15 phút để hoàn tất thủ tục bàn giao.
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                setOrderComplete(null);
+                onClose();
+              }}
+              className="btn-lux-gold px-8 py-3"
+            >
+              Đóng và Xem Đơn Hàng Của Tôi
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

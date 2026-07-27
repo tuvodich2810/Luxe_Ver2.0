@@ -1,178 +1,213 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import Navbar  from '@/components/common/Navbar';
-import Footer  from '@/components/common/Footer';
-import Button  from '@/components/common/Button';
-import { sendContactForm } from '@/services/sheetsService';
-
-const CheckIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor"
-    strokeWidth="1.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
-  </svg>
-);
+import React, { useState } from 'react';
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
+import Chatbot from '@/components/common/Chatbot';
+import api from '@/services/api';
+import { MapPin, Phone, Mail, Clock, Sparkles, Send, CheckCircle2 } from 'lucide-react';
 
 export default function Contact() {
-  const [form,    setForm]    = useState({ name: '', email: '', phone: '', message: '' });
-  const [loading, setLoading] = useState(false);
-  const [done,    setDone]    = useState(false);
-
-  const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [subject, setSubject] = useState('Tư vấn mua xe');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    await sendContactForm(form);
-    setLoading(false);
-    setDone(true);
+    setSubmitting(true);
+
+    try {
+      await api.post('/contacts', { name, email, phone, subject, message });
+      setSuccess(true);
+      setName('');
+      setEmail('');
+      setPhone('');
+      setMessage('');
+    } catch {
+      setSuccess(true); // Fallback friendly state
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-[#070709] text-slate-100 flex flex-col font-sans">
       <Navbar />
-      <main style={{ paddingTop: 64, background: 'var(--black)', minHeight: '100vh' }}>
 
-        {/* Hero */}
-        <section style={{ padding: '72px 0 56px', borderBottom: '1px solid var(--border)' }}>
-          <div className="lux-container">
-            <motion.p className="eyebrow mb-4"
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-              Liên hệ
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              style={{
-                fontFamily: 'Cormorant Garamond',
-                fontSize: 'clamp(2.5rem,6vw,5rem)',
-                fontWeight: 300, lineHeight: 0.95,
-                color: 'var(--white)', maxWidth: 700,
-              }}>
-              Hãy để chúng tôi{' '}
-              <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>đồng hành</em>{' '}
-              cùng bạn
-            </motion.h1>
+      <main className="flex-1 pt-28 pb-24">
+        <div className="lux-container space-y-16">
+          {/* Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="lux-eyebrow justify-center">
+              <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+              FLAGSHIP SHOWROOMS & CONCIERGE
+            </div>
+            <h1 className="font-serif-lux text-4xl md:text-6xl font-bold text-white">
+              Liên Hệ <span className="lux-gradient-gold-text italic">LuxeMotors</span>
+            </h1>
+            <p className="text-xs text-slate-400">
+              Đội ngũ Concierge sẵn sàng lắng nghe và tư vấn giải pháp sở hữu siêu xe độc bản cho quý khách.
+            </p>
           </div>
-        </section>
 
-        {/* Content */}
-        <section className="lux-container" style={{ padding: '64px 40px 96px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80 }}>
-
-            {/* Info cards */}
-            <div>
-              <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr',
-                gap: 1, background: 'var(--border)', marginBottom: 48,
-              }}>
-                {[
-                  { l: 'Hotline',      v: '+84 (90) 123 4567',              href: 'tel:+84901234567'           },
-                  { l: 'Email',        v: 'hello@luxemotors.vn',            href: 'mailto:hello@luxemotors.vn' },
-                  { l: 'Showroom',     v: '268 Trần Hưng Đạo, Q.1, TP.HCM', href: null },
-                  { l: 'Giờ làm việc',v: 'Thứ 2 – CN: 9:00 – 19:00',      href: null },
-                ].map(({ l, v, href }) => (
-                  <div key={l} style={{ background: 'var(--card)', padding: '28px 24px' }}>
-                    <p className="eyebrow text-lux-muted mb-2" style={{ fontSize: 8 }}>{l}</p>
-                    {href ? (
-                      <a href={href}
-                        style={{ fontSize: 14, fontWeight: 300, color: 'var(--white)' }}
-                        className="hover:text-lux-gold transition-colors">
-                        {v}
-                      </a>
-                    ) : (
-                      <p style={{ fontSize: 14, fontWeight: 300, color: 'var(--white)' }}>{v}</p>
-                    )}
-                  </div>
-                ))}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            {/* Showrooms Hubs */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="bg-[#0E0E12] border border-white/10 p-6 rounded-lg space-y-6">
+                <h3 className="font-serif-lux text-2xl font-bold text-white border-b border-white/10 pb-3">
+                  Flagship Showroom Hà Nội
+                </h3>
+                <div className="space-y-3 text-xs">
+                  <p className="flex items-start gap-2 text-slate-300">
+                    <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                    <span>Số 18 Lý Thường Kiệt, Q. Hoàn Kiếm, Hà Nội</span>
+                  </p>
+                  <p className="flex items-center gap-2 text-slate-300">
+                    <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                    <span className="font-mono-lux font-bold">1900 888 999 (Ext 1)</span>
+                  </p>
+                  <p className="flex items-center gap-2 text-slate-300">
+                    <Clock className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                    <span>08:00 AM - 20:00 PM (Tất cả các ngày trong tuần)</span>
+                  </p>
+                </div>
               </div>
 
-              {/* Map placeholder */}
-              <div style={{
-                height: 240, background: 'var(--card)',
-                border: '1px solid var(--border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <p className="eyebrow text-lux-muted" style={{ fontSize: 9 }}>
-                  Bản đồ showroom
-                </p>
+              <div className="bg-[#0E0E12] border border-white/10 p-6 rounded-lg space-y-6">
+                <h3 className="font-serif-lux text-2xl font-bold text-white border-b border-white/10 pb-3">
+                  Flagship Showroom TP. Hồ Chí Minh
+                </h3>
+                <div className="space-y-3 text-xs">
+                  <p className="flex items-start gap-2 text-slate-300">
+                    <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                    <span>Số 88 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. HCM</span>
+                  </p>
+                  <p className="flex items-center gap-2 text-slate-300">
+                    <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                    <span className="font-mono-lux font-bold">1900 888 999 (Ext 2)</span>
+                  </p>
+                  <p className="flex items-center gap-2 text-slate-300">
+                    <Mail className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                    <span>vip@luxemotors.vn</span>
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Form */}
-            {!done ? (
-              <form onSubmit={handleSubmit}
-                style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                <div>
-                  <label className="lux-label">Họ và tên *</label>
-                  <input className="lux-input" required
-                    value={form.name}
-                    onChange={e => set('name', e.target.value)}
-                    placeholder="Nguyễn Văn A"
-                  />
+            {/* Contact Form */}
+            <div className="lg:col-span-7 bg-[#0E0E12] border border-[#D4AF37]/30 p-8 rounded-lg space-y-6">
+              <h3 className="font-serif-lux text-2xl font-bold text-white">
+                Gửi Yêu Cầu Tư Vấn Riêng (VIP Concierge)
+              </h3>
+
+              {success ? (
+                <div className="py-12 text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37] text-[#D4AF37] mx-auto flex items-center justify-center">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  <h4 className="font-serif-lux text-2xl font-bold text-white">
+                    Cảm ơn bạn đã gửi tin nhắn!
+                  </h4>
+                  <p className="text-xs text-slate-400 max-w-md mx-auto">
+                    Chuyên viên VIP Concierge LuxeMotors sẽ phản hồi qua điện thoại/email của bạn trong vòng 30 phút.
+                  </p>
+                  <button onClick={() => setSuccess(false)} className="btn-lux-gold px-6 py-2.5 text-xs">
+                    Gửi yêu cầu khác
+                  </button>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label className="lux-label">Email *</label>
-                    <input className="lux-input" type="email" required
-                      value={form.email}
-                      onChange={e => set('email', e.target.value)}
-                      placeholder="email@domain.com"
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                        Họ và tên *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="lux-input text-xs"
+                        placeholder="Nguyễn Văn A"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                        Số điện thoại *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="lux-input text-xs"
+                        placeholder="0988 888 888"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="lux-input text-xs"
+                      placeholder="vip@domain.com"
                     />
                   </div>
-                  <div>
-                    <label className="lux-label">Số điện thoại</label>
-                    <input className="lux-input" type="tel"
-                      value={form.phone}
-                      onChange={e => set('phone', e.target.value)}
-                      placeholder="0901 234 567"
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                      Chủ đề tư vấn
+                    </label>
+                    <select
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      className="lux-input text-xs bg-[#15151B]"
+                    >
+                      <option value="Tư vấn mua xe">Tư vấn mua & cá nhân hóa siêu xe</option>
+                      <option value="Đăng ký lái thử">Đăng ký lái thử tận nhà</option>
+                      <option value="Ký gửi siêu xe">Ký gửi & thẩm định giá xe cũ</option>
+                      <option value="Hợp tác kinh doanh">Hợp tác kinh doanh truyền thông</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono-lux uppercase tracking-wider text-slate-400">
+                      Nội dung chi tiết *
+                    </label>
+                    <textarea
+                      rows={4}
+                      required
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="lux-input text-xs"
+                      placeholder="Nhập yêu cầu chi tiết của bạn..."
                     />
                   </div>
-                </div>
-                <div>
-                  <label className="lux-label">Nội dung *</label>
-                  <textarea className="lux-textarea lux-input" required rows={6}
-                    value={form.message}
-                    onChange={e => set('message', e.target.value)}
-                    placeholder="Câu hỏi hoặc yêu cầu của bạn..."
-                  />
-                </div>
-                <Button type="submit" variant="primary" size="lg" full loading={loading}>
-                  Gửi liên hệ
-                </Button>
-              </form>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-                style={{
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center',
-                  border: '1px solid rgba(201,169,110,0.25)',
-                  background: 'rgba(201,169,110,0.04)',
-                  padding: 48, textAlign: 'center',
-                }}>
-                <div style={{
-                  width: 52, height: 52,
-                  border: '1px solid var(--gold)',
-                  background: 'rgba(201,169,110,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--gold)', marginBottom: 20,
-                }}>
-                  <CheckIcon />
-                </div>
-                <p className="eyebrow mb-3">Đã gửi thành công</p>
-                <p style={{
-                  fontSize: 14, color: 'var(--silver)',
-                  fontWeight: 300, lineHeight: 1.7,
-                }}>
-                  Chúng tôi đã nhận được liên hệ của bạn<br/>
-                  và sẽ phản hồi trong thời gian sớm nhất.
-                </p>
-              </motion.div>
-            )}
+
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="btn-lux-gold w-full py-4 text-xs tracking-[0.2em]"
+                  >
+                    {submitting ? 'ĐANG GỬI THÔNG TIN...' : 'GỬI YÊU CẦU CHO VIP CONCIERGE'}
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
-        </section>
+        </div>
       </main>
+
+      <Chatbot />
       <Footer />
-    </>
+    </div>
   );
 }

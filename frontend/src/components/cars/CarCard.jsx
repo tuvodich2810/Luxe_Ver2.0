@@ -1,187 +1,143 @@
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import Badge  from '@/components/common/Badge';
-import Button from '@/components/common/Button';
-import { formatPriceShort } from '@/utils/formatPrice';
+import favoriteService from '@/services/favoriteService';
+import { Heart, ArrowUpRight } from 'lucide-react';
 
-const HeartIcon = ({ filled }) => (
-  <svg width="14" height="14" fill={filled ? 'currentColor' : 'none'}
-    stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-    <path d="M12 21s-6.7-4.35-9.3-8.2C.8 9.94 1.4 6.2 4.4 4.7c2.3-1.15
-             4.8-.3 6.1 1.5l1.5 2 1.5-2c1.3-1.8 3.8-2.65 6.1-1.5
-             3 1.5 3.6 5.24 1.7 8.1C18.7 16.65 12 21 12 21z"/>
-  </svg>
-);
+export default function CarCard({ car }) {
+  const [isFav, setIsFav] = useState(favoriteService.isFavorite(car?._id));
 
-const Arrow = () => (
-  <svg width="12" height="12" fill="none" stroke="currentColor"
-    strokeWidth="1.5" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round"
-      d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-  </svg>
-);
+  if (!car) return null;
 
-const PLACEHOLDER = 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&auto=format';
-
-export default function CarCard({
-  car, index = 0,
-  isFavorited, isFavoritePending, onToggleFavorite,
-}) {
-  const {
-    _id, slug, name, model, year, brand,
-    price, salePrice, mainImage, images,
-    category, condition, specifications,
-    isFeatured, inStock,
-  } = car;
-
-  const carUrl     = `/cars/${slug || _id}`;
-  const imageUrl   = mainImage || images?.[0]?.url || PLACEHOLDER;
-  const finalPrice = salePrice && salePrice < price ? salePrice : price;
-  const hasDiscount= !!(salePrice && salePrice < price);
-
-  const handleFav = async (e) => {
-    e.preventDefault(); e.stopPropagation();
-    if (onToggleFavorite) {
-      const res = await onToggleFavorite(_id);
-      if (res?.requireAuth) window.location.href = '/login';
-    }
+  const handleToggleFav = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    favoriteService.toggleFavorite(car);
+    setIsFav(!isFav);
   };
 
+  const formatPrice = (price) => {
+    if (!price) return 'Liên hệ';
+    if (typeof price === 'number') {
+      return price > 100000
+        ? `$${price.toLocaleString('en-US')}`
+        : `${price.toLocaleString('vi-VN')} VNĐ`;
+    }
+    return price;
+  };
+
+  // Robust Image URL Extractor
+  const getImageUrl = (item) => {
+    if (typeof item?.mainImage === 'string' && item.mainImage.startsWith('http')) {
+      return item.mainImage;
+    }
+    if (Array.isArray(item?.images) && item.images.length > 0) {
+      const mainObj = item.images.find((img) => img && img.isMain);
+      const target = mainObj || item.images[0];
+      if (typeof target === 'string') return target;
+      if (target && typeof target.url === 'string') return target.url;
+    }
+    return 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=800';
+  };
+
+  const mainImg = getImageUrl(car);
+  const brandName = typeof car.brand === 'object' ? car.brand?.name : car.brand || 'LuxeMotors';
+
+  // Extract specs from MongoDB nested specifications object
+  const hp = car.specifications?.horsepower || car.horsePower || 720;
+  const accel = car.specifications?.acceleration
+    ? `${car.specifications.acceleration}s`
+    : car.acceleration || '2.9s';
+  const trans = car.specifications?.transmission || car.transmission || 'Tự động';
+
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{
-        duration: 0.55, delay: (index % 3) * 0.08,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      className="lux-card hover-gold group"
-    >
-      <Link to={carUrl} className="block">
+    <div className="lux-card group relative flex flex-col justify-between overflow-hidden rounded-md bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37]/50 transition-all duration-500">
+      {/* Top Image Box */}
+      <div className="relative w-full aspect-[16/10] overflow-hidden bg-black/60">
+        <img
+          src={mainImg}
+          alt={car.name}
+          className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-700 ease-out filter contrast-[1.05]"
+          loading="lazy"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=800';
+          }}
+        />
 
-        {/* Image */}
-        <div className="relative overflow-hidden bg-lux-mid"
-          style={{ aspectRatio: '16/9' }}>
-          <motion.img
-            src={imageUrl} alt={name} loading="lazy"
-            className="w-full h-full object-cover"
-            whileHover={{ scale: 1.04 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            onError={e => { e.target.src = PLACEHOLDER; }}
-          />
+        {/* Dark Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0E0E12] via-transparent to-black/40" />
 
-          {/* Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50
-                          via-transparent to-transparent opacity-0
-                          group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-10">
+          <span className="lux-badge lux-badge-gold">
+            {car.year || '2026'}
+          </span>
+          <span className="lux-badge bg-black/70 text-slate-200 border border-white/20 uppercase">
+            {car.category ? car.category.replace('_', ' ') : 'Supercar'}
+          </span>
+        </div>
 
-          {/* Badges — top left */}
-          <div className="absolute top-3.5 left-3.5 flex gap-2 flex-wrap">
-            {isFeatured   && <Badge variant="featured">Nổi bật</Badge>}
-            {!inStock     && <Badge variant="danger">Hết hàng</Badge>}
-            {hasDiscount  && (
-              <Badge variant="gold">
-                -{Math.round(((price - salePrice) / price) * 100)}%
-              </Badge>
-            )}
+        {/* Wishlist Button */}
+        <button
+          onClick={handleToggleFav}
+          className={`absolute top-3 right-3 z-10 p-2.5 rounded-full transition-all duration-300 ${
+            isFav
+              ? 'bg-rose-500/20 text-rose-500 border border-rose-500/40 shadow-lg shadow-rose-500/20'
+              : 'bg-black/60 text-slate-400 hover:text-white border border-white/20'
+          }`}
+          title={isFav ? 'Bỏ khỏi yêu thích' : 'Thêm vào yêu thích'}
+        >
+          <Heart className={`w-4 h-4 ${isFav ? 'fill-rose-500' : ''}`} />
+        </button>
+      </div>
+
+      {/* Card Content Body */}
+      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+        <div>
+          <span className="font-mono-lux text-[10px] uppercase tracking-widest text-[#D4AF37] block">
+            {brandName}
+          </span>
+          <Link to={`/cars/${car._id || car.slug}`}>
+            <h3 className="font-serif-lux text-xl font-bold text-white group-hover:text-[#D4AF37] transition-colors line-clamp-1 mt-0.5">
+              {car.name}
+            </h3>
+          </Link>
+        </div>
+
+        {/* Quick Specs Grid (100% synced with MongoDB specifications) */}
+        <div className="grid grid-cols-3 gap-2 py-3 px-3 rounded bg-[#15151B] border border-white/5 text-[11px] font-mono-lux text-slate-300">
+          <div className="flex flex-col items-center justify-center text-center">
+            <span className="text-[9px] text-slate-500 uppercase tracking-wider">Công suất</span>
+            <span className="font-semibold text-white mt-0.5">{hp} HP</span>
           </div>
-
-          {/* Favorite button — top right */}
-          {onToggleFavorite && (
-            <motion.button
-              type="button" onClick={handleFav}
-              disabled={isFavoritePending}
-              whileTap={{ scale: 0.82 }}
-              aria-label={isFavorited ? 'Bỏ yêu thích' : 'Yêu thích'}
-              className={`btn btn-icon absolute top-3.5 right-3.5
-                          bg-black/50 backdrop-blur-sm
-                          ${isFavorited ? 'active' : ''}`}
-            >
-              <motion.span
-                key={isFavorited ? 'f' : 'u'}
-                initial={{ scale: 0.5 }} animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 14 }}
-              >
-                <HeartIcon filled={isFavorited} />
-              </motion.span>
-            </motion.button>
-          )}
-
-          {/* Hover CTA */}
-          <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-4
-                          opacity-0 group-hover:opacity-100 translate-y-2
-                          group-hover:translate-y-0 transition-all duration-400">
-            <Button variant="primary" size="sm" iconRight={<Arrow />}>
-              Xem chi tiết
-            </Button>
+          <div className="flex flex-col items-center justify-center text-center border-x border-white/10">
+            <span className="text-[9px] text-slate-500 uppercase tracking-wider">0-100 km/h</span>
+            <span className="font-semibold text-[#D4AF37] mt-0.5">{accel}</span>
+          </div>
+          <div className="flex flex-col items-center justify-center text-center">
+            <span className="text-[9px] text-slate-500 uppercase tracking-wider">Hộp số</span>
+            <span className="font-semibold text-white mt-0.5 truncate max-w-full">{trans}</span>
           </div>
         </div>
 
-        {/* Info */}
-        <div className="p-5">
-          {/* Brand + year + condition */}
-          <div className="flex items-center justify-between mb-2.5">
-            <span className="eyebrow text-lux-muted" style={{ fontSize: 9 }}>
-              {brand?.name || '—'}&nbsp;&nbsp;·&nbsp;&nbsp;{year}
+        {/* Price & Action Button */}
+        <div className="flex items-center justify-between pt-2 border-t border-white/10">
+          <div>
+            <span className="text-[10px] text-slate-400 font-mono-lux block">Giá Niêm Yết</span>
+            <span className="font-serif-lux text-xl font-bold text-[#D4AF37]">
+              {formatPrice(car.price)}
             </span>
-            <Badge variant={
-              condition === 'new'       ? 'new'     :
-              condition === 'certified' ? 'certified': 'used'
-            }>
-              {condition === 'new' ? 'Mới' : condition === 'certified' ? 'Certified' : 'Đã dùng'}
-            </Badge>
           </div>
 
-          {/* Name */}
-          <h3 className="font-display text-xl font-light text-lux-white
-                         mb-0.5 line-clamp-1
-                         group-hover:text-lux-gold transition-colors duration-300">
-            {name}
-          </h3>
-          <p className="text-sm text-lux-muted mb-4 font-light">{model}</p>
-
-          {/* Quick specs */}
-          {specifications && (
-            <div className="grid grid-cols-3 gap-0 mb-4 pt-4 border-t border-lux-border">
-              {[
-                { v: specifications.horsepower,                           u: 'HP'   },
-                { v: specifications.acceleration ? `${specifications.acceleration}s` : null, u: '0–100' },
-                { v: specifications.topSpeed,                             u: 'km/h' },
-              ].map((s, i) => s.v && (
-                <div key={i}
-                  className={`text-center ${i === 1 ? 'border-x border-lux-border' : ''}`}>
-                  <p className="font-label text-base font-medium text-lux-white">{s.v}</p>
-                  <p className="eyebrow text-lux-muted" style={{ fontSize: 8 }}>{s.u}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Price + arrow */}
-          <div className="flex items-end justify-between">
-            <div>
-              <p style={{
-                fontFamily: 'Cormorant Garamond', fontSize: 22,
-                fontWeight: 300, color: 'var(--gold)',
-              }}>
-                {formatPriceShort(finalPrice)}
-              </p>
-              {hasDiscount && (
-                <p className="text-xs text-lux-muted line-through mt-0.5">
-                  {formatPriceShort(price)}
-                </p>
-              )}
-            </div>
-            <div className="w-9 h-9 border border-lux-border flex items-center
-                            justify-center text-lux-muted
-                            group-hover:border-lux-gold group-hover:text-lux-gold
-                            transition-all duration-300">
-              <Arrow />
-            </div>
-          </div>
+          <Link
+            to={`/cars/${car._id || car.slug}`}
+            className="p-2.5 rounded bg-[#15151B] border border-white/10 group-hover:border-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#070709] text-white transition-all"
+            title="Xem chi tiết"
+          >
+            <ArrowUpRight className="w-4 h-4" />
+          </Link>
         </div>
-      </Link>
-    </motion.article>
+      </div>
+    </div>
   );
 }

@@ -1,94 +1,86 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import api from '@/services/api';
+import brandService from '@/services/brandService';
+import { Sparkles, ArrowRight, Award } from 'lucide-react';
 
-// Fallback brands nếu API chưa có data
 const FALLBACK_BRANDS = [
-  { _id: '1', name: 'Lamborghini', logo: '' },
-  { _id: '2', name: 'Ferrari', logo: '' },
-  { _id: '3', name: 'Porsche', logo: '' },
-  { _id: '4', name: 'Bugatti', logo: '' },
-  { _id: '5', name: 'McLaren', logo: '' },
-  { _id: '6', name: 'Rolls-Royce', logo: '' },
-  { _id: '7', name: 'Bentley', logo: '' },
-  { _id: '8', name: 'Aston Martin', logo: '' },
+  { _id: 'b1', name: 'Ferrari', origin: 'Ý (Italy)', logo: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=400' },
+  { _id: 'b2', name: 'Lamborghini', origin: 'Ý (Italy)', logo: 'https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?auto=format&fit=crop&q=80&w=400' },
+  { _id: 'b3', name: 'Porsche', origin: 'Đức (Germany)', logo: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=400' },
+  { _id: 'b4', name: 'Rolls-Royce', origin: 'Anh (UK)', logo: 'https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&q=80&w=400' },
+  { _id: 'b5', name: 'Bentley', origin: 'Anh (UK)', logo: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=400' },
+  { _id: 'b6', name: 'McLaren', origin: 'Anh (UK)', logo: 'https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&q=80&w=400' },
 ];
 
-const BrandsSection = () => {
-  const [brands, setBrands] = useState(FALLBACK_BRANDS);
+export default function BrandsSection() {
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await api.get('/brands?featured=true');
-        if (response.data?.length > 0) {
-          setBrands(response.data);
+        const res = await brandService.getBrands(true);
+        if (res?.data && res.data.length > 0) {
+          setBrands(res.data);
+        } else {
+          setBrands(FALLBACK_BRANDS);
         }
       } catch {
-        // Dùng fallback
+        setBrands(FALLBACK_BRANDS);
+      } finally {
+        setLoading(false);
       }
     };
     fetchBrands();
   }, []);
 
   return (
-    <section className="section-padding bg-graphite">
-      <div className="container-luxury">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="eyebrow mb-4"
-          >
-            Đối tác chính thức
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="heading-display text-white"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
-          >
-            Thương hiệu hàng đầu
-          </motion.h2>
+    <section className="py-24 bg-[#0A0A0E] border-t border-white/5 relative overflow-hidden">
+      <div className="lux-container space-y-12">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3">
+            <div className="lux-eyebrow">
+              <Award className="w-3.5 h-3.5 text-[#D4AF37]" />
+              AUTHORIZED PARTNERS
+            </div>
+            <h2 className="font-serif-lux text-4xl sm:text-5xl font-bold text-white">
+              Thương Hiệu <span className="lux-gradient-gold-text italic">Huyền Thoại</span>
+            </h2>
+            <p className="text-xs text-slate-400 max-w-lg">
+              Đối tác nhập khẩu và phân phối ủy quyền chính hãng từ các tập đoàn siêu xe danh giá bậc nhất thế giới.
+            </p>
+          </div>
+
+          <Link to="/cars" className="btn-lux-ghost">
+            <span>Tất cả thương hiệu</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
 
-        {/* Brands grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
-          {brands.map((brand, index) => (
-            <motion.div
-              key={brand._id}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
+        {/* Brands Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {brands.map((brand) => (
+            <Link
+              key={brand._id || brand.name}
+              to={`/cars?brand=${brand._id || brand.name}`}
+              className="lux-card group p-6 flex flex-col items-center justify-center text-center space-y-3 bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37] transition-all duration-300"
             >
-              <Link
-                to={`/cars?brand=${brand._id}`}
-                className="flex items-center justify-center bg-graphite hover:bg-black/50 transition-colors duration-300 p-8 group h-28"
-              >
-                {brand.logo ? (
-                  <img
-                    src={brand.logo}
-                    alt={brand.name}
-                    className="max-h-10 max-w-[120px] object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 opacity-50 group-hover:opacity-100"
-                  />
-                ) : (
-                  <span className="font-display text-lg font-light text-silver/50 group-hover:text-gold transition-colors duration-300 tracking-wider">
-                    {brand.name}
-                  </span>
-                )}
-              </Link>
-            </motion.div>
+              <div className="w-12 h-12 rounded-full bg-[#15151B] border border-white/10 flex items-center justify-center text-[#D4AF37] font-serif-lux font-bold text-lg group-hover:scale-110 transition-transform">
+                {brand.name.charAt(0)}
+              </div>
+              <div>
+                <h4 className="font-serif-lux text-lg font-bold text-white group-hover:text-[#D4AF37] transition-colors">
+                  {brand.name}
+                </h4>
+                <p className="text-[10px] font-mono-lux text-slate-500 uppercase">
+                  {brand.origin || 'Đại lý ủy quyền'}
+                </p>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default BrandsSection;
+}
