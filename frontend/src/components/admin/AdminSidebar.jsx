@@ -32,7 +32,7 @@ export default function AdminSidebar() {
             <div style={{ position: 'absolute', inset: 4, background: 'var(--gold)' }} />
           </div>
           <span style={{
-            fontFamily: 'Helvetica Neue', fontSize: 12, fontWeight: 300,
+            fontFamily: 'Helvetica Neue', fontSize: 16, fontWeight: 300,
             letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--white)',
           }}>
             Luxe<span style={{ color: 'var(--gold)' }}>Admin</span>
@@ -48,10 +48,10 @@ export default function AdminSidebar() {
             : location.pathname.startsWith(item.href);
           return (
             <Link key={item.href} to={item.href} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '10px 12px', marginBottom: 2,
+              display: 'flex', alignItems: 'center', gap: 20,
+              padding: '15px 12px', marginBottom: 2,
               fontFamily: 'Space Grotesk',
-              fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase',
+              fontSize: 16, letterSpacing: '0.12em', textTransform: 'uppercase',
               color: active ? 'var(--gold)' : 'var(--muted)',
               background: active ? 'rgba(201,169,110,0.06)' : 'transparent',
               borderLeft: `2px solid ${active ? 'var(--gold)' : 'transparent'}`,
@@ -74,19 +74,19 @@ export default function AdminSidebar() {
             width: 32, height: 32,
             background: 'var(--mid)', border: '1px solid var(--border)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, color: 'var(--gold)', fontFamily: 'Space Grotesk', flexShrink: 0,
+            fontSize: 40, color: 'var(--gold)', fontFamily: 'Space Grotesk', flexShrink: 0,
           }}>
             {user?.fullName?.charAt(0)?.toUpperCase() || 'A'}
           </div>
           <div style={{ minWidth: 0 }}>
             <p style={{
-              fontSize: 12, color: 'var(--white)',
+              fontSize: 16, color: 'var(--white)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {user?.fullName}
             </p>
             <p style={{
-              fontFamily: 'Space Grotesk', fontSize: 10,
+              fontFamily: 'Space Grotesk', fontSize: 14,
               color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase',
             }}>
               Admin

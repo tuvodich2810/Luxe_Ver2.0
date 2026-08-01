@@ -100,7 +100,7 @@ const orderSchema = new mongoose.Schema(
 // Sinh mã đơn hàng
 orderSchema.pre("save", function (next) {
   if (!this.orderNumber) {
-    const random = Math.floor(100000 + Math.random() * 900000);
+    const random = Date.now().toString().slice(-6);
     this.orderNumber = `LM-${new Date().getFullYear()}-${random}`;
   }
   next();
@@ -109,5 +109,6 @@ orderSchema.pre("save", function (next) {
 orderSchema.index({ user: 1 });
 orderSchema.index({ car: 1 });
 orderSchema.index({ orderStatus: 1 });
+orderSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model("Order", orderSchema);

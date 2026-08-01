@@ -174,7 +174,7 @@ const AdminCars = () => {
         <img
           src={car.mainImage || '/placeholder-car.jpg'}
           alt={car.name}
-          className="w-16 h-10 object-cover"
+          className="w-20 h-14 object-cover"
         />
       ),
     },

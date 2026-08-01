@@ -15,7 +15,7 @@ export default function AdminHeader({ title }) {
       padding: '0 32px', flexShrink: 0,
     }}>
       <h1 style={{
-        fontFamily: 'Cormorant Garamond', fontSize: 22,
+        fontFamily: 'Cormorant Garamond', fontSize: 40, letterSpacing: '0.05em',
         fontWeight: 300, color: 'var(--white)',
       }}>
         {title}

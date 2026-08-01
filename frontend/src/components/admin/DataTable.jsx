@@ -16,7 +16,7 @@ export default function DataTable({
       textAlign: 'center', padding: '48px 0',
       background: 'var(--card)', border: '1px solid var(--border)',
     }}>
-      <p style={{ fontSize: 13, color: 'var(--muted)' }}>{emptyMessage}</p>
+      <p style={{ fontSize: 16, color: 'var(--muted)' }}>{emptyMessage}</p>
     </div>
   );
 
@@ -30,25 +30,49 @@ export default function DataTable({
           </tr>
         </thead>
         <tbody>
-          {data.map((row, ri) => (
-            <tr key={row._id || ri}>
-              {columns.map(c => (
-                <td key={c.key}>
-                  {c.render ? c.render(row) : (row[c.key] ?? '—')}
-                </td>
-              ))}
-              {actions && (
-                <td style={{ textAlign: 'right' }}>
-                  <div style={{
-                    display: 'flex', gap: 6, justifyContent: 'flex-end',
-                  }}>
-                    {actions(row)}
-                  </div>
-                </td>
-              )}
-            </tr>
+  {data.map((row, ri) => (
+    <tr
+      key={row._id || ri}
+      style={{
+        borderBottom: "1px solid #2d2d2d",
+      }}
+    >
+          {columns.map((c) => (
+            <td
+              key={c.key}
+              style={{
+                padding: "16px 20px",
+                verticalAlign: "middle",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {c.render ? c.render(row) : (row[c.key] ?? "—")}
+            </td>
           ))}
-        </tbody>
+
+          {actions && (
+            <td
+              style={{
+                padding: "16px 20px",
+                textAlign: "right",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}
+              >
+                {actions(row)}
+              </div>
+            </td>
+          )}
+        </tr>
+      ))}
+    </tbody>
       </table>
     </div>
   );

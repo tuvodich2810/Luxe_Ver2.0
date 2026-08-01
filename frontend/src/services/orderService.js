@@ -1,37 +1,88 @@
-const ORDERS_KEY = 'luxe_orders';
+import api from './api';
 
-export const orderService = {
-  getOrders: () => {
+const orderService = {
+  // ==========================================
+  // USER: Lấy đơn hàng của user hiện tại
+  // ==========================================
+  getMyOrders: async (params = {}) => {
+    const response = await api.get('/orders/my-orders', {
+      params,
+    });
+
+    return response;
+  },
+
+  // ==========================================
+  // ADMIN: Lấy tất cả đơn hàng
+  // ==========================================
+  getAllOrders: async (params = {}) => {
+    const response = await api.get('/orders', {
+      params,
+    });
+
+    return response;
+  },
+
+  // ==========================================
+  // USER: Tạo đơn hàng
+  // ==========================================
+  createOrder: async (orderData) => {
+    const response = await api.post('/orders', orderData);
+
+    return response;
+  },
+
+  // ==========================================
+  // USER: Hủy đơn hàng
+  // ==========================================
+  cancelOrder: async (orderId) => {
+    const response = await api.patch(
+      `/orders/${orderId}/cancel`
+    );
+
+    return response;
+  },
+
+  // ==========================================
+  // Lấy chi tiết đơn hàng
+  // ==========================================
+  getOrderById: async (orderId) => {
+    const response = await api.get(
+      `/orders/${orderId}`
+    );
+
+    return response;
+  },
+
+  // ==========================================
+  // ADMIN: Cập nhật trạng thái
+  // ==========================================
+  updateOrderStatus: async (orderId, data) => {
+    const response = await api.patch(
+      `/orders/${orderId}/status`,
+      data
+    );
+
+    return response;
+  },
+
+  // ==========================================
+  // Tương thích Navbar cũ
+  // Không dùng localStorage nữa
+  // ==========================================
+  getOrders: async () => {
     try {
-      const data = localStorage.getItem(ORDERS_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch {
+      const response = await api.get('/orders/my-orders');
+      return response?.data || [];
+    } catch (error) {
+      console.error(
+        'Không thể lấy đơn hàng:',
+        error.message
+      );
+
       return [];
     }
   },
-
-  createOrder: (orderData) => {
-    const orders = orderService.getOrders();
-    const newOrder = {
-      _id: 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-      orderDate: new Date().toISOString(),
-      status: 'pending_confirmation',
-      paymentStatus: 'deposit_paid',
-      ...orderData
-    };
-    const updated = [newOrder, ...orders];
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('luxe_orders_updated', { detail: updated }));
-    return newOrder;
-  },
-
-  cancelOrder: (orderId) => {
-    const orders = orderService.getOrders();
-    const updated = orders.map(ord => ord._id === orderId ? { ...ord, status: 'cancelled' } : ord);
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('luxe_orders_updated', { detail: updated }));
-    return updated;
-  }
 };
 
 export default orderService;

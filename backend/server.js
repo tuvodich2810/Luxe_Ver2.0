@@ -21,6 +21,8 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const imageRoutes = require('./routes/imageRoutes');
 const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+
 
 // ===================================
 // Import Middlewares
@@ -99,6 +101,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/orders', orderRoutes);
 // ===================================
 // Error Handling (phải đặt sau tất cả routes)
 // ===================================

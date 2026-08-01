@@ -79,7 +79,7 @@ export default function AdminAppointments() {
         <main style={{ padding:'28px 32px', flex:1 }}>
 
           {/* Filter tabs */}
-          <div style={{ display:'flex', gap:6, marginBottom:20, flexWrap:'wrap' }}>
+          <div style={{ display:'flex', gap:20, marginBottom:20, flexWrap:'wrap' }}>
             {FILTER_TABS.map(tab => (
               <button key={tab.v}
                 onClick={() => setFilterStatus(tab.v)}
