@@ -34,4 +34,7 @@ module.exports = {
   EMAIL_PASS: process.env.EMAIL_PASS,
   EMAIL_FROM: process.env.EMAIL_FROM,
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+
+  GROQ_API_KEY: process.env.GROQ_API_KEY,
+  GROQ_MODEL: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
 };

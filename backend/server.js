@@ -1,7 +1,15 @@
 // ===================================
 // Load config trước tiên
 // ===================================
-const { PORT, NODE_ENV, FRONTEND_URL, UPLOAD_PATH } = require('./config/env');
+const {
+  PORT,
+  NODE_ENV,
+  FRONTEND_URL,
+  UPLOAD_PATH,
+  GROQ_API_KEY,
+} = require('./config/env');
+
+console.log("Groq Key:", GROQ_API_KEY);
 const connectDB = require('./config/db');
 
 const express = require('express');
@@ -22,6 +30,7 @@ const imageRoutes = require('./routes/imageRoutes');
 const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 
 // ===================================
@@ -102,6 +111,7 @@ app.use('/api/images', imageRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/chat', chatRoutes);
 // ===================================
 // Error Handling (phải đặt sau tất cả routes)
 // ===================================

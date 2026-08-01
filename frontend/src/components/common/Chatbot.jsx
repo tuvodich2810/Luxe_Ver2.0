@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { sendContactForm } from '@/services/sheetsService';
+import { sendMessage as sendChatMessage } from '@/services/chatService';
 
 /* ─── Icons ──────────────────────────────────── */
 const ChatIcon = () => (
@@ -79,20 +80,6 @@ QUAN TRỌNG: Khi phát hiện khách để lại tên và SĐT trong hội tho�
 [LEAD:{"name":"TÊN","phone":"SĐT","interest":"MÔ TẢ NGẮN"}]`;
 
 /* ─── Gọi Claude API ─────────────────────────── */
-const callClaude = async (messages) => {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
-      system: SYSTEM_PROMPT,
-      messages,
-    }),
-  });
-  const data = await response.json();
-  return data.content?.[0]?.text || 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.';
-};
 
 /* ─── Quick reply suggestions ────────────────── */
 const QUICK_REPLIES = [
@@ -165,7 +152,9 @@ export default function Chatbot() {
 
       history.push({ role: 'user', content: userText });
 
-      const rawResponse = await callClaude(history);
+      const result = await sendChatMessage(userText);
+
+        const rawResponse = result.reply;
 
       /* Kiểm tra có lead không */
       const lead = extractLead(rawResponse);
