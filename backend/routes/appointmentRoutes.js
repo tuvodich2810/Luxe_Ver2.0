@@ -7,9 +7,11 @@ const {
 const { protect } = require('../middlewares/authMiddleware');
 const { adminOnly } = require('../middlewares/adminMiddleware');
 
+const { validateAppointmentInput } = require('../utils/validators');
+
 router.get('/', protect, adminOnly, getAllAppointments);
 router.get('/my', protect, getMyAppointments);
-router.post('/', protect, createAppointment);
+router.post('/', protect, validateAppointmentInput, createAppointment);
 router.put('/:id', protect, adminOnly, updateAppointmentStatus);
 router.delete('/:id', protect, cancelAppointment);
 

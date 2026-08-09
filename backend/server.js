@@ -6,12 +6,12 @@ const {
   NODE_ENV,
   FRONTEND_URL,
   UPLOAD_PATH,
-  GROQ_API_KEY,
 } = require('./config/env');
 
-console.log("Groq Key:", GROQ_API_KEY);
-const connectDB = require('./config/db');
+const dns = require('dns');
+dns.setServers(['1.1.1.1', '8.8.8.8']);
 
+const connectDB = require('./config/db');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -31,12 +31,13 @@ const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const chatRoutes = require('./routes/chatRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
 
 // ===================================
 // Import Middlewares
 // ===================================
 const { notFound, errorHandler } = require('./middlewares/errorMiddleware');
+const { apiRateLimiter } = require('./middlewares/rateLimitMiddleware');
 
 // ===================================
 // Khởi tạo Express app
@@ -51,7 +52,6 @@ connectDB();
 // ===================================
 // Security Middlewares
 // ===================================
-// Helmet thêm các security HTTP headers
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // Cho phép load ảnh từ domain khác
@@ -59,13 +59,13 @@ app.use(
 );
 
 // ===================================
-// CORS Configuration
+// CORS Configuration (Cho phép mọi phương thức GET, POST, PUT, PATCH, DELETE, OPTIONS)
 // ===================================
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: FRONTEND_URL || true,
     credentials: true,          // Cho phép gửi cookies
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
@@ -86,7 +86,7 @@ if (NODE_ENV === 'development') {
 // ===================================
 // Serve static files (ảnh đã upload)
 // ===================================
-app.use('/uploads', express.static(path.resolve(UPLOAD_PATH)));
+app.use('/uploads', express.static(path.resolve(UPLOAD_PATH || './uploads')));
 
 // ===================================
 // Health check
@@ -103,6 +103,7 @@ app.get('/api/health', (req, res) => {
 // ===================================
 // API Routes
 // ===================================
+app.use('/api', apiRateLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/cars', carRoutes);
 app.use('/api/brands', brandRoutes);
@@ -112,6 +113,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/admin', adminRoutes);
+
 // ===================================
 // Error Handling (phải đặt sau tất cả routes)
 // ===================================
@@ -121,12 +124,12 @@ app.use(errorHandler);
 // ===================================
 // Khởi động server
 // ===================================
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT || 5000, () => {
   console.log(
     `\n🚀 Luxe Motors Server đang chạy`.green.bold +
-    `\n   Môi trường: ${NODE_ENV}`.yellow +
-    `\n   Cổng: ${PORT}`.cyan +
-    `\n   API: http://localhost:${PORT}/api`.cyan +
+    `\n   Môi trường: ${NODE_ENV || 'development'}`.yellow +
+    `\n   Cổng: ${PORT || 5000}`.cyan +
+    `\n   API: http://localhost:${PORT || 5000}/api`.cyan +
     `\n`
   );
 });
@@ -136,11 +139,10 @@ const server = app.listen(PORT, () => {
 // ===================================
 process.on('unhandledRejection', (err) => {
   console.error(`❌ Unhandled Promise Rejection: ${err.message}`.red);
-  // Đóng server gracefully trước khi thoát
   server.close(() => process.exit(1));
 });
 
-// Xử lý SIGTERM (khi deploy container bị stop)
+// Xử lý SIGTERM
 process.on('SIGTERM', () => {
   console.log('📴 SIGTERM nhận được, đóng server...'.yellow);
   server.close(() => {

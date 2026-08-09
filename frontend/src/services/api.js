@@ -6,20 +6,22 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('luxe_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-}, err => Promise.reject(err));
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('luxe_token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (err) => Promise.reject(err)
+);
 
 api.interceptors.response.use(
-  res => res.data,
-  err => {
+  (res) => res.data,
+  (err) => {
     if (err.response?.status === 401) {
+      // Chỉ tự động xóa token hỏng/hết hạn khỏi bộ nhớ, KHÔNG cưỡng chế chuyển hướng sang /login
       localStorage.removeItem('luxe_token');
       localStorage.removeItem('luxe_user');
-      if (!window.location.pathname.includes('/login'))
-        window.location.href = '/login';
     }
     return Promise.reject(
       new Error(err.response?.data?.message || err.message || 'Lỗi kết nối')

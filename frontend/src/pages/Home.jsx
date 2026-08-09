@@ -6,6 +6,7 @@ import HeroSection from '@/components/home/HeroSection';
 import BrandsSection from '@/components/home/BrandsSection';
 import FeaturedCars from '@/components/home/FeaturedCars';
 import ServicesSection from '@/components/home/ServicesSection';
+import PrivateInquiryCallout from '@/components/home/PrivateInquiryCallout';
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <BrandsSection />
         <FeaturedCars />
         <ServicesSection />
+        <PrivateInquiryCallout />
       </main>
       <Chatbot />
       <Footer />

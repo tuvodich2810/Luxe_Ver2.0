@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       trim: true,
-      match: [/^(\+84|0)[0-9]{9}$/, 'Số điện thoại không hợp lệ'],
     },
 
     // Password đã được hash
@@ -39,15 +38,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Mật khẩu là bắt buộc'],
       minlength: [6, 'Mật khẩu phải có ít nhất 6 ký tự'],
-      select: false, // Không trả password trong query mặc định
+      select: false,
     },
 
-    // Vai trò: user thường hoặc admin
+    // Vai trò phân quyền: admin, giam_doc, quan_ly, sales, cskh, user
     role: {
       type: String,
       enum: {
-        values: ['user', 'admin'],
-        message: 'Vai trò phải là user hoặc admin',
+        values: ['admin', 'giam_doc', 'quan_ly', 'sales', 'cskh', 'user'],
+        message: 'Vai trò không hợp lệ trong hệ thống',
       },
       default: 'user',
     },
@@ -77,50 +76,32 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    // Tự động thêm createdAt và updatedAt
     timestamps: true,
-    // Thêm virtual fields vào JSON output
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
 
-// ===================================
-// PRE-SAVE HOOK: Hash password trước khi lưu
-// ===================================
 userSchema.pre('save', async function (next) {
-  // Chỉ hash khi password được thay đổi
   if (!this.isModified('password')) {
     return next();
   }
-
-  // Tạo salt với cost factor 12 (cân bằng bảo mật và hiệu năng)
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-// ===================================
-// INSTANCE METHOD: So sánh password khi đăng nhập
-// ===================================
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  // bcrypt.compare tự động dùng salt được nhúng trong hash
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// ===================================
-// VIRTUAL: Danh sách xe yêu thích (populate từ Favorite collection)
-// ===================================
 userSchema.virtual('favorites', {
   ref: 'Favorite',
   localField: '_id',
   foreignField: 'user',
-  count: true, // Chỉ lấy count, không populate full document
+  count: true,
 });
 
-// ===================================
-// INDEX: Tăng tốc query theo email
-// ===================================
 userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 

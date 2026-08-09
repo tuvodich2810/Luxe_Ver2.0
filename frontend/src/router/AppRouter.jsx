@@ -7,12 +7,22 @@ const Home              = lazy(() => import('@/pages/Home'));
 const CarList           = lazy(() => import('@/pages/CarList'));
 const CarDetail         = lazy(() => import('@/pages/CarDetail'));
 const Appointment       = lazy(() => import('@/pages/Appointment'));
+const MyAppointments    = lazy(() => import('@/pages/MyAppointments'));
 const Favorites         = lazy(() => import('@/pages/Favorites'));
 const MyOrders          = lazy(() => import('@/pages/MyOrders'));
 const Contact           = lazy(() => import('@/pages/Contact'));
 const Login             = lazy(() => import('@/pages/Login'));
 const Register          = lazy(() => import('@/pages/Register'));
+
+// PHÂN HỆ TRANG RIÊNG BIỆT TỪNG BỘ PHẬN CHỨC VỤ
 const AdminDashboard    = lazy(() => import('@/pages/admin/AdminDashboard'));
+const DirectorDashboard = lazy(() => import('@/pages/director/DirectorDashboard'));
+const ManagerDashboard  = lazy(() => import('@/pages/manager/ManagerDashboard'));
+const SalesDashboard    = lazy(() => import('@/pages/sales/SalesDashboard'));
+const AdminCSKH         = lazy(() => import('@/pages/admin/AdminCSKH'));
+
+const AdminCRM          = lazy(() => import('@/pages/admin/AdminCRM'));
+const AdminContacts     = lazy(() => import('@/pages/admin/AdminContacts'));
 const AdminCars         = lazy(() => import('@/pages/admin/AdminCars'));
 const AdminBrands       = lazy(() => import('@/pages/admin/AdminBrands'));
 const AdminUsers        = lazy(() => import('@/pages/admin/AdminUsers'));
@@ -64,25 +74,50 @@ export default function AppRouter() {
           <Route path="/register"
             element={<GuestRoute><Register /></GuestRoute>} />
 
+          <Route path="/appointment/my"
+            element={<ProtectedRoute><MyAppointments /></ProtectedRoute>} />
+          <Route path="/appointments/my"
+            element={<ProtectedRoute><MyAppointments /></ProtectedRoute>} />
+          <Route path="/appointments"
+            element={<ProtectedRoute><MyAppointments /></ProtectedRoute>} />
           <Route path="/appointment/:carId"
+            element={<ProtectedRoute><Appointment /></ProtectedRoute>} />
+          <Route path="/appointment"
             element={<ProtectedRoute><Appointment /></ProtectedRoute>} />
           <Route path="/favorites"
             element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
           <Route path="/orders"
             element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
 
+          {/* DÀNH RIÊNG TỪNG PHÂN HỆ TRANG CHO TỪNG BỘ PHẬN */}
+          <Route path="/director"
+            element={<AdminRoute allowedRoles={['admin', 'giam_doc']}><DirectorDashboard /></AdminRoute>} />
+          <Route path="/manager"
+            element={<AdminRoute allowedRoles={['admin', 'quan_ly']}><ManagerDashboard /></AdminRoute>} />
+          <Route path="/sales"
+            element={<AdminRoute allowedRoles={['admin', 'sales']}><SalesDashboard /></AdminRoute>} />
+          <Route path="/cskh"
+            element={<AdminRoute allowedRoles={['admin', 'cskh']}><AdminCSKH /></AdminRoute>} />
+          <Route path="/admin/cskh"
+            element={<AdminRoute allowedRoles={['admin', 'cskh']}><AdminCSKH /></AdminRoute>} />
+
+          {/* ADMIN MASTER ROUTES */}
           <Route path="/admin"
-            element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            element={<AdminRoute allowedRoles={['admin']}><AdminDashboard /></AdminRoute>} />
+          <Route path="/admin/crm"
+            element={<AdminRoute allowedRoles={['admin', 'giam_doc']}><AdminCRM /></AdminRoute>} />
+          <Route path="/admin/contacts"
+            element={<AdminRoute allowedRoles={['admin', 'giam_doc', 'quan_ly', 'sales', 'cskh']}><AdminContacts /></AdminRoute>} />
           <Route path="/admin/cars"
-            element={<AdminRoute><AdminCars /></AdminRoute>} />
+            element={<AdminRoute allowedRoles={['admin', 'quan_ly']}><AdminCars /></AdminRoute>} />
           <Route path="/admin/brands"
-            element={<AdminRoute><AdminBrands /></AdminRoute>} />
+            element={<AdminRoute allowedRoles={['admin', 'quan_ly']}><AdminBrands /></AdminRoute>} />
           <Route path="/admin/users"
-            element={<AdminRoute><AdminUsers /></AdminRoute>} />
+            element={<AdminRoute allowedRoles={['admin']}><AdminUsers /></AdminRoute>} />
           <Route path="/admin/appointments"
-            element={<AdminRoute><AdminAppointments /></AdminRoute>} />
+            element={<AdminRoute allowedRoles={['admin', 'quan_ly', 'sales', 'cskh']}><AdminAppointments /></AdminRoute>} />
           <Route path="/admin/orders"
-            element={<AdminRoute><AdminOrders /></AdminRoute>} />
+            element={<AdminRoute allowedRoles={['admin', 'giam_doc', 'quan_ly', 'sales']}><AdminOrders /></AdminRoute>} />
 
           <Route path="*" element={
             <div style={{

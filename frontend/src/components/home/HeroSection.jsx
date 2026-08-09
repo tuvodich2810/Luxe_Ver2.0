@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Shield, Zap, Compass, ChevronRight } from 'lucide-react';
+import { Sparkles, ArrowRight, ShieldCheck, Compass, PhoneCall } from 'lucide-react';
 
 const HERO_SLIDES = [
   {
     title: 'FERRARI SF90 STRADALE',
-    subtitle: 'KỶ NGUYÊN HYBRID 1,000 MA LỰC',
+    subtitle: 'KỶ NGUYÊN HYBRID 1,000 MÃ LỰC ĐỈNH CAO',
     image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=2000',
     topSpeed: '340 KM/H',
     accel: '2.5s (0-100)',
-    price: '$625,000',
+    price: '34.500.000.000 ₫',
+  },
+  {
+    title: 'ROLLS-ROYCE PHANTOM VIII',
+    subtitle: 'ĐỈNH CAO THƯƠNG GIA & BẢO TÀNG DI ĐỘNG',
+    image: 'https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&q=80&w=2000',
+    topSpeed: '250 KM/H',
+    accel: '5.3s (0-100)',
+    price: '48.000.000.000 ₫',
   },
   {
     title: 'LAMBORGHINI REVUELTO',
@@ -17,7 +25,7 @@ const HERO_SLIDES = [
     image: 'https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?auto=format&fit=crop&q=80&w=2000',
     topSpeed: '350 KM/H',
     accel: '2.5s (0-100)',
-    price: '$608,000',
+    price: '43.600.000.000 ₫',
   },
   {
     title: 'PORSCHE 911 GT3 RS',
@@ -25,7 +33,7 @@ const HERO_SLIDES = [
     image: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=2000',
     topSpeed: '296 KM/H',
     accel: '3.2s (0-100)',
-    price: '$312,000',
+    price: '19.800.000.000 ₫',
   },
 ];
 
@@ -43,50 +51,48 @@ export default function HeroSection() {
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Background Image Carousel with Smooth Fade */}
+      {/* Background Images */}
       {HERO_SLIDES.map((s, idx) => (
         <div
           key={idx}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             idx === currentSlide ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
           }`}
-          style={{ transitionProperty: 'opacity, transform', transitionDuration: '1.2s' }}
+          style={{ transitionProperty: 'opacity, transform', transitionDuration: '1.4s' }}
         >
           <img
             src={s.image}
             alt={s.title}
-            className="w-full h-full object-cover object-center filter brightness-[0.45] contrast-125"
+            className="w-full h-full object-cover object-center filter brightness-[0.4] contrast-125"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#070709] via-black/40 to-black/80" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/30 to-[#070709]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070709] via-black/50 to-black/80" />
         </div>
       ))}
 
-      {/* Hero Content Overlay */}
-      <div className="lux-container relative z-20 py-24 flex flex-col justify-between min-h-[80vh]">
-        <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <div className="lux-eyebrow">
-            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            LUXURY AUTOMOTIVE COLLECTION 2026
+      {/* Hero Main Banner Content */}
+      <div className="lux-container relative z-20 py-20 flex flex-col justify-between min-h-[82vh]">
+        <div className="max-w-4xl space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-mono-lux uppercase tracking-widest backdrop-blur-md">
+            <Sparkles className="w-3.5 h-3.5" />
+            LUXURY SUPERCAR FLAGSHIP SHOWROOM
           </div>
 
-          <h1 className="font-serif-lux text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white leading-none">
+          <h1 className="font-serif-lux text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-white leading-[1.05]">
             {slide.title.split(' ')[0]}{' '}
             <span className="lux-gradient-gold-text italic font-normal">
               {slide.title.split(' ').slice(1).join(' ')}
             </span>
           </h1>
 
-          <p className="font-mono-lux text-xs md:text-sm tracking-[0.25em] text-slate-300 uppercase">
+          <p className="font-mono-lux text-xs md:text-sm tracking-[0.25em] text-[#D4AF37] uppercase font-semibold">
             {slide.subtitle}
           </p>
 
-          <p className="text-slate-300 text-sm md:text-base max-w-xl font-light leading-relaxed">
-            Trải nghiệm tuyệt tác kỹ nghệ cơ khí độc bản. Chúng tôi mang đến cho chủ sở hữu danh giá
-            những mẫu xe huyền thoại cùng dịch vụ cá nhân hóa đặc quyền.
+          <p className="text-slate-300 text-xs md:text-sm max-w-xl font-light leading-relaxed">
+            Dành riêng cho những chủ nhân kiệt xuất. Trải nghiệm tuyệt tác kỹ nghệ cơ khí độc bản và dịch vụ VIP Concierge tận nơi.
           </p>
 
-          {/* Quick Hero Specs Bar */}
+          {/* Clean Specs Bar */}
           <div className="flex flex-wrap items-center gap-8 pt-4 pb-4 border-y border-white/15 max-w-2xl">
             <div>
               <span className="font-mono-lux text-[10px] text-slate-400 uppercase tracking-widest block">Tốc Độ Tối Đa</span>
@@ -94,30 +100,31 @@ export default function HeroSection() {
             </div>
             <div className="h-8 w-[1px] bg-white/10" />
             <div>
-              <span className="font-mono-lux text-[10px] text-slate-400 uppercase tracking-widest block">Tăng Tốc</span>
+              <span className="font-mono-lux text-[10px] text-slate-400 uppercase tracking-widest block">Tăng Tốc (0-100)</span>
               <span className="font-serif-lux text-2xl text-white font-bold">{slide.accel}</span>
             </div>
             <div className="h-8 w-[1px] bg-white/10" />
             <div>
-              <span className="font-mono-lux text-[10px] text-slate-400 uppercase tracking-widest block">Giá Tham Chiếu</span>
+              <span className="font-mono-lux text-[10px] text-slate-400 uppercase tracking-widest block">Giá Niêm Yết</span>
               <span className="font-serif-lux text-2xl text-[#D4AF37] font-bold">{slide.price}</span>
             </div>
           </div>
 
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <Link to="/cars" className="btn-lux-gold group">
-              <span>Khám phá Showroom</span>
+            <Link to="/cars" className="btn-lux-gold px-8 py-4 text-xs tracking-wider flex items-center gap-2 group">
+              <span>KHÁM PHÁ BỘ SƯU TẬP XE</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
-            <Link to="/contact" className="btn-lux-outline">
-              Đặt Lịch Lái Thử Tận Nơi
+            <Link to="/contact" className="btn-lux-outline px-8 py-4 text-xs tracking-wider flex items-center gap-2">
+              <PhoneCall className="w-4 h-4 text-[#D4AF37]" />
+              <span>LIÊN HỆ TƯ VẤN RIÊNG</span>
             </Link>
           </div>
         </div>
 
-        {/* Slide Indicators & Navigation Controls */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-12">
+        {/* Slide Indicators */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-8">
           <div className="flex items-center gap-3">
             {HERO_SLIDES.map((_, idx) => (
               <button
@@ -131,16 +138,13 @@ export default function HeroSection() {
             ))}
           </div>
 
-          {/* Hero Counter Stats */}
-          <div className="flex items-center gap-8 text-xs font-mono-lux">
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-[#D4AF37]" />
-              <span className="text-slate-300">100% Nhập Khẩu Chính Hãng</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#D4AF37]" />
-              <span className="text-slate-300">Giao Xe Tận Nơi Toàn Quốc</span>
-            </div>
+          <div className="flex items-center gap-6 text-xs font-mono-lux text-slate-400">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+              Nhập Khẩu Chính Hãng 100%
+            </span>
+            <span>•</span>
+            <span className="text-slate-300">Giao Xe Tận Nơi Dinh Thự</span>
           </div>
         </div>
       </div>

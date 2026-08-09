@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { register, login, getMe, updateProfile, logout } = require('../controllers/authController');
 const { protect } = require('../middlewares/authMiddleware');
+const { validateRegisterInput, validateLoginInput } = require('../utils/validators');
+const { authRateLimiter } = require('../middlewares/rateLimitMiddleware');
 
-// Routes công khai
-router.post('/register', register);
-router.post('/login', login);
+// Routes công khai (kèm validation và rate limiting)
+router.post('/register', authRateLimiter, validateRegisterInput, register);
+router.post('/login', authRateLimiter, validateLoginInput, login);
 
 // Routes yêu cầu đăng nhập
 router.get('/me', protect, getMe);

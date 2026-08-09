@@ -335,42 +335,57 @@ export default function PurchaseModal({
         ) : (
 
           /* Success */
-          <div className="py-8 text-center space-y-6">
+          <div className="py-6 text-center space-y-6">
 
-            <div className="w-16 h-16 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37] text-[#D4AF37] mx-auto flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8" />
+            <div className="w-14 h-14 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37] text-[#D4AF37] mx-auto flex items-center justify-center">
+              <CheckCircle2 className="w-7 h-7" />
             </div>
 
             <div className="space-y-2">
-              <h3 className="font-serif-lux text-3xl font-bold text-white">
-                Đặt Cọc Xe Thành Công!
+              <h3 className="font-serif-lux text-2xl font-bold text-white">
+                Đã Khởi Tạo Đơn Đặt Cọc Xe!
               </h3>
 
               <p className="text-xs text-slate-400 max-w-md mx-auto">
-                Mã đơn hàng cọc của bạn là{' '}
+                Mã đơn hàng: {' '}
                 <span className="text-[#D4AF37] font-mono-lux font-bold">
-                  {orderComplete.orderNumber ||
-                    orderComplete._id}
+                  {orderComplete.orderNumber || orderComplete._id}
                 </span>
-                .
-                <br />
-                Chuyên viên LuxeMotors sẽ liên hệ
-                trong vòng 15 phút để hoàn tất thủ tục
-                bàn giao.
               </p>
             </div>
+
+            {/* VietQR Dynamic Code Payment */}
+            {paymentMethod === 'bank_transfer' && (
+              <div className="bg-[#15151B] border border-[#D4AF37]/30 rounded-lg p-4 max-w-sm mx-auto space-y-3 text-left">
+                <p className="text-[10px] font-mono-lux text-[#D4AF37] uppercase tracking-wider text-center">
+                  MÃ VIETQR CHUYỂN KHOẢN TỰ ĐỘNG
+                </p>
+                <div className="bg-white p-2 rounded flex justify-center">
+                  <img
+                    src={`https://img.vietqr.io/image/MB-0382998888-compact2.png?amount=${Math.round(depositAmount * 24000)}&addInfo=${orderComplete.orderNumber || orderComplete._id}&accountName=SHOWROOM%20LUXE%20MOTORS`}
+                    alt="VietQR Payment"
+                    className="w-48 h-48 object-contain"
+                  />
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1 font-mono-lux border-t border-white/10 pt-2">
+                  <p><span className="text-slate-400">Ngân hàng:</span> MBBank (NHTM Cổ Phần Quân Đội)</p>
+                  <p><span className="text-slate-400">Số tài khoản:</span> <strong className="text-white">0382998888</strong></p>
+                  <p><span className="text-slate-400">Chủ tài khoản:</span> LUXE MOTORS SHOWROOM</p>
+                  <p><span className="text-slate-400">Nội dung chuyển khoản:</span> <strong className="text-[#D4AF37]">{orderComplete.orderNumber || orderComplete._id}</strong></p>
+                </div>
+              </div>
+            )}
 
             <button
               onClick={() => {
                 setOrderComplete(null);
-
                 if (onClose) {
                   onClose();
                 }
               }}
-              className="btn-lux-gold px-8 py-3"
+              className="btn-lux-gold px-8 py-3 text-xs tracking-wider"
             >
-              Đóng và Xem Đơn Hàng Của Tôi
+              Hoàn Tất và Xem Đơn Hàng Của Tôi
             </button>
 
           </div>

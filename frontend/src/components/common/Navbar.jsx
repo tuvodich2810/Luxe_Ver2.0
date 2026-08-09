@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import favoriteService from '@/services/favoriteService';
 import orderService from '@/services/orderService';
+import { ROLES_CONFIG } from '@/config/rolesConfig';
 import {
   Car,
   Heart,
@@ -15,10 +16,12 @@ import {
   X,
   ChevronDown,
   Sparkles,
+  Briefcase,
+  LayoutDashboard,
 } from 'lucide-react';
 
 export default function Navbar() {
-  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -27,6 +30,23 @@ export default function Navbar() {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isStaffOrExecutive = user && ['admin', 'giam_doc', 'quan_ly', 'sales', 'cskh'].includes(user.role);
+  const userRoleConfig = user ? ROLES_CONFIG[user.role] || ROLES_CONFIG.user : ROLES_CONFIG.user;
+
+  // Lấy đúng đường dẫn phân hệ trang riêng của từng chức vụ
+  const getDepartmentLink = () => {
+    if (!user) return '/admin';
+    switch (user.role) {
+      case 'giam_doc': return '/director';
+      case 'quan_ly': return '/manager';
+      case 'sales': return '/sales';
+      case 'cskh': return '/cskh';
+      default: return '/admin';
+    }
+  };
+
+  const adminTargetLink = getDepartmentLink();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -103,7 +123,7 @@ export default function Navbar() {
                 : 'text-slate-300 hover:text-white'
             }`}
           >
-            Bộ bộ sưu tập Xe
+            Bộ sưu tập Xe
           </Link>
           <Link
             to="/contact"
@@ -118,7 +138,7 @@ export default function Navbar() {
         </nav>
 
         {/* Action Controls & Profile */}
-        <div className="hidden md:flex items-center gap-5">
+        <div className="hidden md:flex items-center gap-4">
           {/* Wishlist Button */}
           <Link
             to="/favorites"
@@ -164,25 +184,23 @@ export default function Navbar() {
               </button>
 
               {userDropdownOpen && (
-                <div className="absolute right-0 mt-3 w-56 bg-[#0E0E12] border border-[#D4AF37]/25 rounded-md shadow-2xl p-2 z-50 backdrop-blur-2xl">
+                <div className="absolute right-0 mt-3 w-60 bg-[#0E0E12] border border-[#D4AF37]/25 rounded-md shadow-2xl p-2 z-50 backdrop-blur-2xl">
                   <div className="px-3 py-2 border-b border-white/10 mb-1">
                     <p className="text-xs font-medium text-white truncate">{user?.fullName}</p>
                     <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
-                    {isAdmin && (
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-[#D4AF37]/20 text-[#D4AF37] text-[9px] font-mono-lux rounded border border-[#D4AF37]/30">
-                        ADMINISTRATOR
-                      </span>
-                    )}
+                    <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-mono-lux font-bold border ${userRoleConfig.color}`}>
+                      {userRoleConfig.label}
+                    </span>
                   </div>
 
-                  {isAdmin && (
+                  {isStaffOrExecutive && (
                     <Link
-                      to="/admin"
+                      to={adminTargetLink}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded text-xs text-[#D4AF37] hover:bg-[#D4AF37]/10 transition-colors"
+                      className="flex items-center gap-2.5 px-3 py-2 rounded text-xs text-[#D4AF37] font-bold hover:bg-[#D4AF37]/15 transition-colors border-b border-white/5 mb-1"
                     >
-                      <Shield className="w-3.5 h-3.5" />
-                      Trang Quản Trị (Admin)
+                      <LayoutDashboard className="w-4 h-4 text-[#D4AF37]" />
+                      <span>Trang Quản Trị ({userRoleConfig.label.split(' ')[0]})</span>
                     </Link>
                   )}
 
@@ -259,24 +277,17 @@ export default function Navbar() {
           >
             Showroom & Liên hệ
           </Link>
-          <Link
-            to="/favorites"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-mono-lux uppercase text-slate-200 py-2 border-b border-white/5 flex justify-between"
-          >
-            <span>Xe yêu thích</span>
-            {favCount > 0 && <span className="text-[#D4AF37] font-bold">({favCount})</span>}
-          </Link>
 
           {isAuthenticated ? (
             <>
-              {isAdmin && (
+              {isStaffOrExecutive && (
                 <Link
-                  to="/admin"
+                  to={adminTargetLink}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-sm font-mono-lux text-[#D4AF37] py-2 border-b border-white/5"
+                  className="text-sm font-mono-lux text-[#D4AF37] font-bold py-2 border-b border-white/5 flex items-center gap-2"
                 >
-                  Quản trị Admin
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span>💼 Trang Quản Trị ({userRoleConfig.label.split(' ')[0]})</span>
                 </Link>
               )}
               <Link

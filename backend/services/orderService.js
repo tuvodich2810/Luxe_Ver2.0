@@ -120,6 +120,32 @@ const createOrder = async (userId, orderData) => {
   };
 
   // ===================================
+  // Giảm số lượng xe trong kho bằng Thao tác nguyên tử (Atomic Update)
+  // Ngăn ngừa lỗi Concurrency / Race Condition khi nhiều người mua cùng lúc
+  // ===================================
+  const updatedCar = await Car.findOneAndUpdate(
+    {
+      _id: car._id,
+      inStock: true,
+      stockCount: { $gt: 0 },
+    },
+    {
+      $inc: { stockCount: -1 },
+    },
+    { new: true }
+  );
+
+  if (!updatedCar) {
+    const error = new Error('Xe vừa hết hàng tại thời điểm bạn đặt mua');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (updatedCar.stockCount <= 0) {
+    await Car.findByIdAndUpdate(car._id, { $set: { inStock: false, stockCount: 0 } });
+  }
+
+  // ===================================
   // Tạo đơn hàng trong MongoDB
   // ===================================
   const order = await Order.create({
@@ -131,19 +157,14 @@ const createOrder = async (userId, orderData) => {
     paymentMethod,
     deliveryAddress,
     notes,
+    statusHistory: [
+      {
+        status: 'pending',
+        note: 'Đơn hàng vừa được tạo trên hệ thống',
+        changedAt: new Date(),
+      },
+    ],
   });
-
-  // ===================================
-  // Giảm số lượng xe trong kho
-  // ===================================
-  car.stockCount -= 1;
-
-  if (car.stockCount <= 0) {
-    car.stockCount = 0;
-    car.inStock = false;
-  }
-
-  await car.save();
 
   // ===================================
   // Gửi email xác nhận
@@ -512,34 +533,40 @@ const updateOrderStatus = async (
   const updateFields = {};
 
   if (orderStatus) {
-    updateFields.orderStatus =
-      orderStatus;
+    updateFields.orderStatus = orderStatus;
+    if (orderStatus === 'completed') {
+      updateFields.paymentStatus = 'fully_paid';
+    } else if (orderStatus === 'cancelled') {
+      updateFields.paymentStatus = 'refunded';
+    }
   }
 
   if (paymentStatus) {
-    updateFields.paymentStatus =
-      paymentStatus;
+    updateFields.paymentStatus = paymentStatus;
   }
 
-  if (
-    Object.keys(updateFields).length === 0
-  ) {
-    const error = new Error(
-      'Không có dữ liệu để cập nhật'
-    );
+  if (Object.keys(updateFields).length === 0) {
+    const error = new Error('Không có dữ liệu để cập nhật');
     error.statusCode = 400;
     throw error;
   }
 
-  const order =
-    await Order.findByIdAndUpdate(
-      orderId,
-      updateFields,
-      {
-        new: true,
-        runValidators: true,
-      }
-    )
+  const updateQuery = { $set: updateFields };
+
+  if (orderStatus) {
+    updateQuery.$push = {
+      statusHistory: {
+        status: orderStatus,
+        note: 'Cập nhật từ quản trị viên',
+        changedAt: new Date(),
+      },
+    };
+  }
+
+  const order = await Order.findByIdAndUpdate(orderId, updateQuery, {
+    new: true,
+    runValidators: true,
+  })
       .populate(
         'user',
         'fullName email phone'
@@ -634,24 +661,19 @@ const cancelOrder = async (
   // Cập nhật trạng thái
   // ===================================
   order.orderStatus = 'cancelled';
-
   await order.save();
 
   // ===================================
-  // Cộng lại số lượng xe
+  // Cộng lại số lượng xe (Atomic Update)
   // ===================================
-  const car = await Car.findById(
-    order.car
-  );
-
-  if (car) {
-    car.stockCount =
-      Math.max(0, car.stockCount) + 1;
-
-    car.inStock = true;
-
-    await car.save();
+  if (order.car) {
+    await Car.findByIdAndUpdate(order.car, {
+      $inc: { stockCount: 1 },
+      $set: { inStock: true },
+    });
   }
+
+  return order;
 
   return order;
 };

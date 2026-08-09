@@ -78,6 +78,15 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
     },
 
+    // Lịch sử biến động trạng thái đơn hàng
+    statusHistory: [
+      {
+        status: { type: String, required: true },
+        changedAt: { type: Date, default: Date.now },
+        note: { type: String, default: '' },
+      },
+    ],
+
     // Địa chỉ giao xe
     deliveryAddress: {
       type: String,
