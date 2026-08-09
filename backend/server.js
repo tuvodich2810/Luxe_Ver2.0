@@ -61,10 +61,24 @@ app.use(
 // ===================================
 // CORS Configuration (Cho phép mọi phương thức GET, POST, PUT, PATCH, DELETE, OPTIONS)
 // ===================================
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  ...(FRONTEND_URL ? [FRONTEND_URL] : []),
+];
+
 app.use(
   cors({
-    origin: FRONTEND_URL || true,
-    credentials: true,          // Cho phép gửi cookies
+    origin: (origin, callback) => {
+      // Cho phép requests không có origin (Postman, mobile app, server-to-server)
+      if (!origin) return callback(null, true);
+      // Cho phép tất cả subdomain của vercel.app
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      // Cho phép các origin trong whitelist
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
