@@ -1,3 +1,8 @@
+const dns = require('dns');
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {}
+
 // ===================================
 // Load config trước tiên
 // ===================================
@@ -7,9 +12,6 @@ const {
   FRONTEND_URL,
   UPLOAD_PATH,
 } = require('./config/env');
-
-const dns = require('dns');
-dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 const connectDB = require('./config/db');
 const express = require('express');
@@ -72,8 +74,6 @@ app.use(
     origin: (origin, callback) => {
       // Cho phép requests không có origin (Postman, mobile app, server-to-server)
       if (!origin) return callback(null, true);
-      // Cho phép tất cả subdomain của vercel.app
-      if (origin.endsWith('.vercel.app')) return callback(null, true);
       // Cho phép các origin trong whitelist
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error(`CORS blocked: ${origin}`));
@@ -84,11 +84,15 @@ app.use(
   })
 );
 
+const cookieParser = require('cookie-parser');
+
 // ===================================
 // Request Parsing
 // ===================================
 app.use(express.json({ limit: '10mb' }));                   // Parse JSON body
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Parse form data
+const { mongoSanitizeMiddleware } = require('./middlewares/sanitizeMiddleware');
+app.use(mongoSanitizeMiddleware); // Chống NoSQL Query Injection
 
 // ===================================
 // Logger (chỉ trong development)

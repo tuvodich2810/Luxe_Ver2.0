@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const colors = require("colors");
+const dns = require("dns");
 const { MONGO_URI, NODE_ENV } = require("./env");
+
+// Sử dụng Google & Cloudflare DNS để giải quyết lỗi DNS SRV (querySrv ECONNREFUSED) trên Windows
+try {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch (e) {
+  // Ignore DNS set error if not supported
+}
 
 let mongoServer;
 
@@ -40,6 +48,19 @@ const connectDB = async () => {
         console.log(
           `✅ Đã chuyển sang MongoDB in-memory: ${conn.connection.host}`.yellow.bold
         );
+
+        // Auto-seed data nếu in-memory DB chưa có dữ liệu
+        try {
+          const User = require("../models/User");
+          const count = await User.countDocuments();
+          if (count === 0) {
+            console.log("🌱 Tự động khởi tạo dữ liệu mẫu cho In-Memory Database...".yellow);
+            const { seedFullData } = require("../services/seedService");
+            await seedFullData();
+          }
+        } catch (seedErr) {
+          console.error("⚠️ Lỗi tự động nạp dữ liệu mẫu:", seedErr.message);
+        }
 
         return conn;
       } catch (memError) {

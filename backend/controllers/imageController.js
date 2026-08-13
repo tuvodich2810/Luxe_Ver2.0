@@ -15,9 +15,9 @@ const uploadImage = expressAsyncHandler(async (req, res) => {
   }
 
   const { file } = req;
-
-  // Tạo URL public có thể truy cập
-  const url = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const secureProtocol = (process.env.NODE_ENV === 'production' || protocol === 'https') ? 'https' : protocol;
+  const url = `${secureProtocol}://${req.get('host')}/uploads/${file.filename}`;
 
   // Lưu metadata vào DB
   const image = await Image.create({
@@ -41,9 +41,12 @@ const uploadMultipleImages = expressAsyncHandler(async (req, res) => {
     throw error;
   }
 
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const secureProtocol = (process.env.NODE_ENV === 'production' || protocol === 'https') ? 'https' : protocol;
+
   const images = await Promise.all(
     req.files.map(async (file) => {
-      const url = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+      const url = `${secureProtocol}://${req.get('host')}/uploads/${file.filename}`;
       return Image.create({
         originalName: file.originalname,
         filename: file.filename,

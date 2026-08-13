@@ -6,6 +6,7 @@ import Chatbot from '@/components/common/Chatbot';
 import { useAuth } from '@/context/AuthContext';
 import carService from '@/services/carService';
 import appointmentService from '@/services/appointmentService';
+import { isValidVNPhone } from '@/utils/validation';
 import MyAppointments from './MyAppointments';
 import {
   Sparkles,
@@ -34,7 +35,9 @@ export default function Appointment() {
   const [visitorPhone, setVisitorPhone] = useState(user?.phone || '');
   const [visitorEmail, setVisitorEmail] = useState(user?.email || '');
 
-  const [appointmentDate, setAppointmentDate] = useState('');
+  // Mặc định chọn ngày hôm sau
+  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  const [appointmentDate, setAppointmentDate] = useState(tomorrowStr);
   const [timeSlot, setTimeSlot] = useState('10:00');
   const [notes, setNotes] = useState('');
 
@@ -108,6 +111,11 @@ export default function Appointment() {
     if (!user) {
       alert('Vui lòng đăng nhập để đăng ký lịch hẹn lái thử.');
       navigate('/login');
+      return;
+    }
+
+    if (!isValidVNPhone(visitorPhone)) {
+      alert('Số điện thoại không hợp lệ. Vui lòng nhập SĐT Việt Nam hợp lệ (10 chữ số, bắt đầu bằng 03, 05, 07, 08, 09).');
       return;
     }
 
@@ -197,11 +205,16 @@ export default function Appointment() {
                   {allCars.length === 0 && (
                     <option value="">-- Đang tải danh sách siêu xe... --</option>
                   )}
-                  {allCars.map((c) => (
-                    <option key={c._id} value={c._id} className="bg-[#15151B] text-white">
-                      {c.name} ({typeof c.brand === 'object' ? c.brand?.name : c.brand || 'Luxe'}) - {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(c.price || 0)}
-                    </option>
-                  ))}
+                  {allCars.map((c) => {
+                    let numP = c.price || 0;
+                    if (numP > 0 && numP < 50000000) numP = numP * 25000;
+                    const priceVND = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numP);
+                    return (
+                      <option key={c._id} value={c._id} className="bg-[#15151B] text-white">
+                        {c.name} ({typeof c.brand === 'object' ? c.brand?.name : c.brand || 'Luxe'}) - {priceVND}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -217,14 +230,47 @@ export default function Appointment() {
                     alt={car.name}
                     className="w-24 h-16 object-cover rounded border border-white/10"
                   />
-                  <div>
+                  <div className="flex-1">
                     <span className="text-[10px] font-mono-lux text-[#D4AF37] uppercase tracking-wider">
                       {typeof car.brand === 'object' ? car.brand?.name : car.brand || 'Luxe Motors'}
                     </span>
                     <h4 className="font-serif-lux text-lg text-white font-bold">{car.name}</h4>
                     <p className="text-xs font-mono-lux text-emerald-400">
-                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.price || 0)}
+                      {(() => {
+                        let numP = car.price || 0;
+                        if (numP > 0 && numP < 50000000) numP = numP * 25000;
+                        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numP);
+                      })()}
                     </p>
+                  </div>
+                  {/* Stock Badge */}
+                  <div className="shrink-0">
+                    {car.stockCount > 0 ? (
+                      <span className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                        <span className="font-mono-lux text-xl font-bold text-emerald-400">{car.stockCount}</span>
+                        <span className="text-[9px] font-mono-lux text-emerald-400/70 uppercase tracking-widest">Còn lại</span>
+                      </span>
+                    ) : (car.inStock === false || car.stockCount === 0) ? (
+                      <span className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg bg-rose-500/10 border border-rose-500/40">
+                        <span className="text-[10px] font-mono-lux text-rose-400 font-bold uppercase tracking-widest">Hết hàng</span>
+                      </span>
+                    ) : (
+                      <span className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30">
+                        <span className="text-[9px] font-mono-lux text-[#D4AF37] uppercase tracking-widest">Liên hệ</span>
+                        <span className="text-[9px] font-mono-lux text-[#D4AF37]/70">để xác nhận</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Out-of-stock warning banner */}
+              {car && (car.stockCount === 0 || car.inStock === false) && (
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-rose-500/10 border border-rose-500/30">
+                  <span className="text-rose-400 text-lg">⚠️</span>
+                  <div>
+                    <p className="text-rose-400 font-mono-lux text-xs font-bold">Mẫu xe này hiện đã hết hàng</p>
+                    <p className="text-rose-400/70 text-[11px] mt-0.5">Quý khách có thể đăng ký nhận thông báo khi có hàng mới về, hoặc chọn mẫu xe khác phù hợp.</p>
                   </div>
                 </div>
               )}
@@ -323,10 +369,18 @@ export default function Appointment() {
 
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="btn-lux-gold w-full py-4 text-xs tracking-[0.2em] font-mono-lux font-bold"
+                  disabled={submitting || car?.stockCount === 0 || car?.inStock === false}
+                  className={`w-full py-4 text-xs tracking-[0.2em] font-mono-lux font-bold ${
+                    (car?.stockCount === 0 || car?.inStock === false)
+                      ? 'bg-slate-700 text-slate-400 cursor-not-allowed rounded-sm'
+                      : 'btn-lux-gold'
+                  }`}
                 >
-                  {submitting ? 'ĐANG KHỞI TẠO LỊCH HẸN VIP...' : 'XÁC NHẬN ĐẶT LỊCH LÁI THỬ TẬN NHÀ'}
+                  {car?.stockCount === 0 || car?.inStock === false
+                    ? 'XE NÀY ĐÃ HẾT HÀNG — VUI LÒNG CHỌN XE KHÁC'
+                    : submitting
+                    ? 'ĐANG KHỞI TẠO LỊCH HẸN VIP...'
+                    : 'XÁC NHẬN ĐẶT LỊCH LÁI THỬ TẬN NHÀ'}
                 </button>
               </form>
             </div>

@@ -60,6 +60,16 @@ const updateOrderStatus = expressAsyncHandler(async (req, res) => {
     return badRequest(res, 'Vui lòng cung cấp trạng thái cần cập nhật');
   }
 
+  const validOrderStatuses = ['pending', 'confirmed', 'approved', 'processing', 'delivered', 'completed', 'cancelled'];
+  const validPaymentStatuses = ['pending', 'deposit_paid', 'fully_paid', 'refunded', 'failed'];
+
+  if (orderStatus && !validOrderStatuses.includes(orderStatus)) {
+    return badRequest(res, `Trạng thái đơn hàng không hợp lệ: ${orderStatus}`);
+  }
+  if (paymentStatus && !validPaymentStatuses.includes(paymentStatus)) {
+    return badRequest(res, `Trạng thái thanh toán không hợp lệ: ${paymentStatus}`);
+  }
+
   const order = await orderService.updateOrderStatus(req.params.id, {
     orderStatus,
     paymentStatus,
@@ -79,6 +89,38 @@ const cancelOrder = expressAsyncHandler(async (req, res) => {
   return ok(res, 'Hủy đơn hàng thành công', order);
 });
 
+// ===================================
+// POST /api/orders/:id/create-payment-link
+// Tạo link thanh toán & QR Code động PayOS
+// ===================================
+const createPayOSPaymentLink = expressAsyncHandler(async (req, res) => {
+  const isStaff = ['admin', 'giam_doc', 'quan_ly', 'sales'].includes(req.user?.role);
+  const paymentData = await orderService.createPayOSPaymentLink(req.params.id, req.user._id, isStaff);
+
+  return ok(res, 'Tạo link thanh toán PayOS thành công', paymentData);
+});
+
+// ===================================
+// POST /api/orders/payos-webhook
+// Webhook tự động nhận thông báo chuyển khoản từ PayOS (Public, Verify Signature)
+// ===================================
+const handlePayOSWebhook = expressAsyncHandler(async (req, res) => {
+  const result = await orderService.processPayOSWebhook(req.body);
+
+  return ok(res, result.message, result);
+});
+
+// ===================================
+// GET /api/orders/:id/payment-status
+// Lấy trạng thái thanh toán cho Frontend Polling & tự động hủy đơn hết hạn
+// ===================================
+const getPaymentStatus = expressAsyncHandler(async (req, res) => {
+  const isStaff = ['admin', 'giam_doc', 'quan_ly', 'sales', 'cskh'].includes(req.user?.role);
+  const statusData = await orderService.getPaymentStatus(req.params.id, req.user._id, isStaff);
+
+  return ok(res, 'Lấy trạng thái thanh toán thành công', statusData);
+});
+
 module.exports = {
   createOrder,
   getMyOrders,
@@ -86,4 +128,7 @@ module.exports = {
   getOrderById,
   updateOrderStatus,
   cancelOrder,
+  createPayOSPaymentLink,
+  handlePayOSWebhook,
+  getPaymentStatus,
 };

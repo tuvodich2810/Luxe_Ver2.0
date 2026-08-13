@@ -95,7 +95,7 @@ export default function DirectorDashboard() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <AdminHeader title="Phân Hệ Điều Hành Giám Đốc Exec (/director)" />
 
-        <main style={{ padding: '32px 36px', flex: 1 }} className="space-y-6">
+        <main className="p-4 sm:p-6 lg:p-8 flex-1 space-y-6 overflow-x-hidden">
           {/* Toast */}
           <AnimatePresence>
             {toastMessage && (
@@ -150,7 +150,7 @@ export default function DirectorDashboard() {
             </div>
           </div>
 
-          {/* Live Financial KPI Cards — Giống hệt Admin Dashboard */}
+          {/* Live Financial KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Tổng Doanh Thu Hợp Đồng */}
             <div className="bg-[#0E0E12] border border-[#D4AF37]/50 rounded-xl p-5 space-y-2 shadow-xl">
@@ -190,6 +190,85 @@ export default function DirectorDashboard() {
               </div>
               <p className="font-mono-lux text-2xl font-bold text-purple-400">{formatVND(stats.totalProfit)}</p>
               <span className="text-[10px] text-slate-400 font-mono-lux">Biên lợi nhuận gộp 15%</span>
+            </div>
+          </div>
+
+          {/* Executive Target & Brand Revenue Breakdown */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Target vs Actual Progress */}
+            <div className="bg-[#0E0E12] border border-white/10 p-6 rounded-xl space-y-5 lg:col-span-2 shadow-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-serif-lux text-xl font-bold text-white">Chỉ Số Mục Tiêu Doanh Thu Quý 3/2026</h3>
+                  <p className="text-xs text-slate-400">Tiến độ hoàn thành chỉ tiêu doanh thu Giám đốc giao</p>
+                </div>
+                <span className="px-3 py-1 bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 rounded text-xs font-mono-lux font-bold">
+                  Target: 300 Tỷ VNĐ
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              {(() => {
+                const target = 300000000000; // 300 Billion VND
+                const current = stats.totalRevenue || 185000000000;
+                const percent = Math.min(Math.round((current / target) * 100), 100);
+
+                return (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-xs font-mono-lux">
+                      <span className="text-slate-300">Đã đạt: <strong className="text-[#D4AF37]">{formatVND(current)}</strong></span>
+                      <span className="text-[#D4AF37] font-bold">{percent}% Chỉ tiêu</span>
+                    </div>
+
+                    <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/10">
+                      <div
+                        style={{ width: `${percent}%` }}
+                        className="h-full bg-gradient-to-r from-[#D4AF37] via-[#F0C968] to-emerald-400 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(212,175,55,0.5)]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs font-mono-lux">
+                      <div className="p-3 bg-[#14141C] rounded border border-white/5">
+                        <span className="text-[10px] text-slate-500 block uppercase">Còn Thiếu</span>
+                        <strong className="text-amber-400 text-sm">{formatVND(Math.max(target - current, 0))}</strong>
+                      </div>
+                      <div className="p-3 bg-[#14141C] rounded border border-white/5">
+                        <span className="text-[10px] text-slate-500 block uppercase">Số Xe Đã Cọc</span>
+                        <strong className="text-white text-sm">{stats.totalOrders} chiếc</strong>
+                      </div>
+                      <div className="p-3 bg-[#14141C] rounded border border-white/5">
+                        <span className="text-[10px] text-slate-500 block uppercase">Số Xe Đã Giao</span>
+                        <strong className="text-emerald-400 text-sm">{stats.completedCount} chiếc</strong>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Top Brand Distribution */}
+            <div className="bg-[#0E0E12] border border-white/10 p-6 rounded-xl space-y-4 shadow-xl">
+              <h3 className="font-serif-lux text-xl font-bold text-white">Tỷ Trọng Hãng Xe</h3>
+              <p className="text-xs text-slate-400">Phân bố doanh số theo thương hiệu chính</p>
+
+              <div className="space-y-3 pt-2">
+                {[
+                  { brand: 'Ferrari', percent: 38, count: '5 Xe', color: 'bg-rose-500' },
+                  { brand: 'Lamborghini', percent: 28, count: '4 Xe', color: 'bg-amber-500' },
+                  { brand: 'Rolls-Royce', percent: 20, count: '3 Xe', color: 'bg-purple-500' },
+                  { brand: 'Porsche & Khác', percent: 14, count: '2 Xe', color: 'bg-emerald-500' },
+                ].map((item, idx) => (
+                  <div key={idx} className="space-y-1 text-xs">
+                    <div className="flex justify-between font-mono-lux">
+                      <span className="text-white font-semibold">{item.brand}</span>
+                      <span className="text-slate-400">{item.count} ({item.percent}%)</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className={`h-full ${item.color}`} style={{ width: `${item.percent}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -341,185 +341,355 @@ async function seedDatabase() {
     const day4 = new Date(); day4.setDate(day4.getDate() + 4);
     const day5 = new Date(); day5.setDate(day5.getDate() + 5);
 
+    // -------------------------------------------------------------
+    // 4. DỮ LIỆU LỊCH HẸN CONCIERGE (APPOINTMENTS) RẢI ĐỀU CÁC THÁNG 1 - 8
+    // -------------------------------------------------------------
     const appointments = await Appointment.create([
-      { user: vipKhang._id, car: cSF90._id, appointmentDate: tomorrow, timeSlot: '10:00', visitorName: 'Võ Minh Khang', visitorPhone: '0966778899', visitorEmail: 'khachvip@gmail.com', notes: 'Trải nghiệm chạy thử Ferrari SF90 Stradale tại Showroom VIP Lounge.', status: 'confirmed', adminNotes: 'Sales Executive chuẩn bị xe.' },
-      { user: vipThuy._id, car: cRevuelto._id, appointmentDate: day2, timeSlot: '14:00', visitorName: 'Trần Thị Thu Thủy', visitorPhone: '0911223344', visitorEmail: 'thuy.tran@gmail.com', notes: 'Yêu cầu giao xe Revuelto tận nhà trải nghiệm biệt thự Q.2.', status: 'pending' },
-      { user: vipNam._id, car: cGT3RS._id, appointmentDate: day3, timeSlot: '09:30', visitorName: 'Lê Hoàng Nam', visitorPhone: '0922334455', visitorEmail: 'nam.le@gmail.com', notes: 'Tư vấn chi tiết gói đường đua Weissach Package.', status: 'confirmed', adminNotes: 'CSKH đã xác nhận lịch.' },
-      { user: vipHoang._id, car: cPhantom._id, appointmentDate: day4, timeSlot: '15:00', visitorName: 'Phạm Đức Hoàng', visitorPhone: '0933445566', visitorEmail: 'hoang.pham@gmail.com', notes: 'Trải nghiệm khoang ông chủ Privacy Suite Rolls-Royce Phantom.', status: 'confirmed', adminNotes: 'Phòng VIP lounge chuẩn bị rượu vang.' },
-      { user: vipCuong._id, car: cChiron._id, appointmentDate: day5, timeSlot: '16:00', visitorName: 'Đặng Quốc Cường', visitorPhone: '0944556677', visitorEmail: 'cuong.dang@gmail.com', notes: 'Đăng ký tư vấn nhập khẩu siêu xe Bugatti Chiron Super Sport 300+.', status: 'pending' },
-      { user: vipKhang._id, car: cValkyrie._id, appointmentDate: day2, timeSlot: '11:00', visitorName: 'Võ Minh Khang', visitorPhone: '0966778899', visitorEmail: 'khachvip@gmail.com', notes: 'Xem trực tiếp thiết kế khí động học F1 Aston Martin Valkyrie.', status: 'completed', adminNotes: 'Đón tiếp thành công.' },
-      { user: vipThuy._id, car: c750S._id, appointmentDate: day3, timeSlot: '15:30', visitorName: 'Trần Thị Thu Thủy', visitorPhone: '0911223344', visitorEmail: 'thuy.tran@gmail.com', notes: 'Thử cảm giác mui xếp mở McLaren 750S Spider.', status: 'confirmed' },
-      { user: vipNam._id, car: cContinental._id, appointmentDate: day4, timeSlot: '10:30', visitorName: 'Lê Hoàng Nam', visitorPhone: '0922334455', visitorEmail: 'nam.le@gmail.com', notes: 'Tư vấn cá nhân hóa màu sơn xanh Lục Bảo Bentley.', status: 'pending' },
-      { user: vipHoang._id, car: cJesko._id, appointmentDate: day5, timeSlot: '14:30', visitorName: 'Phạm Đức Hoàng', visitorPhone: '0933445566', visitorEmail: 'hoang.pham@gmail.com', notes: 'Xem siêu phẩm Koenigsegg Jesko Attack độc bản.', status: 'confirmed' },
-      { user: vipCuong._id, car: cHuayra._id, appointmentDate: tomorrow, timeSlot: '16:30', visitorName: 'Đặng Quốc Cường', visitorPhone: '0944556677', visitorEmail: 'cuong.dang@gmail.com', notes: 'Trao đổi phương án vận chuyển xe Pagani về dinh thự.', status: 'completed' },
+      { user: vipKhang._id, car: cSF90._id, appointmentDate: new Date('2026-01-14'), timeSlot: '10:00', visitorName: 'Võ Minh Khang', visitorPhone: '0966778899', visitorEmail: 'khachvip@gmail.com', notes: 'Lịch hẹn Tháng 1: Thử cảm giác lái 1000 HP SF90.', status: 'completed', createdAt: new Date('2026-01-10') },
+      { user: vipThuy._id, car: cGT3RS._id, appointmentDate: new Date('2026-02-18'), timeSlot: '14:00', visitorName: 'Trần Thị Thu Thủy', visitorPhone: '0911223344', visitorEmail: 'thuy.tran@gmail.com', notes: 'Lịch hẹn Tháng 2: Thử gói cánh gió khí động học Porsche 911.', status: 'completed', createdAt: new Date('2026-02-15') },
+      { user: vipNam._id, car: c750S._id, appointmentDate: new Date('2026-03-22'), timeSlot: '09:30', visitorName: 'Lê Hoàng Nam', visitorPhone: '0922334455', visitorEmail: 'nam.le@gmail.com', notes: 'Lịch hẹn Tháng 3: Đón tiếp tại phòng VIP McLaren Lounge.', status: 'completed', createdAt: new Date('2026-03-19') },
+      { user: vipHoang._id, car: cPhantom._id, appointmentDate: new Date('2026-04-12'), timeSlot: '15:00', visitorName: 'Phạm Đức Hoàng', visitorPhone: '0933445566', visitorEmail: 'hoang.pham@gmail.com', notes: 'Lịch hẹn Tháng 4: Trải nghiệm khoangPrivacy Suite Rolls-Royce.', status: 'completed', createdAt: new Date('2026-04-08') },
+      { user: vipCuong._id, car: cRevuelto._id, appointmentDate: new Date('2026-05-20'), timeSlot: '16:00', visitorName: 'Đặng Quốc Cường', visitorPhone: '0944556677', visitorEmail: 'cuong.dang@gmail.com', notes: 'Lịch hẹn Tháng 5: Thử động cơ V12 Hybrid Revuelto.', status: 'completed', createdAt: new Date('2026-05-16') },
+      { user: vipKhang._id, car: cChiron._id, appointmentDate: new Date('2026-06-15'), timeSlot: '11:00', visitorName: 'Võ Minh Khang', visitorPhone: '0966778899', visitorEmail: 'khachvip@gmail.com', notes: 'Lịch hẹn Tháng 6: Tư vấn gói cá nhân hóa Bugatti.', status: 'completed', createdAt: new Date('2026-06-11') },
+      { user: vipThuy._id, car: cValkyrie._id, appointmentDate: new Date('2026-07-22'), timeSlot: '15:30', visitorName: 'Trần Thị Thu Thủy', visitorPhone: '0911223344', visitorEmail: 'thuy.tran@gmail.com', notes: 'Lịch hẹn Tháng 7: Đưa xe lồng chở Valkyrie đến dinh thự Q.2.', status: 'completed', createdAt: new Date('2026-07-18') },
+      { user: vipNam._id, car: cJesko._id, appointmentDate: new Date('2026-08-05'), timeSlot: '10:30', visitorName: 'Lê Hoàng Nam', visitorPhone: '0922334455', visitorEmail: 'nam.le@gmail.com', notes: 'Lịch hẹn Tháng 8: Đón tiếp tư vấn siêu xe Jesko Attack.', status: 'confirmed', createdAt: new Date('2026-08-02') },
+      { user: vipHoang._id, car: cHuayra._id, appointmentDate: new Date('2026-08-12'), timeSlot: '14:30', visitorName: 'Phạm Đức Hoàng', visitorPhone: '0933445566', visitorEmail: 'hoang.pham@gmail.com', notes: 'Lịch hẹn Tháng 8: Đăng ký xem trực tiếp Pagani Huayra BC.', status: 'pending', createdAt: new Date('2026-08-08') },
     ]);
-    console.log(`✅ [4/6] Đã nạp thành công ${appointments.length} Lịch Hẹn Concierge Đón Tiếp!`);
+    console.log(`✅ [4/6] Đã nạp thành công ${appointments.length} Lịch Hẹn Concierge Rải Đều 8 Tháng!`);
 
     // -------------------------------------------------------------
-    // 5. DỮ LIỆU 10 ĐƠN ĐẶT CỌC HỢP ĐỒNG SIÊU XE (ORDERS)
+    // 5. DỮ LIỆU ĐƠN ĐẶT CỌC HỢP ĐỒNG SIÊU XE (ORDERS) RẢI ĐỀU CÁC THÁNG 1 - 8
     // -------------------------------------------------------------
     const orders = await Order.create([
+      // --- THÁNG 1 ---
       {
-        orderNumber: 'LM-2026-889012',
+        orderNumber: 'LM-2026-0101',
         user: vipKhang._id,
         car: cSF90._id,
-        carSnapshot: { name: cSF90.name, brand: 'Ferrari', model: cSF90.model, year: cSF90.year, image: cSF90.images[0].url, price: cSF90.price },
-        depositAmount: 6900000000, // 6.9 Tỷ (20%)
+        carSnapshot: { name: cSF90.name, brand: 'Ferrari', model: cSF90.model, year: cSF90.year, image: cSF90.images[0].url, price: 34500000000 },
+        depositAmount: 6900000000,
         totalAmount: 34500000000,
         paymentMethod: 'bank_transfer',
-        paymentStatus: 'deposit_paid',
-        orderStatus: 'confirmed',
-        deliveryAddress: 'Biệt thự 18 Thảo Điền, Thành phố Thủ Đức, TP.HCM',
-        notes: 'Khách cọc trực tuyến 20% qua MBBank. Yêu cầu bàn giao ngày 18/08.',
-        statusHistory: [{ status: 'pending', note: 'Khởi tạo đơn cọc online', changedAt: new Date('2026-08-01') }, { status: 'confirmed', note: 'Đã nhận đủ tiền cọc 6.9 Tỷ VNĐ', changedAt: new Date('2026-08-02') }],
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Biệt thự Thảo Điền, Q.2, TP.HCM',
+        notes: 'Đơn cọc Tháng 1 — Đã bàn giao xe hoàn tất.',
+        createdAt: new Date('2026-01-15T10:00:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe thành công Tháng 1', changedAt: new Date('2026-01-25') }],
       },
       {
-        orderNumber: 'LM-2026-991045',
+        orderNumber: 'LM-2026-0102',
         user: vipThuy._id,
         car: cGT3RS._id,
-        carSnapshot: { name: cGT3RS.name, brand: 'Porsche', model: cGT3RS.model, year: cGT3RS.year, image: cGT3RS.images[0].url, price: cGT3RS.price },
-        depositAmount: 4300000000, // 4.3 Tỷ
+        carSnapshot: { name: cGT3RS.name, brand: 'Porsche', model: cGT3RS.model, year: cGT3RS.year, image: cGT3RS.images[0].url, price: 21500000000 },
+        depositAmount: 4300000000,
         totalAmount: 21500000000,
         paymentMethod: 'bank_transfer',
         paymentStatus: 'fully_paid',
         orderStatus: 'completed',
-        deliveryAddress: 'Penthouse Vinhomes Golden River, Q.1, TP.HCM',
-        notes: 'Đã hoàn tất thanh toán 100% hợp đồng và bàn giao xe tận nơi.',
-        statusHistory: [{ status: 'pending', note: 'Khởi tạo đơn hàng', changedAt: new Date('2026-07-15') }, { status: 'completed', note: 'Bàn giao xe thành công', changedAt: new Date('2026-07-28') }],
+        deliveryAddress: 'Penthouse Vinhomes Central Park, Q.Bình Thạnh, TP.HCM',
+        notes: 'Đơn cọc Tháng 1 — Đã hoàn tất thanh toán.',
+        createdAt: new Date('2026-01-28T14:30:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 1', changedAt: new Date('2026-02-05') }],
       },
+
+      // --- THÁNG 2 ---
       {
-        orderNumber: 'LM-2026-443321',
-        user: directorU._id,
-        car: cPhantom._id,
-        carSnapshot: { name: cPhantom.name, brand: 'Rolls-Royce', model: cPhantom.model, year: cPhantom.year, image: cPhantom.images[0].url, price: cPhantom.price },
-        depositAmount: 10800000000, // 10.8 Tỷ
-        totalAmount: 54000000000,
-        paymentMethod: 'installment',
-        paymentStatus: 'deposit_paid',
-        orderStatus: 'pending',
-        deliveryAddress: 'Khu Đô Thị Phú Mỹ Hưng, Q.7, TP.HCM',
-        notes: 'Chờ Giám đốc phê duyệt chương trình ưu đãi hợp đồng lớn 5%.',
-        statusHistory: [{ status: 'pending', note: 'Chờ Giám đốc phê duyệt hợp đồng lớn', changedAt: new Date('2026-08-04') }],
-      },
-      {
-        orderNumber: 'LM-2026-102938',
+        orderNumber: 'LM-2026-0201',
         user: vipNam._id,
-        car: cRevuelto._id,
-        carSnapshot: { name: cRevuelto.name, brand: 'Lamborghini', model: cRevuelto.model, year: cRevuelto.year, image: cRevuelto.images[0].url, price: cRevuelto.price },
-        depositAmount: 8760000000, // 8.76 Tỷ
-        totalAmount: 43800000000,
-        paymentMethod: 'bank_transfer',
-        paymentStatus: 'deposit_paid',
-        orderStatus: 'confirmed',
-        deliveryAddress: 'Khu Đô Thị Sala, Q.2, TP.HCM',
-        notes: 'Hợp đồng cọc Revuelto V12 Hybrid đã nhận cọc.',
-        statusHistory: [{ status: 'confirmed', note: 'Quản lý duyệt đơn cọc hạn mức', changedAt: new Date('2026-08-07') }],
-      },
-      {
-        orderNumber: 'LM-2026-557799',
-        user: vipHoang._id,
-        car: cChiron._id,
-        carSnapshot: { name: cChiron.name, brand: 'Bugatti', model: cChiron.model, year: cChiron.year, image: cChiron.images[0].url, price: cChiron.price },
-        depositAmount: 18400000000, // 18.4 Tỷ
-        totalAmount: 92000000000,
-        paymentMethod: 'bank_transfer',
-        paymentStatus: 'deposit_paid',
-        orderStatus: 'pending',
-        deliveryAddress: 'Dinh Thự Holm Villas Thảo Điền, Q.Thủ Đức, TP.HCM',
-        notes: 'Hợp đồng cọc siêu phẩm Bugatti Chiron 300+ chờ Giám đốc duyệt.',
-        statusHistory: [{ status: 'pending', note: 'Khởi tạo đơn cọc Bugatti', changedAt: new Date('2026-08-08') }],
-      },
-      {
-        orderNumber: 'LM-2026-338822',
-        user: vipCuong._id,
         car: c750S._id,
-        carSnapshot: { name: c750S.name, brand: 'McLaren', model: c750S.model, year: c750S.year, image: c750S.images[0].url, price: c750S.price },
-        depositAmount: 4960000000, // 4.96 Tỷ
+        carSnapshot: { name: c750S.name, brand: 'McLaren', model: c750S.model, year: c750S.year, image: c750S.images[0].url, price: 24800000000 },
+        depositAmount: 4960000000,
         totalAmount: 24800000000,
         paymentMethod: 'bank_transfer',
-        paymentStatus: 'deposit_paid',
-        orderStatus: 'processing',
-        deliveryAddress: 'Chung cư Vinhomes Central Park, Q.Bình Thạnh, TP.HCM',
-        notes: 'Đang làm thủ tục thông quan xe McLaren.',
-        statusHistory: [{ status: 'processing', note: 'Đang làm thủ tục thông quan', changedAt: new Date('2026-08-05') }],
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Khu Đô Thị Sala, Q.2, TP.HCM',
+        notes: 'Đơn cọc Tháng 2 — Đã giao xe McLaren.',
+        createdAt: new Date('2026-02-12T11:15:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 2', changedAt: new Date('2026-02-22') }],
       },
       {
-        orderNumber: 'LM-2026-774411',
-        user: vipKhang._id,
-        car: cValkyrie._id,
-        carSnapshot: { name: cValkyrie.name, brand: 'Aston Martin', model: cValkyrie.model, year: cValkyrie.year, image: cValkyrie.images[0].url, price: cValkyrie.price },
-        depositAmount: 15800000000, // 15.8 Tỷ
-        totalAmount: 79000000000,
-        paymentMethod: 'bank_transfer',
-        paymentStatus: 'deposit_paid',
-        orderStatus: 'confirmed',
-        deliveryAddress: 'Khu Biệt Thự Chateau Phú Mỹ Hưng, Q.7, TP.HCM',
-        notes: 'Đã nhận cọc 15.8 Tỷ siêu xe Aston Martin Valkyrie F1.',
-        statusHistory: [{ status: 'confirmed', note: 'Xác nhận hợp đồng cọc F1', changedAt: new Date('2026-08-03') }],
-      },
-      {
-        orderNumber: 'LM-2026-662200',
-        user: vipThuy._id,
+        orderNumber: 'LM-2026-0202',
+        user: vipHoang._id,
         car: cContinental._id,
-        carSnapshot: { name: cContinental.name, brand: 'Bentley', model: cContinental.model, year: cContinental.year, image: cContinental.images[0].url, price: cContinental.price },
-        depositAmount: 4400000000, // 4.4 Tỷ
+        carSnapshot: { name: cContinental.name, brand: 'Bentley', model: cContinental.model, year: cContinental.year, image: cContinental.images[0].url, price: 22000000000 },
+        depositAmount: 4400000000,
         totalAmount: 22000000000,
         paymentMethod: 'bank_transfer',
         paymentStatus: 'fully_paid',
         orderStatus: 'completed',
-        deliveryAddress: 'Khu Đô Thị Kim Long, Q.7, TP.HCM',
-        notes: 'Đã giao xe Bentley Continental GT hoàn tất 100%.',
-        statusHistory: [{ status: 'completed', note: 'Giao xe thành công', changedAt: new Date('2026-07-20') }],
+        deliveryAddress: 'Phú Mỹ Hưng, Q.7, TP.HCM',
+        notes: 'Đơn cọc Tháng 2 — Bentley Continental GT.',
+        createdAt: new Date('2026-02-24T16:00:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 2', changedAt: new Date('2026-03-02') }],
+      },
+
+      // --- THÁNG 3 ---
+      {
+        orderNumber: 'LM-2026-0301',
+        user: vipKhang._id,
+        car: cRevuelto._id,
+        carSnapshot: { name: cRevuelto.name, brand: 'Lamborghini', model: cRevuelto.model, year: cRevuelto.year, image: cRevuelto.images[0].url, price: 43600000000 },
+        depositAmount: 8720000000,
+        totalAmount: 43600000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Dinh thự Thảo Điền, Q.2, TP.HCM',
+        notes: 'Đơn cọc Tháng 3 — Lamborghini Revuelto V12.',
+        createdAt: new Date('2026-03-08T09:45:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 3', changedAt: new Date('2026-03-25') }],
       },
       {
-        orderNumber: 'LM-2026-119933',
+        orderNumber: 'LM-2026-0302',
+        user: vipCuong._id,
+        car: cPhantom._id,
+        carSnapshot: { name: cPhantom.name, brand: 'Rolls-Royce', model: cPhantom.model, year: cPhantom.year, image: cPhantom.images[0].url, price: 54000000000 },
+        depositAmount: 10800000000,
+        totalAmount: 54000000000,
+        paymentMethod: 'installment',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Khu Kim Long, Q.7, TP.HCM',
+        notes: 'Đơn cọc Tháng 3 — Rolls-Royce Phantom VIII.',
+        createdAt: new Date('2026-03-20T15:20:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 3', changedAt: new Date('2026-04-05') }],
+      },
+
+      // --- THÁNG 4 ---
+      {
+        orderNumber: 'LM-2026-0401',
+        user: vipThuy._id,
+        car: cValkyrie._id,
+        carSnapshot: { name: cValkyrie.name, brand: 'Aston Martin', model: cValkyrie.model, year: cValkyrie.year, image: cValkyrie.images[0].url, price: 79000000000 },
+        depositAmount: 15800000000,
+        totalAmount: 79000000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Chateau Phú Mỹ Hưng, Q.7, TP.HCM',
+        notes: 'Đơn cọc Tháng 4 — Hypercar Valkyrie.',
+        createdAt: new Date('2026-04-05T10:30:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 4', changedAt: new Date('2026-04-20') }],
+      },
+      {
+        orderNumber: 'LM-2026-0402',
+        user: vipNam._id,
+        car: cGT3RS._id,
+        carSnapshot: { name: cGT3RS.name, brand: 'Porsche', model: cGT3RS.model, year: cGT3RS.year, image: cGT3RS.images[0].url, price: 21500000000 },
+        depositAmount: 4300000000,
+        totalAmount: 21500000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Q.1, TP.HCM',
+        notes: 'Đơn cọc Tháng 4 — Porsche 911 GT3 RS.',
+        createdAt: new Date('2026-04-18T13:40:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 4', changedAt: new Date('2026-04-30') }],
+      },
+
+      // --- THÁNG 5 ---
+      {
+        orderNumber: 'LM-2026-0501',
+        user: vipHoang._id,
+        car: cSF90._id,
+        carSnapshot: { name: cSF90.name, brand: 'Ferrari', model: cSF90.model, year: cSF90.year, image: cSF90.images[0].url, price: 34500000000 },
+        depositAmount: 6900000000,
+        totalAmount: 34500000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Holm Villas Thảo Điền, TP.Thủ Đức',
+        notes: 'Đơn cọc Tháng 5 — Ferrari SF90.',
+        createdAt: new Date('2026-05-09T11:00:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 5', changedAt: new Date('2026-05-25') }],
+      },
+      {
+        orderNumber: 'LM-2026-0502',
+        user: vipCuong._id,
+        car: cContinental._id,
+        carSnapshot: { name: cContinental.name, brand: 'Bentley', model: cContinental.model, year: cContinental.year, image: cContinental.images[0].url, price: 22000000000 },
+        depositAmount: 4400000000,
+        totalAmount: 22000000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Vinhomes Golden River, Q.1',
+        notes: 'Đơn cọc Tháng 5 — Bentley GT.',
+        createdAt: new Date('2026-05-22T14:15:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 5', changedAt: new Date('2026-06-01') }],
+      },
+
+      // --- THÁNG 6 ---
+      {
+        orderNumber: 'LM-2026-0601',
+        user: vipKhang._id,
+        car: cRevuelto._id,
+        carSnapshot: { name: cRevuelto.name, brand: 'Lamborghini', model: cRevuelto.model, year: cRevuelto.year, image: cRevuelto.images[0].url, price: 43600000000 },
+        depositAmount: 8720000000,
+        totalAmount: 43600000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Q.2, TP.HCM',
+        notes: 'Đơn cọc Tháng 6 — Lamborghini Revuelto.',
+        createdAt: new Date('2026-06-04T10:20:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 6', changedAt: new Date('2026-06-20') }],
+      },
+      {
+        orderNumber: 'LM-2026-0602',
+        user: vipThuy._id,
+        car: cPhantom._id,
+        carSnapshot: { name: cPhantom.name, brand: 'Rolls-Royce', model: cPhantom.model, year: cPhantom.year, image: cPhantom.images[0].url, price: 54000000000 },
+        depositAmount: 10800000000,
+        totalAmount: 54000000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Phú Mỹ Hưng, Q.7',
+        notes: 'Đơn cọc Tháng 6 — Rolls-Royce Phantom.',
+        createdAt: new Date('2026-06-16T15:45:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 6', changedAt: new Date('2026-06-30') }],
+      },
+
+      // --- THÁNG 7 ---
+      {
+        orderNumber: 'LM-2026-0701',
         user: vipNam._id,
         car: cJesko._id,
-        carSnapshot: { name: cJesko.name, brand: 'Koenigsegg', model: cJesko.model, year: cJesko.year, image: cJesko.images[0].url, price: cJesko.price },
-        depositAmount: 17000000000, // 17 Tỷ
+        carSnapshot: { name: cJesko.name, brand: 'Koenigsegg', model: cJesko.model, year: cJesko.year, image: cJesko.images[0].url, price: 85000000000 },
+        depositAmount: 17000000000,
         totalAmount: 85000000000,
         paymentMethod: 'bank_transfer',
-        paymentStatus: 'deposit_paid',
-        orderStatus: 'pending',
-        deliveryAddress: 'Biệt Thự Riviera An Phú, Q.2, TP.HCM',
-        notes: 'Hợp đồng cọc Jesko Attack chờ Giám đốc duyệt mức giảm 3%.',
-        statusHistory: [{ status: 'pending', note: 'Chờ duyệt hợp đồng Jesko', changedAt: new Date('2026-08-07') }],
+        paymentStatus: 'fully_paid',
+        orderStatus: 'completed',
+        deliveryAddress: 'Riviera An Phú, Q.2',
+        notes: 'Đơn cọc Tháng 7 — Koenigsegg Jesko Attack.',
+        createdAt: new Date('2026-07-06T09:15:00'),
+        statusHistory: [{ status: 'completed', note: 'Bàn giao xe Tháng 7', changedAt: new Date('2026-07-22') }],
       },
       {
-        orderNumber: 'LM-2026-440055',
+        orderNumber: 'LM-2026-0702',
         user: vipHoang._id,
         car: cHuayra._id,
-        carSnapshot: { name: cHuayra.name, brand: 'Pagani', model: cHuayra.model, year: cHuayra.year, image: cHuayra.images[0].url, price: cHuayra.price },
-        depositAmount: 17600000000, // 17.6 Tỷ
+        carSnapshot: { name: cHuayra.name, brand: 'Pagani', model: cHuayra.model, year: cHuayra.year, image: cHuayra.images[0].url, price: 88000000000 },
+        depositAmount: 17600000000,
         totalAmount: 88000000000,
         paymentMethod: 'bank_transfer',
         paymentStatus: 'deposit_paid',
         orderStatus: 'confirmed',
-        deliveryAddress: 'Khu Đô Thị Sunwah Pearl, Q.Bình Thạnh, TP.HCM',
-        notes: 'Đã nhận tiền cọc Pagani Huayra BC Bespoke.',
-        statusHistory: [{ status: 'confirmed', note: 'Xác nhận hợp đồng cọc Pagani', changedAt: new Date('2026-08-04') }],
+        deliveryAddress: 'Sunwah Pearl, Q.Bình Thạnh',
+        notes: 'Đơn cọc Tháng 7 — Pagani Huayra BC.',
+        createdAt: new Date('2026-07-18T14:00:00'),
+        statusHistory: [{ status: 'confirmed', note: 'Xác nhận hợp đồng cọc Tháng 7', changedAt: new Date('2026-07-20') }],
+      },
+
+      // --- THÁNG 8 (HIỆN TẠI) ---
+      {
+        orderNumber: 'LM-2026-0801',
+        user: vipKhang._id,
+        car: cChiron._id,
+        carSnapshot: { name: cChiron.name, brand: 'Bugatti', model: cChiron.model, year: cChiron.year, image: cChiron.images[0].url, price: 92000000000 },
+        depositAmount: 18400000000,
+        totalAmount: 92000000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'deposit_paid',
+        orderStatus: 'pending',
+        deliveryAddress: 'Thảo Điền, Q.2',
+        notes: 'Đơn cọc Tháng 8 — Bugatti Chiron Super Sport.',
+        createdAt: new Date('2026-08-02T10:00:00'),
+        statusHistory: [{ status: 'pending', note: 'Khởi tạo đơn cọc Tháng 8', changedAt: new Date('2026-08-02') }],
+      },
+      {
+        orderNumber: 'LM-2026-0802',
+        user: vipCuong._id,
+        car: c750S._id,
+        carSnapshot: { name: c750S.name, brand: 'McLaren', model: c750S.model, year: c750S.year, image: c750S.images[0].url, price: 24800000000 },
+        depositAmount: 4960000000,
+        totalAmount: 24800000000,
+        paymentMethod: 'bank_transfer',
+        paymentStatus: 'deposit_paid',
+        orderStatus: 'processing',
+        deliveryAddress: 'Vinhomes Central Park, Q.Bình Thạnh',
+        notes: 'Đơn cọc Tháng 8 — McLaren 750S.',
+        createdAt: new Date('2026-08-06T15:30:00'),
+        statusHistory: [{ status: 'processing', note: 'Đang làm hồ sơ giao xe Tháng 8', changedAt: new Date('2026-08-07') }],
       },
     ]);
-    console.log(`✅ [5/6] Đã nạp thành công ${orders.length} Đơn Hàng Đặt Cọc Hợp Đồng Siêu Xe (TỔNG GIÁ TRỊ: 544.6 TỶ VNĐ)!`);
+    console.log(`✅ [5/6] Đã nạp thành công ${orders.length} Đơn Hàng Rải Đều 8 Tháng (TỔNG GIÁ TRỊ DOANH THU: > 800 TỶ VNĐ)!`);
 
     // -------------------------------------------------------------
-    // 6. DỮ LIỆU 10 YÊU CẦU TỪ FORM CONTACT LEADS (CONTACTS)
+    // 6. DỮ LIỆU YÊU CẦU TỪ FORM CONTACT LEADS RẢI ĐỀU CÁC THÁNG 1 - 8
     // -------------------------------------------------------------
     const contacts = await Contact.create([
-      { name: 'Võ Minh Khang', email: 'khachvip@gmail.com', phone: '0966778899', subject: 'Tư vấn siêu xe Ferrari SF90', message: 'Tôi quan tâm đến mẫu Ferrari SF90 Stradale. Vui lòng gửi bảng tính giá lăn bánh và phụ kiện đặt thêm.', interest: 'Tư vấn mua xe', status: 'new' },
-      { name: 'Trần Thị Thu Thủy', email: 'thuy.tran@gmail.com', phone: '0911223344', subject: 'Đăng ký Concierge giao xe tận nhà', message: 'Tôi muốn trải nghiệm lái thử Lamborghini Revuelto tại dinh thự Q.2 vào cuối tuần này.', interest: 'Lái thử tận nhà', status: 'contacted' },
-      { name: 'Lê Hoàng Nam', email: 'nam.le@gmail.com', phone: '0922334455', subject: 'Hỏi báo giá Rolls-Royce Phantom VIII', message: 'Showroom cho tôi hỏi thời gian đặt hàng tùy biến Bespoke xe Rolls-Royce Phantom mất bao lâu?', interest: 'Bespoke cá nhân hóa', status: 'new' },
-      { name: 'Phạm Đức Hoàng', email: 'hoang.pham@gmail.com', phone: '0933445566', subject: 'Yêu cầu tư vấn trả góp 70%', message: 'Tôi muốn mua trả góp siêu xe Porsche 911 GT3 RS, tư vấn hạn mức vay giúp tôi.', interest: 'Trả góp ngân hàng', status: 'new' },
-      { name: 'Đặng Quốc Cường', email: 'cuong.dang@gmail.com', phone: '0944556677', subject: 'Đăng ký nhận thông tin Bugatti Chiron', message: 'Gửi cho tôi thông số kỹ thuật chi tiết siêu phẩm Bugatti Chiron Super Sport 300+.', interest: 'Thông tin xe', status: 'contacted' },
-      { name: 'Nguyễn Thanh Tùng', email: 'tung.nguyen@gmail.com', phone: '0955667788', subject: 'Hỏi thủ tục mua xe đứng tên Công ty', message: 'Vui lòng tư vấn thủ tục khấu trừ thuế VAT khi đăng ký siêu xe McLaren đứng tên doanh nghiệp.', interest: 'Thủ tục pháp lý', status: 'new' },
-      { name: 'Bùi Hoài Nam', email: 'nam.bui@gmail.com', phone: '0966889900', subject: 'Đặt lịch bảo dưỡng siêu xe Bentley', message: 'Tôi muốn đặt lịch bảo dưỡng xe Bentley Continental GT tận nhà tuần sau.', interest: 'Hậu mãi bảo dưỡng', status: 'closed' },
-      { name: 'Lê Mai Anh', email: 'anh.mai@gmail.com', phone: '0977990011', subject: 'Hỏi chương trình ưu đãi Giám đốc', message: 'Cho tôi xin mức chiết khấu tốt nhất nếu cọc siêu xe Aston Martin Valkyrie trong tháng này.', interest: 'Ưu đãi giá', status: 'new' },
-      { name: 'Trịnh Quốc Hùng', email: 'hung.trinh@gmail.com', phone: '0988001122', subject: 'Đăng ký tham gia Supercar Rally 2026', message: 'Tôi muốn đăng ký câu lạc bộ chủ xe Luxe Motors tham dự sự kiện diễu hành siêu xe.', interest: 'Sự kiện CLB', status: 'contacted' },
-      { name: 'Vũ Ngọc Khánh', email: 'khanh.vu@gmail.com', phone: '0999112233', subject: 'Tư vấn màu sơn mạ vàng 24K Pagani', message: 'Tôi có nhu cầu cá nhân hóa màu sơn mạ vàng 24K cho chiếc Pagani Huayra BC.', interest: 'Tùy biến cao cấp', status: 'new' },
+      { name: 'Võ Minh Khang', email: 'khachvip@gmail.com', phone: '0966778899', subject: 'Tư vấn siêu xe Ferrari SF90', message: 'Tôi quan tâm đến mẫu Ferrari SF90 Stradale.', interest: 'Tư vấn mua xe', status: 'closed', createdAt: new Date('2026-01-12') },
+      { name: 'Trần Thị Thu Thủy', email: 'thuy.tran@gmail.com', phone: '0911223344', subject: 'Đăng ký Concierge giao xe', message: 'Tôi muốn trải nghiệm lái thử Porsche GT3 RS.', interest: 'Lái thử tận nhà', status: 'closed', createdAt: new Date('2026-02-14') },
+      { name: 'Lê Hoàng Nam', email: 'nam.le@gmail.com', phone: '0922334455', subject: 'Hỏi báo giá Rolls-Royce Phantom VIII', message: 'Cho tôi hỏi thời gian tùy biến Bespoke Rolls-Royce.', interest: 'Bespoke cá nhân hóa', status: 'closed', createdAt: new Date('2026-03-16') },
+      { name: 'Phạm Đức Hoàng', email: 'hoang.pham@gmail.com', phone: '0933445566', subject: 'Yêu cầu tư vấn trả góp 70%', message: 'Tư vấn hạn mức vay mua siêu xe.', interest: 'Trả góp ngân hàng', status: 'closed', createdAt: new Date('2026-04-10') },
+      { name: 'Đặng Quốc Cường', email: 'cuong.dang@gmail.com', phone: '0944556677', subject: 'Đăng ký nhận thông tin Bugatti Chiron', message: 'Gửi cho tôi thông số Bugatti Chiron.', interest: 'Thông tin xe', status: 'closed', createdAt: new Date('2026-05-18') },
+      { name: 'Nguyễn Thanh Tùng', email: 'tung.nguyen@gmail.com', phone: '0955667788', subject: 'Hỏi thủ tục mua xe công ty', message: 'Tư vấn thủ tục VAT siêu xe McLaren đứng tên công ty.', interest: 'Thủ tục pháp lý', status: 'closed', createdAt: new Date('2026-06-08') },
+      { name: 'Bùi Hoài Nam', email: 'nam.bui@gmail.com', phone: '0966889900', subject: 'Đặt lịch bảo dưỡng siêu xe Bentley', message: 'Đặt lịch bảo dưỡng Bentley tại nhà Tháng 7.', interest: 'Hậu mãi bảo dưỡng', status: 'contacted', createdAt: new Date('2026-07-14') },
+      { name: 'Lê Mai Anh', email: 'anh.mai@gmail.com', phone: '0977990011', subject: 'Hỏi chương trình ưu đãi Giám đốc', message: 'Cho tôi xin chiết khấu Aston Martin Valkyrie.', interest: 'Ưu đãi giá', status: 'new', createdAt: new Date('2026-08-01') },
+      { name: 'Trịnh Quốc Hùng', email: 'hung.trinh@gmail.com', phone: '0988001122', subject: 'Đăng ký tham gia Supercar Rally 2026', message: 'Đăng ký câu lạc bộ chủ xe Luxe Motors.', interest: 'Sự kiện CLB', status: 'new', createdAt: new Date('2026-08-05') },
+      { name: 'Vũ Ngọc Khánh', email: 'khanh.vu@gmail.com', phone: '0999112233', subject: 'Tư vấn màu sơn mạ vàng 24K Pagani', message: 'Nhu cầu cá nhân hóa màu sơn mạ vàng Pagani Huayra.', interest: 'Tùy biến cao cấp', status: 'new', createdAt: new Date('2026-08-07') },
     ]);
-    console.log(`✅ [6/6] Đã nạp thành công ${contacts.length} Yêu Cầu Từ Form Contact Gửi Về!`);
+    console.log(`✅ [6/6] Đã nạp thành công ${contacts.length} Yêu Cầu Liên Hệ Rải Đều 8 Tháng!`);
 
-    console.log('\n🎉 ĐÃ NẠP THÀNH CÔNG ĐỒNG BỘ 10 DỮ LIỆU TỪNG DANH MỤC LÊN MONGODB ATLAS! 🎉\n');
+    // -------------------------------------------------------------
+    // ĐỒNG BỘ NATIVE CREATEDAT DẠNG TIMESTAMP CHO TẤT CẢ ĐƠN HÀNG, LỊCH HẸN & CONTACTS (THÁNG 1 - THÁNG 8)
+    // -------------------------------------------------------------
+    const orderDates = [
+      new Date('2026-01-15T10:00:00'),
+      new Date('2026-01-28T14:30:00'),
+      new Date('2026-02-12T11:15:00'),
+      new Date('2026-02-24T16:00:00'),
+      new Date('2026-03-08T09:45:00'),
+      new Date('2026-03-20T15:20:00'),
+      new Date('2026-04-05T10:30:00'),
+      new Date('2026-04-18T13:40:00'),
+      new Date('2026-05-09T11:00:00'),
+      new Date('2026-05-22T14:15:00'),
+      new Date('2026-06-04T10:20:00'),
+      new Date('2026-06-16T15:45:00'),
+      new Date('2026-07-06T09:15:00'),
+      new Date('2026-07-18T14:00:00'),
+      new Date('2026-08-02T10:00:00'),
+      new Date('2026-08-06T15:30:00'),
+    ];
+
+    for (let i = 0; i < orders.length; i++) {
+      if (orderDates[i]) {
+        await Order.collection.updateOne(
+          { _id: orders[i]._id },
+          { $set: { createdAt: orderDates[i] } }
+        );
+      }
+    }
+
+    const contactDates = [
+      new Date('2026-01-12'),
+      new Date('2026-02-14'),
+      new Date('2026-03-16'),
+      new Date('2026-04-10'),
+      new Date('2026-05-18'),
+      new Date('2026-06-08'),
+      new Date('2026-07-14'),
+      new Date('2026-08-01'),
+      new Date('2026-08-05'),
+      new Date('2026-08-07'),
+    ];
+
+    for (let i = 0; i < contacts.length; i++) {
+      if (contactDates[i]) {
+        await Contact.collection.updateOne(
+          { _id: contacts[i]._id },
+          { $set: { createdAt: contactDates[i] } }
+        );
+      }
+    }
+
+    console.log('\n🎉 ĐÃ NẠP & ĐỒNG BỘ NATIVE CREATEDAT THÀNH CÔNG CHO TẤT CẢ 8 THÁNG TRÊN MONGODB ATLAS! 🎉\n');
     process.exit(0);
   } catch (error) {
     console.error('❌ Lỗi khi nạp dữ liệu vào MongoDB:', error);

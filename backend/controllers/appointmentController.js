@@ -1,5 +1,6 @@
 const expressAsyncHandler = require('express-async-handler');
 const Appointment = require('../models/Appointment');
+const notificationService = require('../services/notificationService');
 const {
   ok,
   created,
@@ -29,11 +30,6 @@ const getAllAppointments = expressAsyncHandler(async (req, res) => {
 
     Appointment.countDocuments(filter),
   ]);
-
-  console.log("========== APPOINTMENTS ==========");
-  console.log(appointments);
-  console.log("TOTAL:", total);
-  console.log("==================================");
 
   return ok(
     res,
@@ -90,10 +86,16 @@ const createAppointment = expressAsyncHandler(async (req, res) => {
       notes,
     } = req.body;
 
+    let cleanTimeSlot = String(timeSlot || '').trim();
+    const timeMatch = cleanTimeSlot.match(/\b(0[9]|1[0-6]):[0-5][0]\b/);
+    if (timeMatch) {
+      cleanTimeSlot = timeMatch[0];
+    }
+
     if (
       !car ||
       !appointmentDate ||
-      !timeSlot ||
+      !cleanTimeSlot ||
       !visitorName ||
       !visitorPhone ||
       !visitorEmail
@@ -108,12 +110,15 @@ const createAppointment = expressAsyncHandler(async (req, res) => {
     // Kiểm tra trùng lịch hẹn (Appointment Conflict Check)
     // ===================================
     const targetDate = new Date(appointmentDate);
-    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+    const startOfDay = new Date(targetDate.getTime());
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(targetDate.getTime());
+    endOfDay.setHours(23, 59, 59, 999);
 
     const existingAppointment = await Appointment.findOne({
       car,
-      timeSlot,
+      timeSlot: cleanTimeSlot,
       appointmentDate: { $gte: startOfDay, $lte: endOfDay },
       status: { $in: ['pending', 'confirmed'] },
     });
@@ -129,7 +134,7 @@ const createAppointment = expressAsyncHandler(async (req, res) => {
       user: req.user._id,
       car,
       appointmentDate,
-      timeSlot,
+      timeSlot: cleanTimeSlot,
       visitorName,
       visitorPhone,
       visitorEmail,
@@ -143,6 +148,9 @@ const createAppointment = expressAsyncHandler(async (req, res) => {
 
     console.log("ĐÃ LƯU APPOINTMENT:");
     console.log(appointment);
+
+    // TỰ ĐỘNG GỬI THÔNG BÁO EMAIL & ZALO CHO KHÁCH HÀNG
+    notificationService.triggerAppointmentCreated(appointment, req.user);
 
     return created(
       res,
@@ -172,6 +180,9 @@ const updateAppointmentStatus = expressAsyncHandler(async (req, res) => {
     cancelReason,
   } = req.body;
 
+  const oldAppt = await Appointment.findById(req.params.id);
+  const oldStatus = oldAppt ? oldAppt.status : 'pending';
+
   const appointment =
     await Appointment.findByIdAndUpdate(
       req.params.id,
@@ -185,7 +196,7 @@ const updateAppointmentStatus = expressAsyncHandler(async (req, res) => {
         runValidators: true,
       }
     )
-      .populate('user', 'fullName email')
+      .populate('user', 'fullName email phone')
       .populate('car', 'name');
 
   if (!appointment) {
@@ -194,6 +205,9 @@ const updateAppointmentStatus = expressAsyncHandler(async (req, res) => {
       'Không tìm thấy lịch hẹn'
     );
   }
+
+  // TỰ ĐỘNG GỬI THÔNG BÁO EMAIL & ZALO CẬP NHẬT TRẠNG THÁI CHO KHÁCH HÀNG
+  notificationService.triggerAppointmentUpdated(appointment, req.user, oldStatus, status);
 
   return ok(
     res,
@@ -209,7 +223,9 @@ const updateAppointmentStatus = expressAsyncHandler(async (req, res) => {
 const cancelAppointment = expressAsyncHandler(async (req, res) => {
 
   const appointment =
-    await Appointment.findById(req.params.id);
+    await Appointment.findById(req.params.id)
+      .populate('user', 'fullName email phone')
+      .populate('car', 'name');
 
   if (!appointment) {
     return notFound(
@@ -220,8 +236,7 @@ const cancelAppointment = expressAsyncHandler(async (req, res) => {
 
   if (
     appointment.user &&
-    appointment.user.toString() !==
-      req.user._id.toString() &&
+    appointment.user._id ? appointment.user._id.toString() !== req.user._id.toString() : appointment.user.toString() !== req.user._id.toString() &&
     req.user.role !== 'admin'
   ) {
     return forbidden(
@@ -230,17 +245,21 @@ const cancelAppointment = expressAsyncHandler(async (req, res) => {
     );
   }
 
+  const oldStatus = appointment.status;
   appointment.status = 'cancelled';
 
   appointment.cancelReason =
     req.body.cancelReason ||
-    'Người dùng tự hủy';
+    'Khách hàng tự hủy trên hệ thống';
 
   await appointment.save();
 
+  // TỰ ĐỘNG GỬI THÔNG BÁO EMAIL & ZALO KHI HỦY LỊCH HẸN
+  notificationService.triggerAppointmentUpdated(appointment, req.user, oldStatus, 'cancelled');
+
   return ok(
     res,
-    'Hủy lịch hẹn thành công',
+    'Đã hủy lịch hẹn thành công',
     appointment
   );
 

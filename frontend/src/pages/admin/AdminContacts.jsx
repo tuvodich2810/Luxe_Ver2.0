@@ -32,6 +32,32 @@ const STATUS_CFG = {
   },
 };
 
+// Lead classification: HOT / WARM / COLD
+const classifyLead = (contact) => {
+  let score = 0;
+
+  // Business email domain (not gmail/yahoo/hotmail/outlook)
+  const freeEmails = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'yahoo.com.vn', 'ymail.com'];
+  const emailDomain = contact.email?.split('@')[1]?.toLowerCase();
+  if (emailDomain && !freeEmails.includes(emailDomain)) score += 2;
+
+  // High-intent keywords in subject or message
+  const intentKeywords = ['cọc', 'mua', 'đặt lịch', 'giá bán', 'hợp đồng', 'chốt', 'thanh toán', 'mua xe', 'đặt xe', 'xem xe'];
+  const textToCheck = `${contact.subject || ''} ${contact.message || ''}`.toLowerCase();
+  intentKeywords.forEach((kw) => { if (textToCheck.includes(kw)) score += 1; });
+
+  // Field completeness
+  if (contact.name && contact.name.trim().length > 2) score += 1;
+  if (contact.phone && contact.phone.trim().length >= 10) score += 1;
+  if (contact.email && contact.email.includes('@')) score += 1;
+  if (contact.message && contact.message.trim().length > 20) score += 1;
+
+  if (score >= 5) return { label: 'HOT', emoji: '🔴', color: 'bg-rose-500/15 text-rose-400 border-rose-500/40' };
+  if (score >= 3) return { label: 'WARM', emoji: '🟡', color: 'bg-amber-500/15 text-amber-400 border-amber-500/40' };
+  return { label: 'COLD', emoji: '🔵', color: 'bg-slate-500/15 text-slate-400 border-slate-500/40' };
+};
+
+
 export default function AdminContacts() {
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,6 +100,17 @@ export default function AdminContacts() {
   const newCount = useMemo(() => contacts.filter((c) => c.status === 'new' || !c.status).length, [contacts]);
   const contactedCount = useMemo(() => contacts.filter((c) => c.status === 'contacted').length, [contacts]);
   const closedCount = useMemo(() => contacts.filter((c) => c.status === 'closed').length, [contacts]);
+  const hotCount = useMemo(() => filteredContacts.filter((c) => classifyLead(c).label === 'HOT').length, [filteredContacts]);
+
+  // Sort HOT leads first, then WARM, then COLD (within each status group)
+  const sortedContacts = useMemo(() => {
+    const order = { HOT: 0, WARM: 1, COLD: 2 };
+    return [...filteredContacts].sort((a, b) => {
+      const scoreA = order[classifyLead(a).label];
+      const scoreB = order[classifyLead(b).label];
+      return scoreA - scoreB;
+    });
+  }, [filteredContacts]);
 
   const handleUpdateStatus = async (id, newStatus) => {
     setActionId(id);
@@ -155,13 +192,19 @@ export default function AdminContacts() {
     },
     {
       key: 'status',
-      label: 'Trạng Thái',
+      label: 'Trạng Thái & Mức Ưu Tiên',
       render: (item) => {
         const cfg = STATUS_CFG[item.status] || STATUS_CFG.new;
+        const lead = classifyLead(item);
         return (
-          <span className={`px-2.5 py-1 rounded text-[10px] font-mono-lux border ${cfg.color}`}>
-            {cfg.label}
-          </span>
+          <div className="flex flex-col gap-1.5">
+            <span className={`px-2.5 py-1 rounded text-[10px] font-mono-lux border ${cfg.color}`}>
+              {cfg.label}
+            </span>
+            <span className={`px-2 py-0.5 rounded text-[9px] font-mono-lux border font-bold ${lead.color} flex items-center gap-1`}>
+              {lead.emoji} {lead.label}
+            </span>
+          </div>
         );
       },
     },
@@ -198,6 +241,12 @@ export default function AdminContacts() {
               <span className="text-[10px] text-slate-500">Tin nhắn khách vãng lai</span>
             </div>
 
+            <div className="bg-[#0E0E12] border border-rose-500/30 rounded-lg p-4 space-y-1">
+              <span className="text-rose-400 text-xs font-mono-lux">🔴 HOT Leads</span>
+              <p className="font-mono-lux text-2xl font-bold text-rose-400">{hotCount}</p>
+              <span className="text-[10px] text-rose-400/70">Caoð intent — uưu tiên liên hệ ngay</span>
+            </div>
+
             <div className="bg-[#0E0E12] border border-amber-500/30 rounded-lg p-4 space-y-1">
               <span className="text-amber-400 text-xs font-mono-lux">Mới - Chờ Liên Hệ</span>
               <p className="font-mono-lux text-2xl font-bold text-amber-400">{newCount}</p>
@@ -208,12 +257,6 @@ export default function AdminContacts() {
               <span className="text-blue-400 text-xs font-mono-lux">Đã Liên Hệ Tư Vấn</span>
               <p className="font-mono-lux text-2xl font-bold text-blue-400">{contactedCount}</p>
               <span className="text-[10px] text-slate-500">Đã gọi điện / gửi mail</span>
-            </div>
-
-            <div className="bg-[#0E0E12] border border-emerald-500/30 rounded-lg p-4 space-y-1">
-              <span className="text-emerald-400 text-xs font-mono-lux">Đã Hoàn Thành</span>
-              <p className="font-mono-lux text-2xl font-bold text-emerald-400">{closedCount}</p>
-              <span className="text-[10px] text-slate-500">Đã giải đáp nhu cầu</span>
             </div>
           </div>
 
@@ -252,10 +295,10 @@ export default function AdminContacts() {
             </div>
           </div>
 
-          {/* DataTable */}
+          {/* DataTable - sorted HOT first */}
           <DataTable
             columns={columns}
-            data={filteredContacts}
+            data={sortedContacts}
             isLoading={isLoading}
             emptyMessage="Chưa có yêu cầu liên hệ nào từ khách vãng lai"
             actions={(item) => (

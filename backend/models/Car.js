@@ -90,6 +90,7 @@ const carSchema = new mongoose.Schema(
     salePrice: {
       type: Number,
       default: null,
+      min: [0, 'Giá sale không thể âm'],
     },
 
     // Danh sách ảnh xe
@@ -176,6 +177,16 @@ const carSchema = new mongoose.Schema(
     isPublished: {
       type: Boolean,
       default: true,
+    },
+    // Soft delete
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
   },
   {

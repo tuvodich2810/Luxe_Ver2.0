@@ -20,13 +20,6 @@ const appointmentSchema = new mongoose.Schema(
     appointmentDate: {
       type: Date,
       required: [true, 'Ngày hẹn là bắt buộc'],
-      validate: {
-        validator: function (date) {
-          // Ngày hẹn phải trong tương lai
-          return date > new Date();
-        },
-        message: 'Ngày hẹn phải là ngày trong tương lai',
-      },
     },
 
     // Khung giờ

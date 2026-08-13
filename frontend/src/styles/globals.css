@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -17,9 +17,9 @@
   --text-platinum: #F8FAFC;
   --text-silver: #CBD5E1;
   --text-muted: #64748B;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Space Grotesk', monospace;
+  --font-serif: 'Jost', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Jost', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Jost', system-ui, -apple-system, sans-serif;
   --ease-lux: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-lux: 300ms;
 }
@@ -37,6 +37,7 @@ html {
   scroll-behavior: smooth;
   background: var(--obsidian);
   color: var(--text-platinum);
+  font-family: var(--font-sans);
 }
 
 body {
@@ -75,12 +76,13 @@ body {
   .lux-container { padding: 0 16px; }
 }
 
-/* Typography Helpers */
-.font-serif-lux {
-  font-family: var(--font-serif);
+/* Typography Helpers - Standardized 100% Unified Font Stack */
+.font-serif-lux, .font-mono-lux, .font-sans-lux {
+  font-family: var(--font-sans);
 }
 .font-mono-lux {
-  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .lux-gradient-gold-text {
@@ -92,10 +94,10 @@ body {
 .lux-eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--gold);
-  font-weight: 500;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 8px;

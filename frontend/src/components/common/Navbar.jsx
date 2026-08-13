@@ -75,6 +75,13 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  const handleLogoClick = (e) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -87,7 +94,7 @@ export default function Navbar() {
     >
       <div className="lux-container flex items-center justify-between">
         {/* Brand Logo */}
-        <Link to="/" className="group flex items-center gap-3">
+        <Link to="/" onClick={handleLogoClick} className="group flex items-center gap-3 cursor-pointer" title="Nhấn để về Trang chủ Luxe Motors Showroom">
           <div className="w-10 h-10 rounded-sm bg-gradient-to-br from-[#D4AF37] via-[#AA7C11] to-[#61460B] p-[1px] shadow-lg shadow-[#D4AF37]/10 transition-transform duration-500 group-hover:scale-105">
             <div className="w-full h-full bg-[#0E0E12] flex items-center justify-center rounded-[1px]">
               <Sparkles className="w-5 h-5 text-[#D4AF37] transition-transform duration-500 group-hover:rotate-12" />
@@ -139,6 +146,18 @@ export default function Navbar() {
 
         {/* Action Controls & Profile */}
         <div className="hidden md:flex items-center gap-4">
+          {/* Direct Zalo Button */}
+          <a
+            href="https://zalo.me/0372950720"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0068FF]/15 border border-[#0068FF]/40 text-blue-400 hover:text-white hover:bg-[#0068FF] text-xs font-mono-lux font-bold transition-all shadow"
+            title="Chat Zalo Quang Tuấn 0372.950.720"
+          >
+            <span className="w-4 h-4 rounded-full bg-[#0068FF] text-white text-[10px] flex items-center justify-center font-black">Z</span>
+            <span>Zalo: 0372.950.720</span>
+          </a>
+
           {/* Wishlist Button */}
           <Link
             to="/favorites"

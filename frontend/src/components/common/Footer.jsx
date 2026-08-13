@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, MapPin, Phone, Mail, ArrowRight, ShieldCheck, Award, Clock } from 'lucide-react';
+import PolicyModal from '@/components/common/PolicyModal';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
+  const [policyType, setPolicyType] = useState('privacy');
+
+  const openPolicy = (type) => {
+    setPolicyType(type);
+    setPolicyModalOpen(true);
+  };
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -129,16 +137,20 @@ export default function Footer() {
           {/* Concierge Hotline */}
           <div>
             <h4 className="font-mono-lux text-xs uppercase tracking-widest text-white mb-6">
-              VIP Concierge
+              VIP Concierge Zalo &amp; Hotline
             </h4>
             <div className="space-y-3 text-xs">
-              <a href="tel:1900888999" className="flex items-center gap-2 text-white hover:text-[#D4AF37] transition-colors">
+              <a href="tel:0372950720" className="flex items-center gap-2 text-white hover:text-[#D4AF37] transition-colors">
                 <Phone className="w-4 h-4 text-[#D4AF37]" />
-                <span className="font-mono-lux font-bold text-sm">1900 888 999</span>
+                <span className="font-mono-lux font-bold text-sm">0372 950 720</span>
               </a>
-              <a href="mailto:vip@luxemotors.vn" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+              <a href="https://zalo.me/0372950720" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors">
+                <span className="w-4 h-4 rounded bg-[#0068FF] text-white text-[10px] font-bold flex items-center justify-center">Z</span>
+                <span className="font-mono-lux font-semibold">Zalo: Quang Tuấn (0372.950.720)</span>
+              </a>
+              <a href="mailto:luxemotor001@gmail.com" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                 <Mail className="w-4 h-4 text-[#D4AF37]" />
-                <span>vip@luxemotors.vn</span>
+                <span>luxemotor001@gmail.com</span>
               </a>
             </div>
           </div>
@@ -148,12 +160,34 @@ export default function Footer() {
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <p>© 2026 LuxeMotors Vietnam. All Rights Reserved. Designed with UI/UX Pro Max Standard.</p>
           <div className="flex gap-6">
-            <Link to="#" className="hover:text-slate-300">Chính sách bảo mật</Link>
-            <Link to="#" className="hover:text-slate-300">Điều khoản dịch vụ</Link>
-            <Link to="#" className="hover:text-slate-300">Bảo hành & Bảo dưỡng</Link>
+            <button
+              onClick={() => openPolicy('privacy')}
+              className="hover:text-[#D4AF37] transition-colors cursor-pointer text-xs"
+            >
+              Chính sách bảo mật
+            </button>
+            <button
+              onClick={() => openPolicy('terms')}
+              className="hover:text-[#D4AF37] transition-colors cursor-pointer text-xs"
+            >
+              Điều khoản dịch vụ
+            </button>
+            <button
+              onClick={() => openPolicy('warranty')}
+              className="hover:text-[#D4AF37] transition-colors cursor-pointer text-xs"
+            >
+              Bảo hành &amp; Bảo dưỡng
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Policy Modal */}
+      <PolicyModal
+        isOpen={policyModalOpen}
+        onClose={() => setPolicyModalOpen(false)}
+        policyType={policyType}
+      />
     </footer>
   );
 }

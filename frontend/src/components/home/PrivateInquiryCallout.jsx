@@ -35,11 +35,11 @@ export default function PrivateInquiryCallout() {
             </Link>
 
             <a
-              href="tel:1900888999"
+              href="tel:0372950720"
               className="px-8 py-4 rounded-lg bg-[#14141C] border border-white/10 hover:border-[#D4AF37] text-xs font-mono-lux text-white flex items-center gap-2 transition-all w-full sm:w-auto justify-center"
             >
               <Phone className="w-4 h-4 text-[#D4AF37]" />
-              <span>HOTLINE VIP: 1900 888 999</span>
+              <span>HOTLINE VIP: 0372 950 720</span>
             </a>
           </div>
 

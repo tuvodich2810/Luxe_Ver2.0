@@ -3,6 +3,7 @@ const Car = require('../models/Car');
 const User = require('../models/User');
 const mongoose = require('mongoose');
 const emailService = require('./emailService');
+const notificationService = require('./notificationService');
 
 // ===================================
 // Tạo đơn hàng
@@ -66,9 +67,9 @@ const createOrder = async (userId, orderData) => {
   }
 
   // ===================================
-  // Lấy giá hiện tại
+  // Lấy giá hiện tại (Quy đổi sang VNĐ nếu DB lưu USD)
   // ===================================
-  const currentPrice =
+  let currentPrice =
     car.salePrice &&
     car.salePrice > 0 &&
     car.salePrice < car.price
@@ -120,82 +121,93 @@ const createOrder = async (userId, orderData) => {
   };
 
   // ===================================
-  // Giảm số lượng xe trong kho bằng Thao tác nguyên tử (Atomic Update)
-  // Ngăn ngừa lỗi Concurrency / Race Condition khi nhiều người mua cùng lúc
+  // Giảm số lượng xe trong kho & Tạo đơn qua Mongoose ACID Transaction
+  // Ngăn ngừa lỗi Concurrency & Hỏng dữ liệu (Data Corruption)
   // ===================================
-  const updatedCar = await Car.findOneAndUpdate(
-    {
-      _id: car._id,
-      inStock: true,
-      stockCount: { $gt: 0 },
-    },
-    {
-      $inc: { stockCount: -1 },
-    },
-    { new: true }
-  );
+  const session = await mongoose.startSession().catch(() => null);
+  if (session) session.startTransaction();
 
-  if (!updatedCar) {
-    const error = new Error('Xe vừa hết hàng tại thời điểm bạn đặt mua');
-    error.statusCode = 400;
+  try {
+    const updatedCar = await Car.findOneAndUpdate(
+      {
+        _id: car._id,
+        inStock: true,
+        stockCount: { $gt: 0 },
+      },
+      {
+        $inc: { stockCount: -1 },
+      },
+      { new: true, session: session || undefined }
+    );
+
+    if (!updatedCar) {
+      const error = new Error('Xe vừa hết hàng tại thời điểm bạn đặt mua');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (updatedCar.stockCount <= 0) {
+      await Car.findByIdAndUpdate(
+        car._id,
+        { $set: { inStock: false, stockCount: 0 } },
+        { session: session || undefined }
+      );
+    }
+
+    // Tạo đơn hàng trong MongoDB
+    const orders = await Order.create(
+      [
+        {
+          user: userId,
+          car: car._id,
+          carSnapshot,
+          depositAmount: deposit,
+          totalAmount: currentPrice,
+          paymentMethod,
+          deliveryAddress,
+          notes,
+          statusHistory: [
+            {
+              status: 'pending',
+              note: 'Đơn hàng vừa được tạo trên hệ thống',
+              changedAt: new Date(),
+            },
+          ],
+        },
+      ],
+      { session: session || undefined }
+    );
+
+    const order = orders[0];
+
+    if (session) {
+      await session.commitTransaction();
+      session.endSession();
+    }
+
+    // Gửi thông báo đa kênh Email + Zalo (Async non-blocking)
+    notificationService.triggerOrderCreated(order);
+
+    return order;
+  } catch (error) {
+    if (session) {
+      await session.abortTransaction();
+      session.endSession();
+    } else {
+      // Fallback Rollback cho Standalone Mongo: hoàn lại stock nếu tạo đơn thất bại
+      await Car.findByIdAndUpdate(car._id, {
+        $inc: { stockCount: 1 },
+        $set: { inStock: true },
+      }).catch(() => {});
+    }
     throw error;
   }
-
-  if (updatedCar.stockCount <= 0) {
-    await Car.findByIdAndUpdate(car._id, { $set: { inStock: false, stockCount: 0 } });
-  }
-
-  // ===================================
-  // Tạo đơn hàng trong MongoDB
-  // ===================================
-  const order = await Order.create({
-    user: userId,
-    car: car._id,
-    carSnapshot,
-    depositAmount: deposit,
-    totalAmount: currentPrice,
-    paymentMethod,
-    deliveryAddress,
-    notes,
-    statusHistory: [
-      {
-        status: 'pending',
-        note: 'Đơn hàng vừa được tạo trên hệ thống',
-        changedAt: new Date(),
-      },
-    ],
-  });
-
-  // ===================================
-  // Gửi email xác nhận
-  // Không làm lỗi tạo đơn nếu email lỗi
-  // ===================================
-  User.findById(userId)
-    .then((user) => {
-      if (user) {
-        return emailService.sendOrderConfirmation(
-          order,
-          user.email,
-          user.fullName
-        );
-      }
-    })
-    .catch((err) => {
-      console.error(
-        'Send email error:',
-        err.message
-      );
-    });
-
-  return order;
 };
 
 // ===================================
 // [ADMIN] Lấy tất cả đơn hàng
 // ===================================
 const getAllOrders = async (queryParams = {}) => {
-  console.log('\n🔥🔥🔥 getAllOrders() ĐÃ ĐƯỢC GỌI');
-
   const {
     page = 1,
     limit = 20,
@@ -204,73 +216,14 @@ const getAllOrders = async (queryParams = {}) => {
     userId,
   } = queryParams;
 
-  // ===================================
-  // Tạo bộ lọc
-  // ===================================
   const filter = {};
+  if (orderStatus) filter.orderStatus = orderStatus;
+  if (paymentStatus) filter.paymentStatus = paymentStatus;
+  if (userId && mongoose.Types.ObjectId.isValid(userId)) filter.user = userId;
 
-  if (orderStatus) {
-    filter.orderStatus = orderStatus;
-  }
-
-  if (paymentStatus) {
-    filter.paymentStatus = paymentStatus;
-  }
-
-  if (
-    userId &&
-    mongoose.Types.ObjectId.isValid(userId)
-  ) {
-    filter.user = userId;
-  }
-
-  // ===================================
-  // Pagination
-  // ===================================
-  const pageNumber = Math.max(
-    1,
-    parseInt(page, 10) || 1
-  );
-
-  const limitNumber = Math.min(
-    50,
-    Math.max(
-      1,
-      parseInt(limit, 10) || 20
-    )
-  );
-
-  const skip =
-    (pageNumber - 1) * limitNumber;
-
-  // ===================================
-  // DEBUG DATABASE
-  // ===================================
-  console.log('\n========== DATABASE DEBUG ==========');
-
-  console.log(
-    'Database:',
-    mongoose.connection.db.databaseName
-  );
-
-  console.log(
-    'Order collection:',
-    Order.collection.name
-  );
-
-  console.log(
-    'Filter:',
-    filter
-  );
-
-  // Đếm trực tiếp Order
-  const directCount =
-    await Order.countDocuments({});
-
-  console.log(
-    'Total Order trong DB:',
-    directCount
-  );
+  const pageNumber = Math.max(1, parseInt(page, 10) || 1);
+  const limitNumber = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
+  const skip = (pageNumber - 1) * limitNumber;
 
   // ===================================
   // Lấy danh sách Order
@@ -491,7 +444,9 @@ const updateOrderStatus = async (
   const validOrderStatuses = [
     'pending',
     'confirmed',
+    'approved',
     'processing',
+    'delivered',
     'completed',
     'cancelled',
   ];
@@ -504,6 +459,7 @@ const updateOrderStatus = async (
     'deposit_paid',
     'fully_paid',
     'refunded',
+    'failed',
   ];
 
   if (
@@ -563,6 +519,14 @@ const updateOrderStatus = async (
     };
   }
 
+  const oldOrder = await Order.findById(orderId);
+  if (!oldOrder) {
+    const error = new Error('Không tìm thấy đơn hàng');
+    error.statusCode = 404;
+    throw error;
+  }
+  const oldStatus = oldOrder.orderStatus;
+
   const order = await Order.findByIdAndUpdate(orderId, updateQuery, {
     new: true,
     runValidators: true,
@@ -582,6 +546,11 @@ const updateOrderStatus = async (
     );
     error.statusCode = 404;
     throw error;
+  }
+
+  // Gửi thông báo đa kênh Email + Zalo khi thay đổi trạng thái đơn
+  if (oldStatus !== order.orderStatus) {
+    notificationService.triggerOrderStatusChanged(order, order.user, oldStatus, order.orderStatus);
   }
 
   return order;
@@ -679,6 +648,194 @@ const cancelOrder = async (
 };
 
 // ===================================
+// PAYOS PAYMENT GATEWAY INTEGRATION
+// ===================================
+const payosService = require('./payosService');
+
+// Tạo PayOS Link thanh toán cho đơn hàng
+const createPayOSPaymentLink = async (orderId, userId, isStaff = false) => {
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    const error = new Error('ID đơn hàng không hợp lệ');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const order = await Order.findById(orderId).populate('car', 'name');
+  if (!order) {
+    const error = new Error('Không tìm thấy đơn hàng');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (!isStaff && order.user.toString() !== userId.toString()) {
+    const error = new Error('Bạn không có quyền thao tác trên đơn hàng này');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  if (order.paymentStatus === 'deposit_paid' || order.paymentStatus === 'fully_paid') {
+    const error = new Error('Đơn hàng đã được thanh toán cọc trước đó');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (order.orderStatus === 'cancelled') {
+    const error = new Error('Đơn hàng đã bị hủy, không thể tạo link thanh toán');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Tạo payosOrderCode dạng số nguyên duy nhất dựa trên timestamp nếu chưa có
+  if (!order.payosOrderCode) {
+    order.payosOrderCode = Number(String(Date.now()).slice(-8));
+  }
+
+  // Đặt thời hạn giữ cọc +30 phút
+  order.depositExpiredAt = new Date(Date.now() + 30 * 60 * 1000);
+
+  // Gọi PayOS SDK tạo Checkout URL
+  const payosRes = await payosService.createPaymentLink(order);
+
+  order.paymentLinkId = payosRes.paymentLinkId;
+  order.checkoutUrl = payosRes.checkoutUrl;
+  order.qrCodeUrl = payosRes.qrCodeUrl;
+
+  await order.save();
+
+  return {
+    orderId: order._id,
+    orderNumber: order.orderNumber,
+    payosOrderCode: order.payosOrderCode,
+    depositAmount: order.depositAmount,
+    checkoutUrl: order.checkoutUrl,
+    qrCodeUrl: order.qrCodeUrl,
+    depositExpiredAt: order.depositExpiredAt,
+  };
+};
+
+// Xử lý Webhook tự động từ PayOS (Verify signature, Idempotency & ACID Transaction)
+const processPayOSWebhook = async (webhookBody) => {
+  // 1. Verify signature của PayOS
+  const verifiedData = payosService.verifyWebhookData(webhookBody);
+
+  const { orderCode, reference, code } = verifiedData;
+
+  // 2. Tìm đơn hàng theo payosOrderCode
+  const order = await Order.findOne({ payosOrderCode: Number(orderCode) });
+  if (!order) {
+    return { success: true, message: 'Đơn hàng không tồn tại trong hệ thống' };
+  }
+
+  // 3. Chống ghi nhận trùng thanh toán (Idempotency Check)
+  if (order.webhookProcessedAt || order.paymentStatus === 'deposit_paid') {
+    return { success: true, message: 'Đơn hàng đã được ghi nhận thanh toán trước đó' };
+  }
+
+  // Chỉ xử lý khi giao dịch thành công (code = '00' hoặc 0)
+  if (code === '00' || code === 0 || code === 'SUCCESS') {
+    // 4. Mongoose ACID Transaction
+    const session = await mongoose.startSession().catch(() => null);
+    if (session) session.startTransaction();
+
+    try {
+      order.paymentStatus = 'deposit_paid';
+      order.orderStatus = 'confirmed';
+      order.paidAt = new Date();
+      order.webhookProcessedAt = new Date();
+      order.transactionReference = String(reference || '');
+      order.statusHistory.push({
+        status: 'confirmed',
+        note: `Thanh toán cọc thành công qua PayOS (Mã GD: ${reference || 'Auto'})`,
+        changedAt: new Date(),
+      });
+
+      await order.save({ session: session || undefined });
+
+      if (session) {
+        await session.commitTransaction();
+        session.endSession();
+      }
+
+      // Gửi thông báo đa kênh Email + Zalo xác nhận tiền cọc thành công (Async non-blocking)
+      notificationService.triggerDepositSuccess(order);
+
+      return { success: true, message: 'Xử lý Webhook PayOS thành công', orderId: order._id };
+    } catch (err) {
+      if (session) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      throw err;
+    }
+  }
+
+  return { success: true, message: 'Giao dịch PayOS không ở trạng thái thành công' };
+};
+
+// Truy vấn trạng thái thanh toán cho Frontend Polling & tự động hủy đơn quá hạn
+const getPaymentStatus = async (orderId, userId, isStaff = false) => {
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    const error = new Error('ID đơn hàng không hợp lệ');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const order = await Order.findById(orderId);
+  if (!order) {
+    const error = new Error('Không tìm thấy đơn hàng');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (!isStaff && order.user.toString() !== userId.toString()) {
+    const error = new Error('Bạn không có quyền xem đơn hàng này');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  // Tự động kiểm tra thời hạn thanh toán
+  const now = new Date();
+  let isExpired = false;
+  if (
+    order.paymentStatus === 'pending' &&
+    order.depositExpiredAt &&
+    now > new Date(order.depositExpiredAt) &&
+    order.orderStatus !== 'cancelled'
+  ) {
+    isExpired = true;
+    order.orderStatus = 'cancelled';
+    order.statusHistory.push({
+      status: 'cancelled',
+      note: 'Hệ thống tự động hủy đơn do quá hạn thanh toán 30 phút',
+      changedAt: new Date(),
+    });
+    await order.save();
+
+    // Hoàn lại số lượng xe vào kho
+    if (order.car) {
+      await Car.findByIdAndUpdate(order.car, {
+        $inc: { stockCount: 1 },
+        $set: { inStock: true },
+      });
+    }
+  }
+
+  return {
+    orderId: order._id,
+    orderNumber: order.orderNumber,
+    paymentStatus: order.paymentStatus,
+    orderStatus: order.orderStatus,
+    paidAt: order.paidAt,
+    depositAmount: order.depositAmount,
+    totalAmount: order.totalAmount,
+    checkoutUrl: order.checkoutUrl,
+    qrCodeUrl: order.qrCodeUrl,
+    depositExpiredAt: order.depositExpiredAt,
+    isExpired,
+  };
+};
+
+// ===================================
 // Export
 // ===================================
 module.exports = {
@@ -688,4 +845,7 @@ module.exports = {
   getOrderById,
   updateOrderStatus,
   cancelOrder,
+  createPayOSPaymentLink,
+  processPayOSWebhook,
+  getPaymentStatus,
 };

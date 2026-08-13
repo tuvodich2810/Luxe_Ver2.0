@@ -100,7 +100,7 @@ const getCRMStats = expressAsyncHandler(async (req, res) => {
       },
     ]),
 
-    // Doanh thu 6 tháng gần nhất
+    // Doanh thu theo từng tháng (lên tới 12 tháng)
     Order.aggregate([
       { $match: { orderStatus: { $ne: 'cancelled' } } },
       {
@@ -115,7 +115,7 @@ const getCRMStats = expressAsyncHandler(async (req, res) => {
         },
       },
       { $sort: { '_id.year': -1, '_id.month': -1 } },
-      { $limit: 6 },
+      { $limit: 12 },
     ]),
 
     Contact.countDocuments(),
@@ -158,7 +158,15 @@ const getCRMStats = expressAsyncHandler(async (req, res) => {
   });
 });
 
+// POST /api/admin/seed-data
+const seedDatabaseController = expressAsyncHandler(async (req, res) => {
+  const seedService = require('../services/seedService');
+  const result = await seedService.seedFullData();
+  return ok(res, 'Đã nạp thành công 100% dữ liệu lịch sử 8 tháng (T1 - T8) lên MongoDB!', result);
+});
+
 module.exports = {
   getDashboardStats,
   getCRMStats,
+  seedDatabaseController,
 };

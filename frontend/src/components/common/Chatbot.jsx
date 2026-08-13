@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '@/services/api';
 import { sendContactForm } from '@/services/sheetsService';
 import { sendMessage as sendChatMessage } from '@/services/chatService';
@@ -125,7 +125,7 @@ export default function Chatbot() {
           {
             role: 'assistant',
             content:
-              'Xin lỗi quý khách, kết nối hiện đang gián đoạn. Vui lòng truy cập đường link http://localhost:5173/contact hoặc gọi Hotline **1900 888 999** để được hỗ trợ.',
+              'Xin lỗi quý khách, kết nối hiện đang gián đoạn. Vui lòng truy cập **trang liên hệ** của chúng tôi hoặc gọi Hotline **0372 950 720** để được hỗ trợ.',
             id: Date.now() + 1,
             isError: true,
           },
@@ -145,38 +145,49 @@ export default function Chatbot() {
     }
   };
 
-  /* Render Markdown + Biến các URL (http://... hoặc /contact) thành đường link bấm được trực tiếp */
   const renderFormattedText = (text) => {
     return text.split('\n').map((line, lineIdx) => {
-      // Regex phát hiện đường link URL
+      // Regex detect URL links
       const urlRegex = /(https?:\/\/[^\s]+|\/contact|\/cars)/g;
       const parts = line.split(urlRegex);
 
       return (
         <span key={lineIdx} className="block leading-relaxed">
           {parts.map((part, partIdx) => {
-            if (part === 'http://localhost:5173/contact' || part === '/contact') {
+            // Any /contact path or full URL containing /contact → open in new tab
+            if (
+              part === '/contact' ||
+              part.includes('/contact') ||
+              part === 'http://localhost:5173/contact' ||
+              part === 'https://luxe-ver2-0.vercel.app/contact'
+            ) {
               return (
-                <Link
+                <a
                   key={partIdx}
-                  to="/contact"
-                  onClick={() => setIsOpen(false)}
+                  href="https://luxe-ver2-0.vercel.app/contact"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[#D4AF37] font-bold underline hover:brightness-125 transition-all inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded bg-[#D4AF37]/10 border border-[#D4AF37]/30"
                 >
-                  <span>http://localhost:5173/contact</span>
-                </Link>
+                  <span>luxemotors.vn/contact</span>
+                </a>
               );
             }
-            if (part === 'http://localhost:5173/cars' || part === '/cars') {
+            if (
+              part === '/cars' ||
+              part === 'http://localhost:5173/cars' ||
+              part === 'https://luxe-ver2-0.vercel.app/cars'
+            ) {
               return (
-                <Link
+                <a
                   key={partIdx}
-                  to="/cars"
-                  onClick={() => setIsOpen(false)}
+                  href="https://luxe-ver2-0.vercel.app/cars"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[#D4AF37] font-bold underline hover:brightness-125 transition-all inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded bg-[#D4AF37]/10 border border-[#D4AF37]/30"
                 >
-                  <span>http://localhost:5173/cars</span>
-                </Link>
+                  <span>luxemotors.vn/cars</span>
+                </a>
               );
             }
             if (part.startsWith('http://') || part.startsWith('https://')) {
@@ -194,11 +205,11 @@ export default function Chatbot() {
             }
 
             // Bold markdown format **text**
-            const boldParts = part.split(/\*\*(.*?)\*\*/g);
+            const boldParts = part.split(/(\*\*.*?\*\*)/g);
             return boldParts.map((subPart, subIdx) =>
-              subIdx % 2 === 1 ? (
+              subPart.startsWith('**') && subPart.endsWith('**') ? (
                 <strong key={subIdx} className="text-[#D4AF37] font-semibold">
-                  {subPart}
+                  {subPart.slice(2, -2)}
                 </strong>
               ) : (
                 subPart
@@ -292,8 +303,8 @@ export default function Chatbot() {
 
               <div className="flex items-center gap-2">
                 <a
-                  href="tel:1900888999"
-                  title="Gọi Hotline VIP Concierge"
+                  href="tel:0372950720"
+                  title="Gọi Hotline VIP Concierge (0372 950 720)"
                   className="p-2 rounded bg-white/5 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black transition-colors"
                 >
                   <PhoneCall className="w-4 h-4" />

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
 import Chatbot from '@/components/common/Chatbot';
+import VietQRBankCard from '@/components/common/VietQRBankCard';
 import orderService from '@/services/orderService';
 import {
   ShoppingBag,
@@ -18,12 +19,15 @@ import {
   MapPin,
   Calendar,
   AlertCircle,
+  QrCode,
+  X,
 } from 'lucide-react';
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedQrOrder, setSelectedQrOrder] = useState(null);
 
   // Lấy đơn hàng của USER hiện tại
   const fetchMyOrders = async () => {
@@ -276,14 +280,24 @@ export default function MyOrders() {
 
                     {/* Bottom Action Footer */}
                     <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <a
-                          href="tel:1900888999"
+                          href="tel:0372950720"
                           className="px-3 py-1.5 rounded bg-white/5 hover:bg-[#D4AF37] text-slate-300 hover:text-black border border-white/10 text-xs font-mono-lux transition-all flex items-center gap-1.5"
                         >
                           <PhoneCall className="w-3.5 h-3.5 text-[#D4AF37]" />
-                          <span>Gọi Chuyên Viên VIP Concierge (1900 888 999)</span>
+                          <span>Gọi Chuyên Viên VIP Concierge (0372 950 720)</span>
                         </a>
+
+                        {!['cancelled', 'delivered', 'completed'].includes(ord.orderStatus) && (
+                          <button
+                            onClick={() => setSelectedQrOrder(ord)}
+                            className="px-3.5 py-1.5 rounded bg-[#D4AF37]/15 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black border border-[#D4AF37]/40 text-xs font-mono-lux font-bold transition-all flex items-center gap-1.5"
+                          >
+                            <QrCode className="w-3.5 h-3.5" />
+                            <span>Quét Mã QR Thanh Toán Cọc</span>
+                          </button>
+                        )}
                       </div>
 
                       {!['cancelled', 'delivered', 'completed'].includes(ord.orderStatus) && (
@@ -327,6 +341,45 @@ export default function MyOrders() {
           )}
         </div>
       </main>
+
+      {/* Modal QR Code Bank Card */}
+      {selectedQrOrder && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-[#0E0E12] border border-[#D4AF37]/30 rounded-2xl p-6 shadow-2xl space-y-5">
+            <button
+              onClick={() => setSelectedQrOrder(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center space-y-1">
+              <div className="lux-eyebrow justify-center text-[#D4AF37]">
+                <Sparkles className="w-3.5 h-3.5" />
+                MÃ VIETQR CHUYỂN KHOẢN TỰ ĐỘNG
+              </div>
+              <h3 className="font-serif-lux text-2xl font-bold text-white">
+                Thanh Toán Đặt Cọc Siêu Xe
+              </h3>
+              <p className="text-xs text-slate-400 font-mono-lux">
+                Mã hợp đồng: <span className="text-[#D4AF37] font-bold">{selectedQrOrder.orderNumber || `#LUXE-${selectedQrOrder._id.slice(-6).toUpperCase()}`}</span>
+              </p>
+            </div>
+
+            <VietQRBankCard
+              depositAmountVND={selectedQrOrder.depositAmount || 500000000}
+              orderCode={selectedQrOrder.orderNumber || `LUXE${selectedQrOrder._id.slice(-6).toUpperCase()}`}
+              orderId={selectedQrOrder._id}
+              initialCheckoutUrl={selectedQrOrder.checkoutUrl}
+              initialQrCodeUrl={selectedQrOrder.qrCodeUrl}
+              initialDepositExpiredAt={selectedQrOrder.depositExpiredAt}
+              onPaymentConfirmed={() => {
+                fetchMyOrders();
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <Chatbot />
       <Footer />

@@ -7,6 +7,23 @@ export default function CarFilter({
   onReset,
   brands = [],
 }) {
+  const [searchTerm, setSearchTerm] = React.useState(filters.search || '');
+
+  // Debounce search input 350ms
+  React.useEffect(() => {
+    setSearchTerm(filters.search || '');
+  }, [filters.search]);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== (filters.search || '')) {
+        onChange({ ...filters, search: searchTerm });
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const categories = [
     { label: 'Hypercar', value: 'hypercar' },
     { label: 'Supercar', value: 'supercar' },
@@ -43,8 +60,8 @@ export default function CarFilter({
             <input
               type="text"
               placeholder="VD: Chiron, SF90, Phantom, GT3..."
-              value={filters.search || ''}
-              onChange={(e) => onChange({ ...filters, search: e.target.value })}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="lux-input pl-9 text-xs"
             />
           </div>

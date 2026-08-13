@@ -143,9 +143,15 @@ export default function CarDetail() {
                 <h1 className="font-serif-lux text-3xl sm:text-4xl font-bold text-white leading-tight">
                   {currentCar.name}
                 </h1>
-                <div className="flex items-center gap-3 pt-2">
+                <div className="flex items-center gap-3 pt-2 flex-wrap">
                   <span className="lux-badge lux-badge-gold">{currentCar.year || '2026'}</span>
-                  <span className="lux-badge lux-badge-emerald">Có Sẵn Giao Ngay</span>
+                  {currentCar.stockCount > 0 ? (
+                    <span className="lux-badge lux-badge-emerald">Tồn Kho: {currentCar.stockCount} Chiếc</span>
+                  ) : currentCar.stockCount === 0 || currentCar.inStock === false ? (
+                    <span className="lux-badge bg-rose-500/15 text-rose-400 border border-rose-500/40">Hết Hàng</span>
+                  ) : (
+                    <span className="lux-badge lux-badge-emerald">Có Sẵn Giao Ngay</span>
+                  )}
                   <span className="lux-badge bg-black/60 text-slate-300 border border-white/20">
                     {currentCar.category || 'Hypercar'}
                   </span>
@@ -157,8 +163,15 @@ export default function CarDetail() {
                 <span className="text-[10px] font-mono-lux uppercase tracking-widest text-slate-400">
                   Giá Niêm Yết Đã Bao Gồm Thẻ Đặc Quyền VIP
                 </span>
-                <div className="font-serif-lux text-4xl font-bold text-[#D4AF37]">
-                  ${typeof currentCar.price === 'number' ? currentCar.price.toLocaleString() : currentCar.price} USD
+                <div className="font-serif-lux text-3xl sm:text-4xl font-bold text-[#D4AF37]">
+                  {(() => {
+                    const price = currentCar.price;
+                    if (!price) return 'Liên hệ thỏa thuận';
+                    let numPrice = typeof price === 'number' ? price : parseFloat(String(price).replace(/[^0-9.]/g, ''));
+                    if (isNaN(numPrice)) return price;
+                    if (numPrice < 50000000) numPrice = numPrice * 25000;
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numPrice);
+                  })()}
                 </div>
                 <p className="text-[11px] text-slate-400">
                   Đã bao gồm thuế GTGT, hải quan chính ngạch & gói bảo dưỡng 5 năm.
@@ -226,6 +239,25 @@ export default function CarDetail() {
                     <span>{isFav ? 'Đã yêu thích' : 'Lưu xe này'}</span>
                   </button>
                 </div>
+
+                {/* Direct Zalo Chat & Hotline Banner */}
+                <a
+                  href="https://zalo.me/0372950720"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-3.5 rounded-lg bg-[#0068FF]/15 border border-[#0068FF]/50 text-white hover:bg-[#0068FF]/25 transition-all shadow-md group cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#0068FF] text-white font-black text-xs flex items-center justify-center shadow">
+                      Zalo
+                    </div>
+                    <div>
+                      <p className="font-serif-lux font-bold text-xs text-white">Trao Đổi Trực Tiếp Qua Zalo VIP</p>
+                      <p className="text-[11px] text-blue-400 font-mono-lux">Hotline / Zalo: 0372 950 720 (Quang Tuấn)</p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-blue-300 font-mono-lux underline group-hover:text-white">Chat ngay &rarr;</span>
+                </a>
               </div>
             </div>
           </div>

@@ -17,6 +17,8 @@ import {
   Crown,
 } from 'lucide-react';
 
+import { isValidVNPhone } from '@/utils/validation';
+
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -45,6 +47,11 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (phone && !isValidVNPhone(phone)) {
+      setError('Số điện thoại không hợp lệ. Vui lòng nhập SĐT Việt Nam hợp lệ (10 chữ số, bắt đầu bằng 03, 05, 07, 08, 09).');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Mật khẩu nhập lại không trùng khớp');

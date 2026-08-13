@@ -11,7 +11,7 @@ const Loader = () => (
         <div className="absolute inset-[5px] bg-lux-gold" />
       </div>
       <span style={{
-        fontFamily: 'Helvetica Neue', fontSize: 18, fontWeight: 300,
+        fontFamily: "'Jost', 'Inter', sans-serif", fontSize: 18, fontWeight: 300,
         letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--white)',
       }}>
         Luxe<span style={{ color: 'var(--gold)' }}>Motors</span>

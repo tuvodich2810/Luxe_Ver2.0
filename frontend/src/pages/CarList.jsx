@@ -9,87 +9,6 @@ import carService from '@/services/carService';
 import brandService from '@/services/brandService';
 import { Sparkles, Grid, List, Loader2 } from 'lucide-react';
 
-const MOCK_CAR_CATALOG = [
-  {
-    _id: 'c1',
-    name: 'Ferrari SF90 Stradale Assetto Fiorano',
-    brand: { name: 'Ferrari' },
-    price: 625000,
-    year: 2026,
-    horsePower: 1000,
-    acceleration: '2.5s',
-    transmission: '8-Speed Dual Clutch',
-    category: 'Hypercar',
-    status: 'available',
-    mainImage: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'c2',
-    name: 'Lamborghini Revuelto V12 Hybrid',
-    brand: { name: 'Lamborghini' },
-    price: 608000,
-    year: 2026,
-    horsePower: 1015,
-    acceleration: '2.5s',
-    transmission: '8-Speed Dual Clutch',
-    category: 'Hypercar',
-    status: 'available',
-    mainImage: 'https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'c3',
-    name: 'Porsche 911 GT3 RS Weissach Package',
-    brand: { name: 'Porsche' },
-    price: 312000,
-    year: 2026,
-    horsePower: 525,
-    acceleration: '3.2s',
-    transmission: '7-Speed PDK',
-    category: 'Supercar',
-    status: 'available',
-    mainImage: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'c4',
-    name: 'Rolls-Royce Spectre Electric Super Coupe',
-    brand: { name: 'Rolls-Royce' },
-    price: 420000,
-    year: 2026,
-    horsePower: 584,
-    acceleration: '4.5s',
-    transmission: 'Single Speed EV',
-    category: 'Luxury Sedan',
-    status: 'available',
-    mainImage: 'https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'c5',
-    name: 'Aston Martin Valkyrie F1 Edition',
-    brand: { name: 'Aston Martin' },
-    price: 3500000,
-    year: 2026,
-    horsePower: 1160,
-    acceleration: '2.3s',
-    transmission: '7-Speed Paddle Shift',
-    category: 'Hypercar',
-    status: 'available',
-    mainImage: 'https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    _id: 'c6',
-    name: 'Bentley Continental GT Speed V8',
-    brand: { name: 'Bentley' },
-    price: 298000,
-    year: 2026,
-    horsePower: 659,
-    acceleration: '3.5s',
-    transmission: '8-Speed Dual Clutch',
-    category: 'Grand Tourer',
-    status: 'available',
-    mainImage: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=800',
-  },
-];
-
 export default function CarList() {
   const [searchParams] = useSearchParams();
   const [cars, setCars] = useState([]);
@@ -99,8 +18,20 @@ export default function CarList() {
     search: searchParams.get('search') || '',
     brand: searchParams.get('brand') || '',
     category: searchParams.get('category') || '',
+    status: searchParams.get('status') || '',
     sort: '-createdAt',
   });
+
+  // Sync filters whenever URL searchParams change (e.g. from Footer links)
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      search: searchParams.get('search') || '',
+      brand: searchParams.get('brand') || '',
+      category: searchParams.get('category') || '',
+      status: searchParams.get('status') || '',
+    }));
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -120,20 +51,10 @@ export default function CarList() {
         if (res?.data && res.data.length > 0) {
           setCars(res.data);
         } else {
-          // Apply local filter on fallback catalog if DB is empty
-          let list = [...MOCK_CAR_CATALOG];
-          if (filters.search) {
-            list = list.filter((c) =>
-              c.name.toLowerCase().includes(filters.search.toLowerCase())
-            );
-          }
-          if (filters.category) {
-            list = list.filter((c) => c.category === filters.category);
-          }
-          setCars(list);
+          setCars([]);
         }
       } catch {
-        setCars(MOCK_CAR_CATALOG);
+        setCars([]);
       } finally {
         setLoading(false);
       }

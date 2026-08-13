@@ -18,9 +18,10 @@ export default {
         },
       },
       fontFamily: {
-        sans:    ['"Helvetica Neue"', 'Arial', 'sans-serif'],
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        label:   ['"Space Grotesk"', 'monospace'],
+        sans:    ['"Jost"', 'system-ui', 'sans-serif'],
+        display: ['"Jost"', 'system-ui', 'sans-serif'],
+        label:   ['"Jost"', 'system-ui', 'sans-serif'],
+        mono:    ['"Jost"', 'system-ui', 'sans-serif'],
       },
     },
   },

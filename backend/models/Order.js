@@ -71,7 +71,9 @@ const orderSchema = new mongoose.Schema(
       enum: [
         "pending",
         "confirmed",
+        "approved",
         "processing",
+        "delivered",
         "completed",
         "cancelled",
       ],
@@ -99,6 +101,35 @@ const orderSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
+    },
+
+    // ===================================
+    // TÍCH HỢP PAYOS & THANH TOÁN QR ĐỘNG
+    // ===================================
+    // Mã đơn dạng số nguyên gửi cho PayOS (Idempotent Key)
+    payosOrderCode: {
+      type: Number,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
+    paymentLinkId: { type: String, default: null },       // ID link thanh toán từ PayOS
+    checkoutUrl: { type: String, default: null },         // Link trang thanh toán PayOS
+    qrCodeUrl: { type: String, default: null },           // Link ảnh QR động PayOS
+    paidAt: { type: Date, default: null },                // Thời điểm tiền về thực tế
+    webhookProcessedAt: { type: Date, default: null },    // Thời điểm Webhook xử lý
+    transactionReference: { type: String, default: null }, // Mã giao dịch ngân hàng (FT ref)
+    depositExpiredAt: { type: Date, default: null },      // Thời hạn cọc (đếm ngược 15-30 phút)
+
+    // Soft delete
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
   },
   {

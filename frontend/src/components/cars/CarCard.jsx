@@ -17,12 +17,9 @@ export default function CarCard({ car }) {
 
   const formatPrice = (price) => {
     if (!price) return 'Liên hệ';
-    if (typeof price === 'number') {
-      return price > 100000
-        ? `$${price.toLocaleString('en-US')}`
-        : `${price.toLocaleString('vi-VN')} VNĐ`;
-    }
-    return price;
+    let numPrice = typeof price === 'number' ? price : parseFloat(String(price).replace(/[^0-9.]/g, ''));
+    if (isNaN(numPrice)) return price;
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numPrice);
   };
 
   // Robust Image URL Extractor

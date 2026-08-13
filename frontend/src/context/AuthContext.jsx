@@ -14,7 +14,8 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const res = await api.get('/auth/me');
-          setUser(res.data);
+          const userData = res.user || res.data?.user || res.data || res;
+          setUser(userData);
           setIsAuthenticated(true);
         } catch {
           localStorage.removeItem('luxe_token');
@@ -28,9 +29,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
-    const { user: u, token } = res.data;
-    localStorage.setItem('luxe_token', token);
-    localStorage.setItem('luxe_user', JSON.stringify(u));
+    const u = res.user || res.data?.user || res.data;
+    const token = res.token || res.data?.token;
+
+    if (token) localStorage.setItem('luxe_token', token);
+    if (u) localStorage.setItem('luxe_user', JSON.stringify(u));
     setUser(u);
     setIsAuthenticated(true);
     return u;
@@ -38,9 +41,11 @@ export const AuthProvider = ({ children }) => {
 
   const register = useCallback(async (formData) => {
     const res = await api.post('/auth/register', formData);
-    const { user: u, token } = res.data;
-    localStorage.setItem('luxe_token', token);
-    localStorage.setItem('luxe_user', JSON.stringify(u));
+    const u = res.user || res.data?.user || res.data;
+    const token = res.token || res.data?.token;
+
+    if (token) localStorage.setItem('luxe_token', token);
+    if (u) localStorage.setItem('luxe_user', JSON.stringify(u));
     setUser(u);
     setIsAuthenticated(true);
     return u;

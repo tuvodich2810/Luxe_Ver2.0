@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
+import VietQRBankCard from '@/components/common/VietQRBankCard';
 import {
   X,
   CheckCircle2,
@@ -23,23 +24,38 @@ export default function PurchaseModal({
   const [orderComplete, setOrderComplete] = useState(null);
   const [error, setError] = useState('');
 
+  const handleClose = () => {
+    setNotes('');
+    setError('');
+    setOrderComplete(null);
+    setSubmitting(false);
+    if (onClose) onClose();
+  };
+
   if (!isOpen || !car) return null;
 
   // ===================================
-  // Giá xe
+  // Giá xe VND
   // ===================================
-  const totalPrice =
+  const rawPrice =
     typeof car.displayPrice === 'number'
       ? car.displayPrice
       : typeof car.salePrice === 'number' &&
         car.salePrice > 0 &&
         car.salePrice < car.price
       ? car.salePrice
-      : car.price;
+      : car.price || 0;
 
-  const depositAmount = Math.round(
-    (totalPrice * depositPercent) / 100
+  const totalPriceVND = rawPrice;
+
+  const depositAmountVND = Math.round(
+    (totalPriceVND * depositPercent) / 100
   );
+
+  const formatCarPriceVND = (num) => {
+    if (!num) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
+  };
 
   // ===================================
   // Tạo đơn hàng
@@ -66,13 +82,9 @@ export default function PurchaseModal({
       // ===================================
       const orderData = {
         car: car._id,
-
-        depositAmount,
-
+        depositAmount: depositAmountVND,
         paymentMethod,
-
         deliveryAddress: showroomLocation,
-
         notes: notes.trim(),
       };
 
@@ -187,7 +199,7 @@ export default function PurchaseModal({
                 <p className="text-xs font-mono-lux text-slate-300">
                   Giá niêm yết:{' '}
                   <span className="text-[#D4AF37] font-bold">
-                    ${totalPrice.toLocaleString('en-US')}
+                    {formatCarPriceVND(totalPriceVND)}
                   </span>
                 </p>
               </div>
@@ -231,8 +243,8 @@ export default function PurchaseModal({
                   Số tiền cọc thanh toán ngay ({depositPercent}%):
                 </span>
 
-                <span className="font-serif-lux text-2xl text-[#D4AF37] font-bold">
-                  ${depositAmount.toLocaleString('en-US')} USD
+                <span className="font-serif-lux text-xl sm:text-2xl text-[#D4AF37] font-bold">
+                  {formatCarPriceVND(depositAmountVND)}
                 </span>
               </div>
 
@@ -322,13 +334,11 @@ export default function PurchaseModal({
               <button
                 type="submit"
                 disabled={submitting}
-                className="btn-lux-gold w-full py-4 text-xs tracking-[0.2em]"
+                className="btn-lux-gold w-full py-4 text-xs tracking-[0.2em] font-mono-lux font-bold"
               >
                 {submitting
                   ? 'Đang Khởi Tạo Đơn Cọc...'
-                  : `XÁC NHẬN ĐẶT CỌC $${depositAmount.toLocaleString(
-                      'en-US'
-                    )}`}
+                  : `XÁC NHẬN ĐẶT CỌC ${formatCarPriceVND(depositAmountVND)}`}
               </button>
             </form>
           </>
@@ -356,24 +366,11 @@ export default function PurchaseModal({
 
             {/* VietQR Dynamic Code Payment */}
             {paymentMethod === 'bank_transfer' && (
-              <div className="bg-[#15151B] border border-[#D4AF37]/30 rounded-lg p-4 max-w-sm mx-auto space-y-3 text-left">
-                <p className="text-[10px] font-mono-lux text-[#D4AF37] uppercase tracking-wider text-center">
-                  MÃ VIETQR CHUYỂN KHOẢN TỰ ĐỘNG
-                </p>
-                <div className="bg-white p-2 rounded flex justify-center">
-                  <img
-                    src={`https://img.vietqr.io/image/MB-0382998888-compact2.png?amount=${Math.round(depositAmount * 24000)}&addInfo=${orderComplete.orderNumber || orderComplete._id}&accountName=SHOWROOM%20LUXE%20MOTORS`}
-                    alt="VietQR Payment"
-                    className="w-48 h-48 object-contain"
-                  />
-                </div>
-                <div className="text-[11px] text-slate-300 space-y-1 font-mono-lux border-t border-white/10 pt-2">
-                  <p><span className="text-slate-400">Ngân hàng:</span> MBBank (NHTM Cổ Phần Quân Đội)</p>
-                  <p><span className="text-slate-400">Số tài khoản:</span> <strong className="text-white">0382998888</strong></p>
-                  <p><span className="text-slate-400">Chủ tài khoản:</span> LUXE MOTORS SHOWROOM</p>
-                  <p><span className="text-slate-400">Nội dung chuyển khoản:</span> <strong className="text-[#D4AF37]">{orderComplete.orderNumber || orderComplete._id}</strong></p>
-                </div>
-              </div>
+              <VietQRBankCard
+                depositAmountVND={depositAmountVND}
+                orderCode={orderComplete.orderNumber}
+                orderId={orderComplete._id}
+              />
             )}
 
             <button

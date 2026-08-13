@@ -28,6 +28,7 @@ const AdminBrands       = lazy(() => import('@/pages/admin/AdminBrands'));
 const AdminUsers        = lazy(() => import('@/pages/admin/AdminUsers'));
 const AdminAppointments = lazy(() => import('@/pages/admin/AdminAppointments'));
 const AdminOrders       = lazy(() => import('@/pages/admin/AdminOrders'));
+const AdminSettings     = lazy(() => import('@/pages/admin/AdminSettings'));
 
 const PageLoader = () => (
   <div style={{
@@ -45,9 +46,9 @@ const PageLoader = () => (
       animation: 'spin 1s linear infinite',
       transform: 'rotate(45deg)',
     }}/>
-    <style>{`@keyframes spin { to { transform: rotate(45deg); } }`}</style>
+    <style>{`@keyframes spin { to { transform: rotate(405deg); } }`}</style>
     <p style={{
-      fontFamily: 'Space Grotesk, monospace',
+      fontFamily: 'Jost, sans-serif',
       fontSize: 10,
       letterSpacing: '0.2em',
       textTransform: 'uppercase',
@@ -118,6 +119,8 @@ export default function AppRouter() {
             element={<AdminRoute allowedRoles={['admin', 'quan_ly', 'sales', 'cskh']}><AdminAppointments /></AdminRoute>} />
           <Route path="/admin/orders"
             element={<AdminRoute allowedRoles={['admin', 'giam_doc', 'quan_ly', 'sales']}><AdminOrders /></AdminRoute>} />
+          <Route path="/admin/settings"
+            element={<AdminRoute allowedRoles={['admin', 'giam_doc', 'quan_ly', 'sales', 'cskh']}><AdminSettings /></AdminRoute>} />
 
           <Route path="*" element={
             <div style={{
@@ -130,7 +133,7 @@ export default function AppRouter() {
               gap: 16,
             }}>
               <p style={{
-                fontFamily: 'Cormorant Garamond, serif',
+                fontFamily: 'Jost, Inter, sans-serif',
                 fontSize: 80,
                 fontWeight: 300,
                 color: 'rgba(255,255,255,0.1)',
@@ -144,7 +147,7 @@ export default function AppRouter() {
                 padding: '12px 28px',
                 background: '#C9A96E',
                 color: '#0A0A0A',
-                fontFamily: 'Space Grotesk, monospace',
+                fontFamily: 'Jost, sans-serif',
                 fontSize: 10,
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',

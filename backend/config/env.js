@@ -33,8 +33,32 @@ module.exports = {
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASS: process.env.EMAIL_PASS,
   EMAIL_FROM: process.env.EMAIL_FROM,
+  SMTP_HOST: process.env.SMTP_HOST || process.env.EMAIL_HOST,
+  SMTP_PORT: parseInt(process.env.SMTP_PORT || process.env.EMAIL_PORT, 10) || 587,
+  SMTP_USER: process.env.SMTP_USER || process.env.EMAIL_USER,
+  SMTP_PASS: process.env.SMTP_PASS || process.env.EMAIL_PASS,
+  FROM_EMAIL: process.env.FROM_EMAIL || process.env.EMAIL_FROM || 'no-reply@luxemotors.com',
+  FROM_NAME: process.env.FROM_NAME || 'Luxe Motors Showroom',
+
+  // Zalo Official Account (OA) Credentials
+  ZALO_OA_ID: process.env.ZALO_OA_ID || '',
+  ZALO_ACCESS_TOKEN: process.env.ZALO_ACCESS_TOKEN || '',
+  ZALO_APP_ID: process.env.ZALO_APP_ID || '',
+  ZALO_SECRET_KEY: process.env.ZALO_SECRET_KEY || '',
+
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
 
   GROQ_API_KEY: process.env.GROQ_API_KEY,
   GROQ_MODEL: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+
+  PAYOS_CLIENT_ID: process.env.PAYOS_CLIENT_ID || '',
+  PAYOS_API_KEY: process.env.PAYOS_API_KEY || '',
+  PAYOS_CHECKSUM_KEY: process.env.PAYOS_CHECKSUM_KEY || '',
+
+  // Cấu hình Ngân hàng & Mã QR VietQR cá nhân
+  BANK_CODE: process.env.BANK_CODE || 'MB',
+  BANK_NAME: process.env.BANK_NAME || 'MBBank (Ngân hàng Quân Đội)',
+  BANK_ACCOUNT_NO: process.env.BANK_ACCOUNT_NO || '0372950720',
+  BANK_ACCOUNT_NAME: process.env.BANK_ACCOUNT_NAME || 'LUXE MOTORS SHOWROOM',
+  STATIC_QR_URL: process.env.STATIC_QR_URL || '',
 };

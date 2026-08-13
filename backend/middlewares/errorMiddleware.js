@@ -14,8 +14,8 @@ const notFound = (req, res, next) => {
 // Express nhận biết error handler vì có 4 tham số (err, req, res, next)
 // ===================================
 const errorHandler = (err, req, res, next) => {
-  // Nếu status code vẫn là 200 (Express chưa set status khi lỗi) → đổi thành 500
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  // Ưu tiên sử dụng err.statusCode nếu có, nếu không thì lấy res.statusCode (nếu 200 thì gán 500)
+  let statusCode = err.statusCode || (res.statusCode === 200 ? 500 : res.statusCode);
   let message = err.message || 'Lỗi máy chủ không xác định';
 
   // Xử lý lỗi Mongoose: CastError (ID không hợp lệ)

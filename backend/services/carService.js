@@ -204,10 +204,20 @@ const updateCar = async (id, updateData) => {
 };
 
 // ===================================
-// Xóa xe
+// Xóa xe (Soft Delete)
 // ===================================
 const deleteCar = async (id) => {
-  const car = await Car.findByIdAndDelete(id);
+  const car = await Car.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        isPublished: false,
+      },
+    },
+    { new: true }
+  );
 
   if (!car) {
     const error = new Error('Không tìm thấy xe');

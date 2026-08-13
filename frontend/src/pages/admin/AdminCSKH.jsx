@@ -127,7 +127,7 @@ export default function AdminCSKH() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <AdminHeader title="Trung Tâm Chăm Sóc Khách Hàng (CSKH Center)" />
 
-        <main style={{ padding: '32px 36px', flex: 1 }} className="space-y-6">
+        <main className="p-4 sm:p-6 lg:p-8 flex-1 space-y-6 overflow-x-hidden">
           {/* Toast Notification Banner */}
           <AnimatePresence>
             {toastMessage && (

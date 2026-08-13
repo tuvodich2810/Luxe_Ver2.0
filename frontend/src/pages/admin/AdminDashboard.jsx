@@ -127,7 +127,7 @@ export default function AdminDashboard() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <AdminHeader title={`Bảng Điều Khiển — ${roleConfig.label.split(' ')[0]}`} />
 
-        <main style={{ padding: '32px 36px', flex: 1 }} className="space-y-8">
+        <main className="p-4 sm:p-6 lg:p-8 flex-1 space-y-8 overflow-x-hidden">
           {/* Customized Role Welcome Banner */}
           <div className="relative bg-[#0E0E12] border border-[#D4AF37]/40 rounded-xl p-6 sm:p-8 overflow-hidden shadow-2xl space-y-4">
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
@@ -471,26 +471,62 @@ export default function AdminDashboard() {
 
               {/* Admin Management Hub Links */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link to="/admin/users" className="p-6 bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37] rounded-lg space-y-2">
-                  <Users className="w-6 h-6 text-[#D4AF37]" />
+                <Link to="/admin/users" className="p-6 bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37] rounded-lg space-y-2 group transition-all">
+                  <Users className="w-6 h-6 text-[#D4AF37] group-hover:scale-110 transition-transform" />
                   <h4 className="font-serif-lux font-bold text-lg text-white">Quản Lý Phân Quyền User</h4>
-                  <p className="text-xs text-slate-400">Cấp quyền Admin, Giám đốc, Quản lý, Sales, CSKH & Khách VIP</p>
+                  <p className="text-xs text-slate-400">Cấp quyền Admin, Giám đốc, Quản lý, Sales, CSKH &amp; Khách VIP</p>
                 </Link>
 
-                <Link to="/admin/crm" className="p-6 bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37] rounded-lg space-y-2">
-                  <TrendingUp className="w-6 h-6 text-amber-400" />
+                <Link to="/admin/crm" className="p-6 bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37] rounded-lg space-y-2 group transition-all">
+                  <TrendingUp className="w-6 h-6 text-amber-400 group-hover:scale-110 transition-transform" />
                   <h4 className="font-serif-lux font-bold text-lg text-white">Báo Cáo Doanh Thu CRM</h4>
                   <p className="text-xs text-slate-400">Xem phễu kinh doanh và biểu đồ doanh thu 6 tháng</p>
                 </Link>
 
-                <Link to="/admin/contacts" className="p-6 bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37] rounded-lg space-y-2">
-                  <Mail className="w-6 h-6 text-emerald-400" />
+                <Link to="/admin/contacts" className="p-6 bg-[#0E0E12] border border-white/10 hover:border-[#D4AF37] rounded-lg space-y-2 group transition-all">
+                  <Mail className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
                   <h4 className="font-serif-lux font-bold text-lg text-white">Yêu Cầu Từ Contact Form</h4>
-                  <p className="text-xs text-slate-400">Xem tin nhắn từ trang http://localhost:5173/contact</p>
+                  <p className="text-xs text-slate-400">Xem và phân loại các yêu cầu liên hệ từ trang Contact và AI Chatbot</p>
                 </Link>
+              </div>
+
+              {/* Realtime System Activity Feed */}
+              <div className="bg-[#0E0E12] border border-white/10 rounded-xl p-6 space-y-4 shadow-xl">
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <h3 className="font-serif-lux text-xl font-bold text-white flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-[#D4AF37]" />
+                    <span>Nhật Ký Hoạt Động Hệ Thống (Live MongoDB Stream)</span>
+                  </h3>
+                  <span className="text-[10px] font-mono-lux text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Stream
+                  </span>
+                </div>
+
+                <div className="space-y-3 font-mono-lux text-xs">
+                  {dashboardData.recentOrders.length > 0 ? (
+                    dashboardData.recentOrders.slice(0, 4).map((ord, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded bg-[#14141C] border border-white/5">
+                        <div className="flex items-center gap-3">
+                          <span className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                          <span className="text-white font-bold">#{ord.orderNumber || ord._id?.slice(-6).toUpperCase()}</span>
+                          <span className="text-slate-400">— Đơn cọc mới cho <strong className="text-slate-200">{ord.carSnapshot?.name || ord.car?.name}</strong></span>
+                        </div>
+                        <span className="text-slate-500 text-[10px]">
+                          {ord.createdAt ? new Date(ord.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Vừa xong'}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center gap-3 p-3 rounded bg-[#14141C] border border-white/5 text-slate-400">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>Hệ thống hoạt động ổn định. Sẵn sàng ghi nhận giao dịch cọc xe &amp; yêu cầu tư vấn mới từ khách hàng VIP.</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           )}
+
         </main>
       </div>
     </div>

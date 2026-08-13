@@ -67,6 +67,22 @@ const orderService = {
   },
 
   // ==========================================
+  // PAYOS: Tạo Payment Link & QR Động
+  // ==========================================
+  createPayOSPaymentLink: async (orderId) => {
+    const response = await api.post(`/orders/${orderId}/create-payment-link`);
+    return response;
+  },
+
+  // ==========================================
+  // PAYOS: Polling Trạng Thái Thanh Toán
+  // ==========================================
+  getPaymentStatus: async (orderId) => {
+    const response = await api.get(`/orders/${orderId}/payment-status`);
+    return response;
+  },
+
+  // ==========================================
   // Tương thích Navbar cũ
   // Không dùng localStorage nữa
   // ==========================================

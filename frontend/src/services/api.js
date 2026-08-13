@@ -4,6 +4,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -15,14 +16,72 @@ api.interceptors.request.use(
   (err) => Promise.reject(err)
 );
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (res) => res.data,
-  (err) => {
-    if (err.response?.status === 401) {
-      // Chỉ tự động xóa token hỏng/hết hạn khỏi bộ nhớ, KHÔNG cưỡng chế chuyển hướng sang /login
-      localStorage.removeItem('luxe_token');
-      localStorage.removeItem('luxe_user');
+  async (err) => {
+    const originalRequest = err.config;
+
+    if (err.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/refresh')) {
+        localStorage.removeItem('luxe_token');
+        localStorage.removeItem('luxe_user');
+        return Promise.reject(new Error(err.response?.data?.message || 'Phiên làm việc đã hết hạn'));
+      }
+
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((e) => Promise.reject(e));
+      }
+
+      isRefreshing = true;
+
+      try {
+        const refreshRes = await axios.post(
+          `${import.meta.env.VITE_API_URL || '/api'}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+
+        const newAccessToken = refreshRes.data?.token || refreshRes.data?.data?.token;
+
+        if (newAccessToken) {
+          localStorage.setItem('luxe_token', newAccessToken);
+          api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          processQueue(null, newAccessToken);
+          return api(originalRequest);
+        }
+      } catch (refreshErr) {
+        processQueue(refreshErr, null);
+        localStorage.removeItem('luxe_token');
+        localStorage.removeItem('luxe_user');
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(
       new Error(err.response?.data?.message || err.message || 'Lỗi kết nối')
     );
