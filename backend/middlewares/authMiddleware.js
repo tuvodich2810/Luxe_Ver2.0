@@ -7,9 +7,6 @@ const { unauthorized } = require('../utils/apiResponse');
 // Middleware xác thực JWT
 // ===================================
 const protect = expressAsyncHandler(async (req, res, next) => {
-  console.log("===== AUTH MIDDLEWARE =====");
-  console.log("Authorization:", req.headers.authorization);
-
   let token;
 
   // Lấy token từ Authorization header (Bearer token)
@@ -20,8 +17,6 @@ const protect = expressAsyncHandler(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
 
-  console.log("Token:", token);
-
   // Không có token
   if (!token) {
     return unauthorized(res, 'Bạn chưa đăng nhập, vui lòng đăng nhập để tiếp tục');
@@ -29,7 +24,6 @@ const protect = expressAsyncHandler(async (req, res, next) => {
 
   // Verify token
   const decoded = verifyToken(token);
-  console.log("Decoded:", decoded);
 
   if (!decoded) {
     return unauthorized(res, 'Token không hợp lệ hoặc đã hết hạn');
@@ -37,7 +31,6 @@ const protect = expressAsyncHandler(async (req, res, next) => {
 
   // Tìm user
   const user = await User.findById(decoded.id).select('-password');
-  console.log("User:", user);
 
   if (!user) {
     return unauthorized(res, 'Tài khoản không tồn tại');

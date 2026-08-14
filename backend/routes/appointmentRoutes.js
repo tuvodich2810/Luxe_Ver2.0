@@ -5,14 +5,14 @@ const {
   createAppointment, updateAppointmentStatus, cancelAppointment,
 } = require('../controllers/appointmentController');
 const { protect } = require('../middlewares/authMiddleware');
-const { adminOnly } = require('../middlewares/adminMiddleware');
+const { staffOnly } = require('../middlewares/adminMiddleware');
 
 const { validateAppointmentInput } = require('../utils/validators');
 
-router.get('/', protect, adminOnly, getAllAppointments);
+router.get('/', protect, staffOnly, getAllAppointments);
 router.get('/my', protect, getMyAppointments);
 router.post('/', protect, validateAppointmentInput, createAppointment);
-router.put('/:id', protect, adminOnly, updateAppointmentStatus);
+router.put('/:id', protect, staffOnly, updateAppointmentStatus);
 router.delete('/:id', protect, cancelAppointment);
 
 module.exports = router;

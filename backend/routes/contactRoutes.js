@@ -8,10 +8,17 @@ const {
   deleteContact,
 } = require('../controllers/contactController');
 
+const { protect } = require('../middlewares/authMiddleware');
+const { staffOnly } = require('../middlewares/adminMiddleware');
+
+// Route công khai gửi liên hệ
 router.post('/', createContact);
-router.get('/', getAllContacts);
-router.get('/:id', getContactById);
-router.put('/:id', updateContactStatus);
-router.delete('/:id', deleteContact);
+
+// Routes dành riêng cho nhân sự nội bộ (Admin, Giám đốc, Quản lý, Sales, CSKH)
+router.get('/', protect, staffOnly, getAllContacts);
+router.get('/:id', protect, staffOnly, getContactById);
+router.put('/:id', protect, staffOnly, updateContactStatus);
+router.delete('/:id', protect, staffOnly, deleteContact);
 
 module.exports = router;
+

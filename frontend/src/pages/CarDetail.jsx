@@ -240,24 +240,22 @@ export default function CarDetail() {
                   </button>
                 </div>
 
-                {/* Direct Zalo Chat & Hotline Banner */}
-                <a
-                  href="https://zalo.me/0372950720"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3.5 rounded-lg bg-[#0068FF]/15 border border-[#0068FF]/50 text-white hover:bg-[#0068FF]/25 transition-all shadow-md group cursor-pointer"
+                {/* Direct VIP Registration & Hotline Banner */}
+                <Link
+                  to="/register"
+                  className="flex items-center justify-between p-3.5 rounded-lg bg-[#D4AF37]/15 border border-[#D4AF37]/50 text-white hover:bg-[#D4AF37]/25 transition-all shadow-md group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#0068FF] text-white font-black text-xs flex items-center justify-center shadow">
-                      Zalo
+                    <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-black font-bold text-xs flex items-center justify-center shadow">
+                      <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-serif-lux font-bold text-xs text-white">Trao Đổi Trực Tiếp Qua Zalo VIP</p>
-                      <p className="text-[11px] text-blue-400 font-mono-lux">Hotline / Zalo: 0372 950 720 (Quang Tuấn)</p>
+                      <p className="font-serif-lux font-bold text-xs text-white">Đăng Ký Đặt Lịch Xem Xe & Lái Thử VIP</p>
+                      <p className="text-[11px] text-[#D4AF37] font-mono-lux">Nhận Đặc Quyền Tư Vấn 1:1 Trực Tiếp</p>
                     </div>
                   </div>
-                  <span className="text-xs text-blue-300 font-mono-lux underline group-hover:text-white">Chat ngay &rarr;</span>
-                </a>
+                  <span className="text-xs text-[#D4AF37] font-mono-lux underline group-hover:text-white">Đăng ký ngay &rarr;</span>
+                </Link>
               </div>
             </div>
           </div>

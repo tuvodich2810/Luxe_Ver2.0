@@ -121,4 +121,40 @@ const updateProfile = async (userId, updateData) => {
   return user;
 };
 
-module.exports = { register, login, getMe, updateProfile };
+// ===================================
+// Đổi mật khẩu tài khoản
+// ===================================
+const changePassword = async (userId, { currentPassword, newPassword }) => {
+  if (!currentPassword || !newPassword) {
+    const error = new Error('Vui lòng nhập đầy đủ mật khẩu hiện tại và mật khẩu mới');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (newPassword.length < 6) {
+    const error = new Error('Mật khẩu mới phải có ít nhất 6 ký tự');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const user = await User.findById(userId).select('+password');
+  if (!user) {
+    const error = new Error('Không tìm thấy tài khoản');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const isMatch = await user.comparePassword(currentPassword);
+  if (!isMatch) {
+    const error = new Error('Mật khẩu hiện tại không chính xác');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  user.password = newPassword;
+  await user.save(); // pre('save') hook sẽ hash newPassword bằng bcrypt
+
+  return { message: 'Đổi mật khẩu thành công' };
+};
+
+module.exports = { register, login, getMe, updateProfile, changePassword };

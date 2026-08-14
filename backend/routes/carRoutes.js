@@ -5,7 +5,7 @@ const {
   getRelatedCars, createCar, updateCar, deleteCar,
 } = require('../controllers/carController');
 const { protect } = require('../middlewares/authMiddleware');
-const { adminOnly } = require('../middlewares/adminMiddleware');
+const { hasRole } = require('../middlewares/adminMiddleware');
 
 // Routes công khai
 router.get('/', getCars);
@@ -13,9 +13,10 @@ router.get('/featured', getFeaturedCars);
 router.get('/:idOrSlug', getCarById);
 router.get('/:id/related', getRelatedCars);
 
-// Routes chỉ dành cho Admin
-router.post('/', protect, adminOnly, createCar);
-router.put('/:id', protect, adminOnly, updateCar);
-router.delete('/:id', protect, adminOnly, deleteCar);
+// Routes dành cho Admin và Quản lý Showroom
+const carManageRoles = hasRole('admin', 'quan_ly');
+router.post('/', protect, carManageRoles, createCar);
+router.put('/:id', protect, carManageRoles, updateCar);
+router.delete('/:id', protect, carManageRoles, deleteCar);
 
 module.exports = router;

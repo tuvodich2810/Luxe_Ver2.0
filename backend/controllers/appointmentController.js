@@ -65,15 +65,6 @@ const getMyAppointments = expressAsyncHandler(async (req, res) => {
 // POST /api/appointments
 // ===================================
 const createAppointment = expressAsyncHandler(async (req, res) => {
-
-  console.log("==================================");
-  console.log("CREATE APPOINTMENT");
-  console.log("BODY:");
-  console.log(req.body);
-  console.log("USER:");
-  console.log(req.user);
-  console.log("==================================");
-
   try {
 
     const {
@@ -145,9 +136,6 @@ const createAppointment = expressAsyncHandler(async (req, res) => {
       'car',
       'name model year mainImage'
     );
-
-    console.log("ĐÃ LƯU APPOINTMENT:");
-    console.log(appointment);
 
     // TỰ ĐỘNG GỬI THÔNG BÁO EMAIL & ZALO CHO KHÁCH HÀNG
     notificationService.triggerAppointmentCreated(appointment, req.user);
@@ -234,11 +222,11 @@ const cancelAppointment = expressAsyncHandler(async (req, res) => {
     );
   }
 
-  if (
-    appointment.user &&
-    appointment.user._id ? appointment.user._id.toString() !== req.user._id.toString() : appointment.user.toString() !== req.user._id.toString() &&
-    req.user.role !== 'admin'
-  ) {
+  const apptUserId = appointment.user?._id ? appointment.user._id.toString() : appointment.user?.toString();
+  const isOwner = apptUserId === req.user._id.toString();
+  const isStaff = ['admin', 'giam_doc', 'quan_ly', 'sales', 'cskh'].includes(req.user.role);
+
+  if (!isOwner && !isStaff) {
     return forbidden(
       res,
       'Bạn không có quyền hủy lịch hẹn này'

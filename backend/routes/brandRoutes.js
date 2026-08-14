@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { getBrands, getBrandById, createBrand, updateBrand, deleteBrand } = require('../controllers/brandController');
 const { protect } = require('../middlewares/authMiddleware');
-const { adminOnly } = require('../middlewares/adminMiddleware');
+const { hasRole } = require('../middlewares/adminMiddleware');
 
 router.get('/', getBrands);
 router.get('/:id', getBrandById);
-router.post('/', protect, adminOnly, createBrand);
-router.put('/:id', protect, adminOnly, updateBrand);
-router.delete('/:id', protect, adminOnly, deleteBrand);
+
+const brandManageRoles = hasRole('admin', 'quan_ly');
+router.post('/', protect, brandManageRoles, createBrand);
+router.put('/:id', protect, brandManageRoles, updateBrand);
+router.delete('/:id', protect, brandManageRoles, deleteBrand);
 
 module.exports = router;

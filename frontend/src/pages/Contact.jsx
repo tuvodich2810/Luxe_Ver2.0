@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
 import Chatbot from '@/components/common/Chatbot';
@@ -15,6 +16,7 @@ import {
   ShieldCheck,
   Building2,
   ExternalLink,
+  UserPlus,
 } from 'lucide-react';
 import { isValidVNPhone } from '@/utils/validation';
 
@@ -82,51 +84,57 @@ export default function Contact() {
             </p>
           </div>
 
-          {/* Section 1 (TOP): Zalo VIP Contact Card & VIP Concierge Form */}
+          {/* Section 1 (TOP): VIP Registration Card & VIP Concierge Form */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            {/* Zalo Contact Card (Left - 5 Cols) */}
+            {/* VIP Registration & Concierge Card (Left - 5 Cols) */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="bg-[#12121C] border-2 border-[#0068FF]/50 p-6 rounded-xl space-y-4 shadow-xl relative overflow-hidden">
+              <div className="bg-[#12121C] border-2 border-[#D4AF37]/50 p-6 rounded-xl space-y-4 shadow-xl relative overflow-hidden">
+                {/* Gold Top Accent */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]" />
+
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#0068FF] flex items-center justify-center text-white font-black text-sm shadow">
-                      Zalo
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#AA7C11] flex items-center justify-center text-[#070709] font-black text-sm shadow">
+                      <Sparkles className="w-5 h-5 text-[#070709]" />
                     </div>
                     <div>
-                      <h4 className="font-serif-lux font-bold text-base text-white">Quang Tuấn — Zalo VIP</h4>
-                      <p className="text-xs text-blue-400 font-mono-lux font-semibold">Hotline/Zalo: 0372 950 720</p>
+                      <h4 className="font-serif-lux font-bold text-base text-white">Đặc Quyền Thành Viên VIP</h4>
+                      <p className="text-xs text-[#D4AF37] font-mono-lux font-semibold">Quang Tuấn — Executive Director</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-[#09090D] p-4 rounded-lg border border-[#D4AF37]/30 flex flex-col items-center text-center space-y-3">
-                  <img
-                    src="/zalo-qr.png"
-                    alt="Mã QR Zalo Quang Tuấn 0372950720"
-                    className="w-48 sm:w-56 h-auto rounded-lg shadow-md border border-white/20 hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://zalo.me/0372950720';
-                    }}
-                  />
-                  <p className="text-[11px] text-slate-300 font-mono-lux">
-                    Quét mã QR trên bằng ứng dụng Zalo để nhắn tin hoặc gọi tư vấn trực tiếp với Giám Đốc/Quản Lý.
-                  </p>
+                <div className="bg-[#09090D] p-5 rounded-lg border border-[#D4AF37]/30 space-y-3">
+                  <h5 className="text-xs font-mono-lux font-bold text-white uppercase tracking-wider">
+                    Đăng Ký Để Nhận Ngay:
+                  </h5>
+                  <ul className="space-y-2 text-xs text-slate-300">
+                    <li className="flex items-start gap-2">
+                      <ShieldCheck className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                      <span>Đặc quyền đặt lịch lái thử siêu xe tại Showroom Hà Nội &amp; TP.HCM.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <ShieldCheck className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                      <span>Nhận tư vấn cấu hình &amp; báo giá lăn bánh 1:1 cùng Ban Giám Đốc.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <ShieldCheck className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                      <span>Ưu tiên quyền giữ cọc bộ sưu tập siêu xe phiên bản giới hạn.</span>
+                    </li>
+                  </ul>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-1">
-                  <a
-                    href="https://zalo.me/0372950720"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 bg-[#0068FF] hover:bg-[#0052cc] text-white py-2.5 px-3 rounded-lg text-xs font-bold font-mono-lux transition-all shadow-md"
+                  <Link
+                    to="/register"
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#AA7C11] text-[#070709] py-2.5 px-3 rounded-lg text-xs font-bold font-mono-lux hover:brightness-110 transition-all shadow-md"
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>Nhắn Zalo Ngay</span>
-                  </a>
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>Đăng Ký Ngay</span>
+                  </Link>
                   <a
                     href="tel:0372950720"
-                    className="flex items-center justify-center gap-2 bg-[#D4AF37] hover:bg-[#b8952b] text-black py-2.5 px-3 rounded-lg text-xs font-bold font-mono-lux transition-all shadow-md"
+                    className="flex items-center justify-center gap-2 bg-[#15151F] border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black py-2.5 px-3 rounded-lg text-xs font-bold font-mono-lux transition-all shadow-md"
                   >
                     <Phone className="w-3.5 h-3.5" />
                     <span>Gọi 0372 950 720</span>
@@ -336,7 +344,7 @@ export default function Contact() {
                     </p>
                     <p className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                      <span className="font-mono-lux font-semibold text-white">0372 950 720 (Hotline &amp; Zalo)</span>
+                      <span className="font-mono-lux font-semibold text-white">0372 950 720 (Hotline VIP Concierge)</span>
                     </p>
                     <p className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-[#D4AF37] shrink-0" />

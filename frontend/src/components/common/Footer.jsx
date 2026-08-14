@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, MapPin, Phone, Mail, ArrowRight, ShieldCheck, Award, Clock } from 'lucide-react';
+import { Sparkles, MapPin, Phone, Mail, ArrowRight, ShieldCheck, Award, Clock, UserPlus } from 'lucide-react';
 import PolicyModal from '@/components/common/PolicyModal';
 
 export default function Footer() {
@@ -134,20 +134,20 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Concierge Hotline */}
+          {/* Concierge Hotline & VIP Registration */}
           <div>
             <h4 className="font-mono-lux text-xs uppercase tracking-widest text-white mb-6">
-              VIP Concierge Zalo &amp; Hotline
+              VIP Concierge &amp; Registration
             </h4>
             <div className="space-y-3 text-xs">
               <a href="tel:0372950720" className="flex items-center gap-2 text-white hover:text-[#D4AF37] transition-colors">
                 <Phone className="w-4 h-4 text-[#D4AF37]" />
                 <span className="font-mono-lux font-bold text-sm">0372 950 720</span>
               </a>
-              <a href="https://zalo.me/0372950720" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors">
-                <span className="w-4 h-4 rounded bg-[#0068FF] text-white text-[10px] font-bold flex items-center justify-center">Z</span>
-                <span className="font-mono-lux font-semibold">Zalo: Quang Tuấn (0372.950.720)</span>
-              </a>
+              <Link to="/register" className="flex items-center gap-2 text-[#D4AF37] hover:text-white transition-colors">
+                <UserPlus className="w-4 h-4 text-[#D4AF37]" />
+                <span className="font-mono-lux font-semibold">Đăng Ký Thành Viên VIP</span>
+              </Link>
               <a href="mailto:luxemotor001@gmail.com" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
                 <Mail className="w-4 h-4 text-[#D4AF37]" />
                 <span>luxemotor001@gmail.com</span>

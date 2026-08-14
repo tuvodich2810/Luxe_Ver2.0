@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { uploadImage, uploadMultipleImages, deleteImage } = require('../controllers/imageController');
 const { protect } = require('../middlewares/authMiddleware');
-const { adminOnly } = require('../middlewares/adminMiddleware');
+const { hasRole } = require('../middlewares/adminMiddleware');
 const { uploadSingle, uploadMultiple } = require('../middlewares/uploadMiddleware');
 
-router.post('/upload', protect, adminOnly, uploadSingle, uploadImage);
-router.post('/upload-multiple', protect, adminOnly, uploadMultiple, uploadMultipleImages);
-router.delete('/:id', protect, adminOnly, deleteImage);
+const imageManageRoles = hasRole('admin', 'quan_ly');
+router.post('/upload', protect, imageManageRoles, uploadSingle, uploadImage);
+router.post('/upload-multiple', protect, imageManageRoles, uploadMultiple, uploadMultipleImages);
+router.delete('/:id', protect, imageManageRoles, deleteImage);
 
 module.exports = router;

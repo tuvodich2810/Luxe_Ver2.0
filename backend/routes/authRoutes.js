@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, refreshToken, getMe, updateProfile, logout } = require('../controllers/authController');
+const { register, login, refreshToken, getMe, updateProfile, changePassword, logout } = require('../controllers/authController');
 const { protect } = require('../middlewares/authMiddleware');
 const { validateRegisterInput, validateLoginInput } = require('../utils/validators');
 const { authRateLimiter } = require('../middlewares/rateLimitMiddleware');
@@ -13,6 +13,7 @@ router.post('/refresh', refreshToken);
 // Routes yêu cầu đăng nhập
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
+router.put('/change-password', protect, changePassword);
 router.post('/logout', protect, logout);
 
 module.exports = router;

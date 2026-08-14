@@ -18,6 +18,7 @@ import {
   Sparkles,
   Briefcase,
   LayoutDashboard,
+  UserPlus,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -146,17 +147,15 @@ export default function Navbar() {
 
         {/* Action Controls & Profile */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Direct Zalo Button */}
-          <a
-            href="https://zalo.me/0372950720"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0068FF]/15 border border-[#0068FF]/40 text-blue-400 hover:text-white hover:bg-[#0068FF] text-xs font-mono-lux font-bold transition-all shadow"
-            title="Chat Zalo Quang Tuấn 0372.950.720"
+          {/* Direct VIP Registration Button */}
+          <Link
+            to="/register"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] hover:text-black hover:bg-[#D4AF37] text-xs font-mono-lux font-bold transition-all shadow-md group"
+            title="Đăng ký nhận đặc quyền thành viên VIP"
           >
-            <span className="w-4 h-4 rounded-full bg-[#0068FF] text-white text-[10px] flex items-center justify-center font-black">Z</span>
-            <span>Zalo: 0372.950.720</span>
-          </a>
+            <UserPlus className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+            <span>Đăng Ký VIP</span>
+          </Link>
 
           {/* Wishlist Button */}
           <Link
@@ -257,7 +256,7 @@ export default function Navbar() {
                 Đăng nhập
               </Link>
               <Link to="/register" className="btn-lux-gold px-5 py-2.5">
-                Tải trải nghiệm
+                Đăng ký VIP
               </Link>
             </div>
           )}
@@ -340,7 +339,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="btn-lux-gold text-center"
               >
-                Tải trải nghiệm
+                Đăng ký VIP
               </Link>
             </div>
           )}

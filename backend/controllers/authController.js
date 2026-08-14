@@ -23,7 +23,6 @@ const sendTokenResponse = (user, statusCode, res, message) => {
     success: true,
     message,
     token: accessToken,
-    refreshToken,
     user,
   });
 };
@@ -117,6 +116,14 @@ const updateProfile = expressAsyncHandler(async (req, res) => {
 });
 
 // ===================================
+// PUT /api/auth/change-password (Yêu cầu đăng nhập)
+// ===================================
+const changePassword = expressAsyncHandler(async (req, res) => {
+  const result = await authService.changePassword(req.user._id, req.body);
+  return ok(res, result.message);
+});
+
+// ===================================
 // POST /api/auth/logout
 // ===================================
 const logout = expressAsyncHandler(async (req, res) => {
@@ -128,4 +135,4 @@ const logout = expressAsyncHandler(async (req, res) => {
   return ok(res, 'Đăng xuất thành công');
 });
 
-module.exports = { register, login, refreshToken, getMe, updateProfile, logout };
+module.exports = { register, login, refreshToken, getMe, updateProfile, changePassword, logout };
