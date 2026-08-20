@@ -34,6 +34,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const favoriteRoutes = require('./routes/favoriteRoutes');
 
 // ===================================
 // Import Middlewares
@@ -65,7 +66,11 @@ app.use(
 // ===================================
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
   'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
   ...(FRONTEND_URL ? [FRONTEND_URL] : []),
 ];
 
@@ -74,13 +79,18 @@ app.use(
     origin: (origin, callback) => {
       // Cho phép requests không có origin (Postman, mobile app, server-to-server)
       if (!origin) return callback(null, true);
-      // Cho phép các origin trong whitelist
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Cho phép mọi port localhost / 127.0.0.1 hoặc các domain trong whitelist
+      if (
+        allowedOrigins.includes(origin) ||
+        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
       callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   })
 );
 
@@ -132,6 +142,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/favorites', favoriteRoutes);
 
 // ===================================
 // Error Handling (phải đặt sau tất cả routes)

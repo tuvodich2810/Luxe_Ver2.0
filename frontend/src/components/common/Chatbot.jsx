@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '@/services/api';
 import { sendContactForm } from '@/services/sheetsService';
 import { sendMessage as sendChatMessage } from '@/services/chatService';
+import FAQModal from './FAQModal';
 import {
   MessageSquare,
   X,
@@ -12,19 +13,21 @@ import {
   PhoneCall,
   Bot,
   ChevronRight,
+  HelpCircle,
 } from 'lucide-react';
 
 /* ─── Quick reply suggestions ────────────────── */
 const QUICK_REPLIES = [
-  { label: '🏎️ Giá xe Ferrari & Lamborghini', text: 'Cho tôi biết giá bán lăn bánh của xe Ferrari và Lamborghini đang có sẵn?' },
-  { label: '📝 Tôi muốn đặt lịch xem xe', text: 'Tôi muốn đặt lịch đăng ký lái thử siêu xe tận nhà.' },
-  { label: '💳 Thủ tục cọc & Trả góp', text: 'Chính sách đặt cọc và hỗ trợ trả góp siêu xe như thế nào?' },
-  { label: '🛡️ Bảo hành & Ký gửi', text: 'Chính sách bảo hành chính hãng và thủ tục ký gửi siêu xe?' },
+  { label: '🏎️ Giá Ferrari & Lamborghini 2026', text: 'Cho tôi biết danh sách và giá lăn bánh của siêu xe Ferrari và Lamborghini đang có sẵn tại showroom?' },
+  { label: '📝 Đặt Lịch Lái Thử Tận Nhà', text: 'Tôi muốn đăng ký lịch lái thử siêu xe riêng tại nhà (Home Concierge Test Drive).' },
+  { label: '💳 Quy Trình Đặt Cọc VietQR', text: 'Quy trình đặt cọc giữ xe trực tuyến và bảo đảm thanh toán qua PayOS VietQR thế nào?' },
+  { label: '✨ May Đo Bespoke & Bảo Hành 5 Năm', text: 'Chính sách may đo cá nhân hóa Bespoke và gói bảo dưỡng 5 sao của showroom?' },
 ];
 
 export default function Chatbot() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [isFAQOpen, setIsFAQOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -223,54 +226,135 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Floating Toggle Button */}
-      <motion.button
-        onClick={() => setIsOpen((v) => !v)}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.95 }}
-        aria-label="Mở chatbot tư vấn VIP Concierge"
-        className={`fixed bottom-6 right-6 z-[1000] w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 shadow-2xl ${
-          isOpen
-            ? 'bg-[#14141C] text-slate-300 border border-white/20'
-            : 'bg-gradient-to-r from-[#D4AF37] via-[#C5A028] to-[#997A15] text-black shadow-[#D4AF37]/30 border border-[#D4AF37]'
-        }`}
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <X className="w-6 h-6" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="relative"
-            >
-              <MessageSquare className="w-6 h-6" />
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* Cụm Phím Trợ Năng Nổi VIP Concierge Xếp Dọc (Zalo -> FAQ -> AI Chatbot) */}
+      <div className="fixed bottom-6 right-4 sm:right-6 z-[1000] flex flex-col items-center gap-2.5 sm:gap-3">
+        {/* 1. NÚT CHAT ZALO VIP */}
+        <motion.a
+          href="https://id.zalo.me/account/login?continue=https%3A%2F%2Fzalo.me%2Fpc"
+          target="_blank"
+          rel="noreferrer"
+          whileHover={{ scale: 1.1, x: -3 }}
+          whileTap={{ scale: 0.95 }}
+          title="Mở Zalo Chat VIP (Zalo PC)"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#0068FF] hover:bg-[#0055D4] text-white flex items-center justify-center shadow-[0_4px_20px_rgba(0,104,255,0.45)] border border-white/30 transition-all relative group cursor-pointer"
+        >
+          {/* Subtle Ring Animation */}
+          <span className="absolute inset-0 rounded-full bg-[#0068FF] opacity-30 animate-ping pointer-events-none" />
 
-        {/* Unread badge */}
-        {!isOpen && unread > 0 && (
-          <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-mono-lux font-bold rounded-full flex items-center justify-center border border-black shadow"
-          >
-            {unread}
-          </motion.span>
-        )}
-      </motion.button>
+          {/* Biểu Tượng Zalo */}
+          <svg viewBox="0 0 48 48" className="w-7 h-7 sm:w-8 sm:h-8 relative z-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M24 4C12.95 4 4 12.5 4 23C4 28.6 6.8 33.6 11.2 36.9L9 44L16.6 40.8C18.9 41.6 21.4 42 24 42C35.05 42 44 33.5 44 23C44 12.5 35.05 4 24 4Z"
+              fill="#0068FF"
+            />
+            <path
+              d="M24 4C12.95 4 4 12.5 4 23C4 28.6 6.8 33.6 11.2 36.9L9 44L16.6 40.8C18.9 41.6 21.4 42 24 42C35.05 42 44 33.5 44 23C44 12.5 35.05 4 24 4Z"
+              stroke="white"
+              strokeWidth="1.2"
+            />
+            <text
+              x="50%"
+              y="56%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="#FFFFFF"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              fontWeight="900"
+              fontSize="12.5px"
+              letterSpacing="-0.3px"
+            >
+              Zalo
+            </text>
+          </svg>
+
+          {/* Tooltip Hover Hiện Bên Trái */}
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md bg-[#0A0A0F] border border-white/20 text-[10px] font-mono-lux text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl">
+            Chat Zalo (Zalo PC)
+          </span>
+        </motion.a>
+
+        {/* 2. NÚT CÂU HỎI THƯỜNG GẶP (FAQ MODAL) */}
+        <motion.button
+          onClick={() => setIsFAQOpen(true)}
+          whileHover={{ scale: 1.1, x: -3 }}
+          whileTap={{ scale: 0.95 }}
+          title="Xem Câu Hỏi Thường Gặp (FAQ)"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#12121C] hover:bg-[#1A1A28] text-[#D4AF37] border border-[#D4AF37]/50 flex items-center justify-center shadow-[0_4px_20px_rgba(212,175,55,0.2)] transition-all relative group cursor-pointer"
+        >
+          <HelpCircle className="w-6 h-6 sm:w-7 sm:h-7 text-[#D4AF37]" />
+          <span className="absolute -top-1 -right-1 px-1.5 py-0.2 bg-[#D4AF37] text-black text-[9px] font-mono-lux font-black rounded-full shadow">
+            FAQ
+          </span>
+
+          {/* Tooltip Hover Hiện Bên Trái */}
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md bg-[#0A0A0F] border border-white/20 text-[10px] font-mono-lux text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl">
+            Câu Hỏi Thường Gặp (FAQ)
+          </span>
+        </motion.button>
+
+        {/* 3. NÚT AI CHATBOT VIP CONCIERGE (HÌNH 2) */}
+        <motion.button
+          onClick={() => setIsOpen((v) => !v)}
+          whileHover={{ scale: 1.1, x: -3 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label="Mở chatbot tư vấn VIP Concierge"
+          className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 shadow-2xl relative group ${
+            isOpen
+              ? 'bg-[#14141C] text-slate-300 border border-white/20'
+              : 'bg-gradient-to-r from-[#D4AF37] via-[#C5A028] to-[#997A15] text-black shadow-[#D4AF37]/30 border border-[#D4AF37]'
+          }`}
+        >
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X className="w-6 h-6" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="chat"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="relative"
+              >
+                <MessageSquare className="w-6 h-6" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Unread badge */}
+          {!isOpen && unread > 0 && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-mono-lux font-bold rounded-full flex items-center justify-center border border-black shadow"
+            >
+              {unread}
+            </motion.span>
+          )}
+
+          {/* Tooltip Hover Hiện Bên Trái */}
+          {!isOpen && (
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md bg-[#0A0A0F] border border-white/20 text-[10px] font-mono-lux text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl">
+              Trợ Lý AI VIP
+            </span>
+          )}
+        </motion.button>
+      </div>
+
+      {/* Modal Câu Hỏi Thường Gặp (FAQ Modal) */}
+      <FAQModal
+        isOpen={isFAQOpen}
+        onClose={() => setIsFAQOpen(false)}
+        onOpenChat={() => setIsOpen(true)}
+      />
 
       {/* Main Chat Window */}
       <AnimatePresence>
@@ -280,7 +364,7 @@ export default function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.96 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-24 right-4 sm:right-8 z-[999] w-[calc(100vw-32px)] sm:w-[430px] h-[600px] bg-[#0A0A0F] border border-[#D4AF37]/40 rounded-2xl flex flex-col shadow-2xl overflow-hidden font-sans backdrop-blur-2xl"
+            className="fixed bottom-6 right-4 sm:right-24 z-[999] w-[calc(100vw-32px)] sm:w-[430px] h-[600px] bg-[#0A0A0F] border border-[#D4AF37]/40 rounded-2xl flex flex-col shadow-2xl overflow-hidden font-sans backdrop-blur-2xl"
           >
             {/* Header section */}
             <div className="p-4 bg-gradient-to-r from-[#111118] via-[#0E0E14] to-[#111118] border-b border-white/10 flex items-center justify-between shrink-0">

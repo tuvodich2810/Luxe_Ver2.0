@@ -18,7 +18,6 @@ import {
   Sparkles,
   Briefcase,
   LayoutDashboard,
-  UserPlus,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -26,8 +25,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [favCount, setFavCount] = useState(favoriteService.getFavorites().length);
-  const [orderCount, setOrderCount] = useState(orderService.getOrders().length);
+  const [favCount, setFavCount] = useState(() => favoriteService.getFavorites().length);
+  const [orderCount, setOrderCount] = useState(0);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -64,11 +63,31 @@ export default function Navbar() {
     window.addEventListener('luxe_favorites_updated', handleFavChange);
     window.addEventListener('luxe_orders_updated', handleOrderChange);
 
+    // Lấy số lượng đơn hàng và xe yêu thích nếu đã đăng nhập
+    if (isAuthenticated) {
+      setFavCount(favoriteService.getFavorites().length);
+      favoriteService.fetchFavorites().then((favs) => {
+        setFavCount(favs?.length || 0);
+      }).catch(() => {});
+
+      orderService.getMyOrders()
+        .then((res) => {
+          const orders = res?.data || (Array.isArray(res) ? res : []);
+          setOrderCount(orders.length);
+        })
+        .catch(() => {
+          setOrderCount(0);
+        });
+    } else {
+      setFavCount(0);
+      setOrderCount(0);
+    }
+
     return () => {
       window.removeEventListener('luxe_favorites_updated', handleFavChange);
       window.removeEventListener('luxe_orders_updated', handleOrderChange);
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     await logout();
@@ -147,16 +166,6 @@ export default function Navbar() {
 
         {/* Action Controls & Profile */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Direct VIP Registration Button */}
-          <Link
-            to="/register"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] hover:text-black hover:bg-[#D4AF37] text-xs font-mono-lux font-bold transition-all shadow-md group"
-            title="Đăng ký nhận đặc quyền thành viên VIP"
-          >
-            <UserPlus className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
-            <span>Đăng Ký VIP</span>
-          </Link>
-
           {/* Wishlist Button */}
           <Link
             to="/favorites"
@@ -256,7 +265,7 @@ export default function Navbar() {
                 Đăng nhập
               </Link>
               <Link to="/register" className="btn-lux-gold px-5 py-2.5">
-                Đăng ký VIP
+                Đăng ký
               </Link>
             </div>
           )}
@@ -339,7 +348,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="btn-lux-gold text-center"
               >
-                Đăng ký VIP
+                Đăng ký
               </Link>
             </div>
           )}

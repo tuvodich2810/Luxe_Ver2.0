@@ -63,12 +63,13 @@ export default function AdminUsers() {
   }, [fetchUsers]);
 
   const filteredUsers = useMemo(() => {
+    const s = String(search || '').toLowerCase();
     return users.filter((u) => {
       const matchRole = !filterRole || u.role === filterRole;
       const matchSearch =
-        !search ||
-        u.fullName?.toLowerCase().includes(search.toLowerCase()) ||
-        u.email?.toLowerCase().includes(search.toLowerCase()) ||
+        !s ||
+        u.fullName?.toLowerCase().includes(s) ||
+        u.email?.toLowerCase().includes(s) ||
         u.phone?.includes(search);
       return matchRole && matchSearch;
     });

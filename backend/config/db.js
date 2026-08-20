@@ -30,6 +30,19 @@ const connectDB = async () => {
       `✅ MongoDB đã kết nối: ${conn.connection.host}`.cyan.bold
     );
 
+    // Tự động nạp tài khoản ban đầu nếu DB chưa có người dùng
+    try {
+      const User = require("../models/User");
+      const userCount = await User.countDocuments();
+      if (userCount === 0) {
+        console.log("🌱 Database trống, đang khởi tạo dữ liệu mẫu ban đầu...".yellow);
+        const { seedFullData } = require("../services/seedService");
+        await seedFullData();
+      }
+    } catch (seedErr) {
+      console.error("⚠️ Không thể tự động nạp dữ liệu mẫu:", seedErr.message);
+    }
+
     return conn;
   } catch (error) {
     console.error(`❌ Lỗi kết nối MongoDB: ${error.message}`.red.bold);

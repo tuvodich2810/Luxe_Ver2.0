@@ -22,7 +22,7 @@ const getCars = async (queryParams) => {
   const filter = { isPublished: true };
 
   if (brand) filter.brand = brand;
-  if (category) {
+  if (category && typeof category === 'string') {
     // Chuyển category về dạng chuẩn khớp với database
     const catLower = category.toLowerCase().replace(/[\s-]/g, '_');
     if (catLower === 'all' || catLower === 'tat_ca_sieu_xe') {
@@ -163,14 +163,20 @@ const getCarById = async (idOrSlug) => {
 // Lấy xe liên quan (cùng brand hoặc category)
 // ===================================
 const getRelatedCars = async (carId, brandId, category, limit = 4) => {
-  return Car.find({
+  const orConditions = [];
+  if (brandId) orConditions.push({ brand: brandId });
+  if (category) orConditions.push({ category: category });
+
+  const query = {
     _id: { $ne: carId },       // Loại trừ xe hiện tại
     isPublished: true,
-    $or: [
-      { brand: brandId },
-      { category: category },
-    ],
-  })
+  };
+
+  if (orConditions.length > 0) {
+    query.$or = orConditions;
+  }
+
+  return Car.find(query)
     .populate('brand', 'name logo slug')
     .sort('-views')
     .limit(limit)

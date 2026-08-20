@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '@/services/api';
+import favoriteService from '@/services/favoriteService';
 
 const AuthContext = createContext(null);
 
@@ -17,10 +18,15 @@ export const AuthProvider = ({ children }) => {
           const userData = res.user || res.data?.user || res.data || res;
           setUser(userData);
           setIsAuthenticated(true);
+          // Đồng bộ danh sách yêu thích riêng của user này
+          favoriteService.fetchFavorites();
         } catch {
           localStorage.removeItem('luxe_token');
           localStorage.removeItem('luxe_user');
+          favoriteService.clearUserCache();
         }
+      } else {
+        favoriteService.clearUserCache();
       }
       setIsLoading(false);
     };
@@ -36,6 +42,8 @@ export const AuthProvider = ({ children }) => {
     if (u) localStorage.setItem('luxe_user', JSON.stringify(u));
     setUser(u);
     setIsAuthenticated(true);
+    // Đồng bộ danh sách xe yêu thích của tài khoản vừa đăng nhập
+    favoriteService.fetchFavorites();
     return u;
   }, []);
 
@@ -48,6 +56,7 @@ export const AuthProvider = ({ children }) => {
     if (u) localStorage.setItem('luxe_user', JSON.stringify(u));
     setUser(u);
     setIsAuthenticated(true);
+    favoriteService.fetchFavorites();
     return u;
   }, []);
 
@@ -57,6 +66,7 @@ export const AuthProvider = ({ children }) => {
     } catch {}
     localStorage.removeItem('luxe_token');
     localStorage.removeItem('luxe_user');
+    favoriteService.clearUserCache();
     setUser(null);
     setIsAuthenticated(false);
   }, []);

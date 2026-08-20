@@ -77,11 +77,12 @@ export default function AdminCars() {
 
   // Bộ lọc tìm kiếm
   const filteredCars = useMemo(() => {
+    const s = String(search || '').toLowerCase();
     return cars.filter((car) => {
       const matchSearch =
-        !search ||
-        car.name?.toLowerCase().includes(search.toLowerCase()) ||
-        car.model?.toLowerCase().includes(search.toLowerCase());
+        !s ||
+        car.name?.toLowerCase().includes(s) ||
+        car.model?.toLowerCase().includes(s);
       const matchBrand =
         !selectedBrand || car.brand?._id === selectedBrand || car.brand === selectedBrand;
       const matchCategory = !selectedCategory || car.category === selectedCategory;

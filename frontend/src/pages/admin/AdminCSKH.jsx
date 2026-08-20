@@ -106,18 +106,19 @@ export default function AdminCSKH() {
     }
   };
 
+  const s = String(search || '').toLowerCase();
   const filteredAppointments = appointments.filter((a) =>
-    !search ||
-    a.visitorName?.toLowerCase().includes(search.toLowerCase()) ||
+    !s ||
+    a.visitorName?.toLowerCase().includes(s) ||
     a.visitorPhone?.includes(search) ||
-    a.car?.name?.toLowerCase().includes(search.toLowerCase())
+    a.car?.name?.toLowerCase().includes(s)
   );
 
   const filteredContacts = contacts.filter((c) =>
-    !search ||
-    c.name?.toLowerCase().includes(search.toLowerCase()) ||
+    !s ||
+    c.name?.toLowerCase().includes(s) ||
     c.phone?.includes(search) ||
-    c.subject?.toLowerCase().includes(search.toLowerCase())
+    c.subject?.toLowerCase().includes(s)
   );
 
   return (

@@ -88,14 +88,11 @@ const orderService = {
   // ==========================================
   getOrders: async () => {
     try {
+      const token = localStorage.getItem('luxe_token');
+      if (!token) return [];
       const response = await api.get('/orders/my-orders');
       return response?.data || [];
     } catch (error) {
-      console.error(
-        'Không thể lấy đơn hàng:',
-        error.message
-      );
-
       return [];
     }
   },

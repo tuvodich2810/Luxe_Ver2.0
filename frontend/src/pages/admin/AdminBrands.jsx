@@ -107,11 +107,12 @@ export default function AdminBrands() {
     }
   };
 
+  const s = String(search || '').toLowerCase();
   const filteredBrands = brands.filter(
     (b) =>
-      !search ||
-      b.name?.toLowerCase().includes(search.toLowerCase()) ||
-      b.country?.toLowerCase().includes(search.toLowerCase())
+      !s ||
+      b.name?.toLowerCase().includes(s) ||
+      b.country?.toLowerCase().includes(s)
   );
 
   return (

@@ -88,11 +88,6 @@ export default function PurchaseModal({
         notes: notes.trim(),
       };
 
-      console.log('========== CREATE ORDER ==========');
-      console.log('ORDER DATA:', orderData);
-      console.log('USER:', user);
-      console.log('==================================');
-
       // ===================================
       // Gọi Backend
       // POST /api/orders
@@ -101,18 +96,6 @@ export default function PurchaseModal({
         '/orders',
         orderData
       );
-
-      console.log('========== ORDER CREATED ==========');
-      console.log('RESPONSE:', response);
-      console.log('===================================');
-
-      // api.js của bạn trả về res.data
-      // Backend có dạng:
-      // {
-      //   success: true,
-      //   message: "...",
-      //   data: order
-      // }
 
       const order = response?.data;
 
@@ -128,11 +111,6 @@ export default function PurchaseModal({
         onSuccess(order);
       }
     } catch (err) {
-      console.error(
-        '❌ CREATE ORDER ERROR:',
-        err
-      );
-
       setError(
         err?.message ||
           'Không thể tạo đơn hàng. Vui lòng thử lại.'

@@ -64,24 +64,51 @@ HƯỚNG DẪN ĐẶT LỊCH & CHỐT ĐƠN:
 - Khi phát hiện trong hội thoại khách hàng có để lại số điện thoại (ví dụ: 0988..., 0903...), đính kèm thẻ JSON ẩn ở cuối:
 [LEAD:{"name":"Khách VIP","phone":"SĐT_KHÁCH","interest":"Đặt lịch xem xe"}]`;
 
-    // Gửi yêu cầu đến Groq
-    const completion = await client.chat.completions.create({
-      model: GROQ_MODEL,
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-      temperature: 0.3,
-      max_tokens: 512,
-    });
+    const candidateModels = [
+      process.env.GROQ_MODEL || GROQ_MODEL || 'groq/compound-mini',
+      'groq/compound-mini',
+      'groq/compound',
+      'qwen/qwen3.6-27b',
+    ];
 
-    const reply = completion.choices[0].message.content;
+    let reply = null;
+    let lastError = null;
+
+    for (const modelName of candidateModels) {
+      try {
+        const completion = await client.chat.completions.create({
+          model: modelName,
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            {
+              role: "user",
+              content: message,
+            },
+          ],
+          temperature: 0.3,
+          max_tokens: 512,
+        });
+
+        let rawContent = completion.choices[0]?.message?.content || '';
+        // Xóa thẻ suy nghĩ <think>...</think> nếu có từ các model như Qwen
+        rawContent = rawContent.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+        if (rawContent) {
+          reply = rawContent;
+          break;
+        }
+      } catch (mErr) {
+        lastError = mErr;
+        console.warn(`⚠️ Model ${modelName} thất bại, đang chuyển sang model tiếp theo:`, mErr.message);
+      }
+    }
+
+    if (!reply) {
+      throw lastError || new Error('Không thể nhận phản hồi từ AI');
+    }
 
     return res.status(200).json({
       success: true,

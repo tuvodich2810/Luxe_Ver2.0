@@ -91,14 +91,15 @@ export default function AdminOrders() {
 
   // Lọc dữ liệu theo tab trạng thái & từ khóa tìm kiếm
   const filteredOrders = allOrders.filter((order) => {
+    const s = String(searchTerm || '').toLowerCase();
     const matchStatus = !filterStatus || order.orderStatus === filterStatus;
     const matchSearch =
-      !searchTerm ||
-      order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      !s ||
+      order.orderNumber?.toLowerCase().includes(s) ||
+      order.user?.fullName?.toLowerCase().includes(s) ||
       order.user?.phone?.includes(searchTerm) ||
-      order.carSnapshot?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.car?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      order.carSnapshot?.name?.toLowerCase().includes(s) ||
+      order.car?.name?.toLowerCase().includes(s);
     return matchStatus && matchSearch;
   });
 

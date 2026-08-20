@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
 import Chatbot from '@/components/common/Chatbot';
@@ -47,6 +48,7 @@ const FALLBACK_CAR = {
 
 export default function CarDetail() {
   const { idOrSlug } = useParams();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [car, setCar] = useState(null);
   const [relatedCars, setRelatedCars] = useState([]);
@@ -70,20 +72,35 @@ export default function CarDetail() {
           } catch {}
         } else {
           setCar(FALLBACK_CAR);
+          setIsFav(favoriteService.isFavorite(FALLBACK_CAR._id));
         }
       } catch {
         setCar(FALLBACK_CAR);
+        setIsFav(favoriteService.isFavorite(FALLBACK_CAR._id));
       } finally {
         setLoading(false);
       }
     };
     fetchDetail();
-  }, [idOrSlug]);
 
-  const handleToggleFav = () => {
+    const handleUpdate = () => {
+      if (car?._id) {
+        setIsFav(favoriteService.isFavorite(car._id));
+      }
+    };
+    window.addEventListener('luxe_favorites_updated', handleUpdate);
+    return () => window.removeEventListener('luxe_favorites_updated', handleUpdate);
+  }, [idOrSlug, car?._id]);
+
+  const handleToggleFav = async () => {
     if (!car) return;
-    favoriteService.toggleFavorite(car);
-    setIsFav(!isFav);
+    if (!isAuthenticated) {
+      if (window.confirm('Vui lòng đăng nhập để lưu siêu xe vào danh sách yêu thích của bạn! Bạn có muốn đến trang đăng nhập ngay không?')) {
+        navigate('/login');
+      }
+      return;
+    }
+    await favoriteService.toggleFavorite(car);
   };
 
   if (loading) {

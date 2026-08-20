@@ -4,7 +4,6 @@ const SHEETS_URL = import.meta.env.VITE_SHEETS_URL || '';
 
 const send = async (data) => {
   if (!SHEETS_URL || SHEETS_URL.includes('YOUR_')) {
-    console.log('[Sheets DEV]', data);
     return { success: true };
   }
   try {

@@ -272,6 +272,131 @@ export default function DirectorDashboard() {
             </div>
           </div>
 
+          {/* TX5: CEO Financial Metrics & AI CRM Performance Matrix */}
+          <div className="bg-[#0E0E12] border border-[#D4AF37]/30 rounded-xl p-6 space-y-6 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <div>
+                <span className="text-[10px] font-mono-lux uppercase tracking-widest text-[#D4AF37]">
+                  CEO DASHBOARD STRATEGIC METRICS (TX5)
+                </span>
+                <h3 className="font-serif-lux text-xl font-bold text-white mt-0.5">
+                  Đo Lường Hiệu Suất Tài Chính CRM &amp; Trí Tuệ Nhân Tạo AI
+                </h3>
+              </div>
+              <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded text-xs font-mono-lux font-bold">
+                ROI Chiến Dịch: +520%
+              </span>
+            </div>
+
+            {/* 6 Key Metrics Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div className="p-3.5 rounded-lg bg-[#14141C] border border-white/5 space-y-1">
+                <span className="text-[10px] text-slate-400 font-mono-lux uppercase block">Total Leads</span>
+                <span className="text-lg font-bold font-serif-lux text-white">250 Leads</span>
+                <span className="text-[10px] text-emerald-400 block font-mono-lux">+166% Target</span>
+              </div>
+              <div className="p-3.5 rounded-lg bg-[#14141C] border border-white/5 space-y-1">
+                <span className="text-[10px] text-slate-400 font-mono-lux uppercase block">Conversion Rate</span>
+                <span className="text-lg font-bold font-serif-lux text-[#D4AF37]">16.8%</span>
+                <span className="text-[10px] text-emerald-400 block font-mono-lux">Mục tiêu 12.0%</span>
+              </div>
+              <div className="p-3.5 rounded-lg bg-[#14141C] border border-white/5 space-y-1">
+                <span className="text-[10px] text-slate-400 font-mono-lux uppercase block">Cost Per Lead (CPL)</span>
+                <span className="text-lg font-bold font-serif-lux text-emerald-400">180K VNĐ</span>
+                <span className="text-[10px] text-slate-400 block font-mono-lux">Giảm 28%</span>
+              </div>
+              <div className="p-3.5 rounded-lg bg-[#14141C] border border-white/5 space-y-1">
+                <span className="text-[10px] text-slate-400 font-mono-lux uppercase block">Cost Per Acq (CPA)</span>
+                <span className="text-lg font-bold font-serif-lux text-purple-400">1.05M VNĐ</span>
+                <span className="text-[10px] text-emerald-400 block font-mono-lux">Tối ưu 42%</span>
+              </div>
+              <div className="p-3.5 rounded-lg bg-[#14141C] border border-white/5 space-y-1">
+                <span className="text-[10px] text-slate-400 font-mono-lux uppercase block">Customer LTV</span>
+                <span className="text-lg font-bold font-serif-lux text-amber-400">2.5 Tỷ VNĐ</span>
+                <span className="text-[10px] text-slate-400 block font-mono-lux">Bảo dưỡng + Phụ kiện</span>
+              </div>
+              <div className="p-3.5 rounded-lg bg-[#14141C] border border-white/5 space-y-1">
+                <span className="text-[10px] text-slate-400 font-mono-lux uppercase block">AI Self-Resolution</span>
+                <span className="text-lg font-bold font-serif-lux text-cyan-400">82.5%</span>
+                <span className="text-[10px] text-cyan-400 block font-mono-lux">Chatbot Gemini AI</span>
+              </div>
+            </div>
+
+            {/* 5-Stage Funnel & A/B Testing Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+              {/* Funnel */}
+              <div className="p-4 rounded-lg bg-[#14141C] border border-white/5 space-y-3">
+                <h4 className="font-serif-lux text-base font-bold text-white">
+                  Phễu Chuyển Đổi Khách Hàng Siêu Xe (5 Giai Đoạn)
+                </h4>
+                <div className="space-y-2.5 text-xs font-mono-lux">
+                  {[
+                    { stage: '1. Tiếp cận Traffic Digital', count: '15.000 Lượt', pct: '100%', w: '100%', bg: 'bg-slate-700' },
+                    { stage: '2. Thu thập Lead VIP CRM', count: '250 Leads', pct: '1.67%', w: '65%', bg: 'bg-blue-600' },
+                    { stage: '3. Đăng ký Lái Thử / Tư Vấn', count: '75 Khách', pct: '30.0%', w: '45%', bg: 'bg-purple-600' },
+                    { stage: '4. Đặt Cọc Hợp Đồng PayOS', count: '42 Đơn Cọc', pct: '56.0%', w: '30%', bg: 'bg-amber-600' },
+                    { stage: '5. Hoàn Tất Bàn Giao Xe (Won)', count: '35 Siêu Xe', pct: '83.3%', w: '22%', bg: 'bg-emerald-600' },
+                  ].map((f, i) => (
+                    <div key={i} className="space-y-1">
+                      <div className="flex justify-between text-slate-300 text-[11px]">
+                        <span>{f.stage}</span>
+                        <strong className="text-white">{f.count} ({f.pct})</strong>
+                      </div>
+                      <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                        <div className={`h-full ${f.bg} rounded-full`} style={{ width: f.w }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* A/B Testing Comparison */}
+              <div className="p-4 rounded-lg bg-[#14141C] border border-white/5 space-y-3">
+                <h4 className="font-serif-lux text-base font-bold text-white">
+                  Kết Quả Thử Nghiệm A/B Testing: AI Marketing vs Truyền Thống
+                </h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-[11px] font-mono-lux">
+                    <thead>
+                      <tr className="text-slate-400 border-b border-white/10">
+                        <th className="pb-2">Kênh Tiếp Thị</th>
+                        <th className="pb-2 text-rose-400">Truyền Thống</th>
+                        <th className="pb-2 text-[#D4AF37]">Nội Dung AI</th>
+                        <th className="pb-2 text-emerald-400">Tăng Trưởng</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 text-slate-300">
+                      <tr>
+                        <td className="py-2">CTR Social Media (Facebook/IG)</td>
+                        <td className="py-2 text-slate-400">3.1%</td>
+                        <td className="py-2 text-white font-bold">5.4%</td>
+                        <td className="py-2 text-emerald-400 font-bold">+74.2%</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2">Tỷ Lệ Mở Email (Open Rate)</td>
+                        <td className="py-2 text-slate-400">28.5%</td>
+                        <td className="py-2 text-white font-bold">46.8%</td>
+                        <td className="py-2 text-emerald-400 font-bold">+64.2%</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2">Tỷ Lệ Click Báo Giá (Email CTR)</td>
+                        <td className="py-2 text-slate-400">11.2%</td>
+                        <td className="py-2 text-white font-bold">21.3%</td>
+                        <td className="py-2 text-emerald-400 font-bold">+90.1%</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2">Thời Gian Xử Lý Tư Vấn</td>
+                        <td className="py-2 text-slate-400">3.5 Giờ</td>
+                        <td className="py-2 text-white font-bold">Tức Thì (0s)</td>
+                        <td className="py-2 text-emerald-400 font-bold">-100%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Bảng Phê Duyệt Hợp Đồng Giám Đốc — Realtime MongoDB */}
           <div className="bg-[#0E0E12] border border-white/10 rounded-xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">

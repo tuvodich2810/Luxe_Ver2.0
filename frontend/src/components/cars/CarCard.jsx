@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import favoriteService from '@/services/favoriteService';
 import { Heart, ArrowUpRight } from 'lucide-react';
 
 export default function CarCard({ car }) {
-  const [isFav, setIsFav] = useState(favoriteService.isFavorite(car?._id));
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [isFav, setIsFav] = useState(() => favoriteService.isFavorite(car?._id || car?.id));
+
+  useEffect(() => {
+    setIsFav(favoriteService.isFavorite(car?._id || car?.id));
+    const handleUpdate = () => {
+      setIsFav(favoriteService.isFavorite(car?._id || car?.id));
+    };
+    window.addEventListener('luxe_favorites_updated', handleUpdate);
+    return () => window.removeEventListener('luxe_favorites_updated', handleUpdate);
+  }, [car?._id, car?.id]);
 
   if (!car) return null;
 
-  const handleToggleFav = (e) => {
+  const handleToggleFav = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    favoriteService.toggleFavorite(car);
-    setIsFav(!isFav);
+    if (!isAuthenticated) {
+      if (window.confirm('Vui lòng đăng nhập để lưu siêu xe vào danh sách yêu thích của bạn! Bạn có muốn đến trang đăng nhập ngay không?')) {
+        navigate('/login');
+      }
+      return;
+    }
+    await favoriteService.toggleFavorite(car);
   };
 
   const formatPrice = (price) => {

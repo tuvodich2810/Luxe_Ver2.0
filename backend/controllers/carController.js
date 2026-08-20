@@ -24,9 +24,10 @@ const getCarById = expressAsyncHandler(async (req, res) => {
 // GET /api/cars/:id/related
 const getRelatedCars = expressAsyncHandler(async (req, res) => {
   const car = await carService.getCarById(req.params.id);
+  const brandId = car.brand?._id || car.brand;
   const related = await carService.getRelatedCars(
     car._id,
-    car.brand._id,
+    brandId,
     car.category
   );
   return ok(res, 'Lấy xe liên quan thành công', related);

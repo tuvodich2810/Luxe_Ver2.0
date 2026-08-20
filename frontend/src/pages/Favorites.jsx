@@ -5,23 +5,43 @@ import Footer from '@/components/common/Footer';
 import Chatbot from '@/components/common/Chatbot';
 import CarCard from '@/components/cars/CarCard';
 import favoriteService from '@/services/favoriteService';
-import { Heart, Sparkles, Trash2, ArrowRight } from 'lucide-react';
+import { Heart, Sparkles, Trash2, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function Favorites() {
-  const [favorites, setFavorites] = useState(favoriteService.getFavorites());
+  const [favorites, setFavorites] = useState(() => favoriteService.getFavorites());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const data = await favoriteService.fetchFavorites();
+        if (isMounted) setFavorites(data || []);
+      } catch (err) {
+        if (isMounted) setFavorites(favoriteService.getFavorites());
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    loadData();
+
     const handleUpdate = (e) => {
       setFavorites(e.detail || []);
     };
     window.addEventListener('luxe_favorites_updated', handleUpdate);
-    return () => window.removeEventListener('luxe_favorites_updated', handleUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('luxe_favorites_updated', handleUpdate);
+    };
   }, []);
 
-  const handleClearAll = () => {
-    localStorage.removeItem('luxe_favorites');
-    setFavorites([]);
-    window.dispatchEvent(new CustomEvent('luxe_favorites_updated', { detail: [] }));
+  const handleClearAll = async () => {
+    if (window.confirm('Bạn có chắc muốn xóa tất cả siêu xe khỏi danh sách yêu thích?')) {
+      await favoriteService.clearFavorites();
+      setFavorites([]);
+    }
   };
 
   return (
@@ -57,7 +77,14 @@ export default function Favorites() {
           </div>
 
           {/* Favorites List */}
-          {favorites.length > 0 ? (
+          {loading ? (
+            <div className="py-24 text-center space-y-4">
+              <Loader2 className="w-10 h-10 text-[#D4AF37] animate-spin mx-auto" />
+              <p className="font-mono-lux text-xs uppercase tracking-widest text-slate-400">
+                Đang tải danh sách xe yêu thích của bạn...
+              </p>
+            </div>
+          ) : favorites.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favorites.map((car) => (
                 <CarCard key={car._id} car={car} />

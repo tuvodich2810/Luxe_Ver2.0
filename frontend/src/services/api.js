@@ -42,6 +42,12 @@ api.interceptors.response.use(
         return Promise.reject(new Error(err.response?.data?.message || 'Phiên làm việc đã hết hạn'));
       }
 
+      // Nếu người dùng chưa từng đăng nhập (không có token), không thử refresh
+      const existingToken = localStorage.getItem('luxe_token');
+      if (!existingToken) {
+        return Promise.reject(new Error(err.response?.data?.message || 'Bạn chưa đăng nhập, vui lòng đăng nhập để tiếp tục'));
+      }
+
       originalRequest._retry = true;
 
       if (isRefreshing) {

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import api from '@/services/api';
+import { calculateLeadScore } from '@/utils/leadScoring';
 import {
   TrendingUp,
   DollarSign,
@@ -14,6 +15,7 @@ import {
   CheckCircle2,
   Clock,
   MessageSquare,
+  Award,
 } from 'lucide-react';
 
 const formatVND = (num) =>
@@ -449,35 +451,43 @@ export default function AdminCRM() {
                     <th className="p-3">Họ và Tên</th>
                     <th className="p-3">Số Điện Thoại</th>
                     <th className="p-3">Dòng Xe Quan Tâm</th>
-                    <th className="p-3">Kênh Nguồn</th>
+                    <th className="p-3">Điểm Đánh Giá Lead</th>
                     <th className="p-3">Thời Gian</th>
                     <th className="p-3 text-right">Thao Tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-slate-300">
-                  {recentLeads.map((lead) => (
-                    <tr key={lead._id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="p-3 font-semibold text-white">{lead.name || 'Khách quan tâm'}</td>
-                      <td className="p-3 font-mono-lux text-[#D4AF37]">{lead.phone || 'N/A'}</td>
-                      <td className="p-3">{lead.interest || lead.message || 'Tư vấn siêu xe'}</td>
-                      <td className="p-3">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono-lux bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                          AI Chatbot / Form
-                        </span>
-                      </td>
-                      <td className="p-3 font-mono-lux text-slate-400">
-                        {new Date(lead.createdAt).toLocaleDateString('vi-VN')}
-                      </td>
-                      <td className="p-3 text-right space-x-2">
-                        <button
-                          onClick={() => alert(`Gửi SMS/Zalo tư vấn tới SĐT: ${lead.phone}`)}
-                          className="px-2.5 py-1 bg-[#1A1A22] border border-white/10 hover:border-[#D4AF37] text-slate-200 hover:text-[#D4AF37] rounded text-[11px] transition-colors"
-                        >
-                          Liên hệ
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {recentLeads.map((lead) => {
+                    const scoreData = calculateLeadScore(lead);
+                    return (
+                      <tr key={lead._id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="p-3 font-semibold text-white">{lead.name || 'Khách quan tâm'}</td>
+                        <td className="p-3 font-mono-lux text-[#D4AF37]">{lead.phone || 'N/A'}</td>
+                        <td className="p-3 max-w-[200px] truncate">{lead.interest || lead.car || lead.message || 'Tư vấn siêu xe'}</td>
+                        <td className="p-3">
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-mono-lux border font-bold flex items-center gap-1 ${scoreData.badgeClass}`}>
+                              {scoreData.emoji} {scoreData.tier}
+                            </span>
+                            <span className="text-xs font-mono-lux font-bold text-white">
+                              {scoreData.totalScore} <span className="text-[9px] text-slate-500">/100đ</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-3 font-mono-lux text-slate-400">
+                          {new Date(lead.createdAt).toLocaleDateString('vi-VN')}
+                        </td>
+                        <td className="p-3 text-right space-x-2">
+                          <button
+                            onClick={() => alert(`Gửi SMS/Zalo tư vấn tới SĐT: ${lead.phone}`)}
+                            className="px-2.5 py-1 bg-[#1A1A22] border border-white/10 hover:border-[#D4AF37] text-slate-200 hover:text-[#D4AF37] rounded text-[11px] transition-colors"
+                          >
+                            Liên hệ
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

@@ -6,7 +6,7 @@ export default function ZaloWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const phoneNumber = '0372950720';
   const displayPhone = '0372 950 720';
-  const zaloUrl = `https://zalo.me/${phoneNumber}`;
+  const zaloUrl = 'https://id.zalo.me/account/login?continue=https%3A%2F%2Fzalo.me%2Fpc';
 
   return (
     <>
