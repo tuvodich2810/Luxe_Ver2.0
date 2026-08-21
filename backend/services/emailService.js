@@ -17,32 +17,24 @@ const {
 } = require('../config/env');
 
 const createTransporter = () => {
-  const user = SMTP_USER || process.env.EMAIL_USER || process.env.SMTP_USER;
-  const pass = SMTP_PASS || process.env.EMAIL_PASS || process.env.SMTP_PASS;
-  const host = SMTP_HOST || process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = Number(SMTP_PORT || process.env.EMAIL_PORT || process.env.SMTP_PORT) || 587;
+  const user = SMTP_USER || process.env.EMAIL_USER || process.env.SMTP_USER || 'tuankwan2810@gmail.com';
+  const pass = SMTP_PASS || process.env.EMAIL_PASS || process.env.SMTP_PASS || 'jwdyeuelkgblorik';
 
-  if (user && pass) {
-    console.log(`✉️ [EMAIL SERVICE] Khởi tạo SMTP Transporter thành công cho tài khoản: ${user}`);
-    
-    // Khi chạy trên nền tảng đám mây (Render), service: 'gmail' giúp gửi thư ổn định nhất
-    if (host.includes('gmail') || user.endsWith('@gmail.com')) {
-      return nodemailer.createTransport({
-        service: 'gmail',
-        auth: { user, pass },
-      });
-    }
-
-    return nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-    });
-  }
-
-  console.warn('⚠️ [EMAIL SERVICE] CẢNH BÁO: Chưa cấu hình biến môi trường EMAIL_USER & EMAIL_PASS trên Dashboard của Render! Hệ thống sẽ chạy ở chế độ Mô Phỏng (Simulation).');
-  return null;
+  console.log(`✉️ [EMAIL SERVICE] Khởi tạo SMTP Transporter SSL Port 465 cho tài khoản: ${user}`);
+  
+  // Dùng trực tiếp host smtp.gmail.com cổng 465 SSL để tránh lỗi STARTTLS Connection Timeout trên Render Cloud
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: { user, pass },
+    tls: {
+      rejectUnauthorized: false,
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  });
 };
 
 const transporter = createTransporter();
