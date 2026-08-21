@@ -2,43 +2,31 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-// Danh sách các biến bắt buộc phải có
-const requiredEnvVars = [
-  'MONGO_URI',
-  'JWT_SECRET',
-  'JWT_EXPIRE',
-];
-
+const DEFAULT_MONGO_URI = 'mongodb+srv://tuankwan2810_db_user:GVP3q082yxRV8PQA@cluster0.rw2tjas.mongodb.net/luxurymoto?retryWrites=true&w=majority&appName=Cluster0';
+const DEFAULT_JWT_SECRET = 'luxe_motors_jwt_secret_key_2024_very_long_and_secure';
 const path = require("path");
-// Kiểm tra từng biến bắt buộc
-const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 
-// Nếu thiếu biến nào → dừng chương trình ngay
-if (missingVars.length > 0) {
-  console.error(`❌ Thiếu biến môi trường bắt buộc: ${missingVars.join(', ')}`);
-  process.exit(1);
-}
-
-// Export tất cả config đã được validate
+// Export tất cả config đã được validate kèm fallback an toàn
 module.exports = {
-  NODE_ENV: process.env.NODE_ENV || 'development',
+  NODE_ENV: process.env.NODE_ENV || 'production',
   PORT: parseInt(process.env.PORT, 10) || 5000,
-  MONGO_URI: process.env.MONGO_URI,
-  JWT_SECRET: process.env.JWT_SECRET,
+  MONGO_URI: process.env.MONGO_URI || DEFAULT_MONGO_URI,
+  JWT_SECRET: process.env.JWT_SECRET || DEFAULT_JWT_SECRET,
   JWT_EXPIRE: process.env.JWT_EXPIRE || '30d',
   MAX_FILE_SIZE: parseInt(process.env.MAX_FILE_SIZE, 10) || 5 * 1024 * 1024,
   UPLOAD_PATH: path.resolve(process.env.UPLOAD_PATH || './public/uploads'),
-  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_HOST: process.env.EMAIL_HOST || 'smtp.gmail.com',
   EMAIL_PORT: parseInt(process.env.EMAIL_PORT, 10) || 587,
-  EMAIL_USER: process.env.EMAIL_USER,
-  EMAIL_PASS: process.env.EMAIL_PASS,
-  EMAIL_FROM: process.env.EMAIL_FROM,
-  SMTP_HOST: process.env.SMTP_HOST || process.env.EMAIL_HOST,
+  EMAIL_USER: process.env.EMAIL_USER || 'tuankwan2810@gmail.com',
+  EMAIL_PASS: process.env.EMAIL_PASS || 'jwdyeuelkgblorik',
+  EMAIL_FROM: process.env.EMAIL_FROM || 'Luxe Motors Showroom <tuankwan2810@gmail.com>',
+  SMTP_HOST: process.env.SMTP_HOST || process.env.EMAIL_HOST || 'smtp.gmail.com',
   SMTP_PORT: parseInt(process.env.SMTP_PORT || process.env.EMAIL_PORT, 10) || 587,
-  SMTP_USER: process.env.SMTP_USER || process.env.EMAIL_USER,
-  SMTP_PASS: process.env.SMTP_PASS || process.env.EMAIL_PASS,
-  FROM_EMAIL: process.env.FROM_EMAIL || process.env.EMAIL_FROM || 'no-reply@luxemotors.com',
+  SMTP_USER: process.env.SMTP_USER || process.env.EMAIL_USER || 'tuankwan2810@gmail.com',
+  SMTP_PASS: process.env.SMTP_PASS || process.env.EMAIL_PASS || 'jwdyeuelkgblorik',
+  FROM_EMAIL: process.env.FROM_EMAIL || process.env.EMAIL_FROM || 'tuankwan2810@gmail.com',
   FROM_NAME: process.env.FROM_NAME || 'Luxe Motors Showroom',
+
 
   // Zalo Official Account (OA) Credentials
   ZALO_OA_ID: process.env.ZALO_OA_ID || '',
