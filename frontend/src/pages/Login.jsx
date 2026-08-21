@@ -154,23 +154,65 @@ export default function Login() {
               <span>Thử nghiệm đăng nhập nhanh (1-Click Fill):</span>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
               <button
                 type="button"
                 onClick={() => fillDemoAccount('admin@luxemotors.com', '123456')}
-                className="px-2.5 py-1.5 rounded bg-[#1C1C26] hover:bg-[#D4AF37] hover:text-black border border-white/10 text-[11px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group"
+                className="px-2 py-1.5 rounded bg-[#1C1C26] hover:bg-[#D4AF37] hover:text-black border border-white/10 text-[10px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group truncate"
+                title="Admin - Toàn quyền quản trị"
               >
-                <Crown className="w-3 h-3 text-[#D4AF37] group-hover:text-black" />
-                <span>Admin (admin@luxemotors.com)</span>
+                <Crown className="w-3 h-3 text-[#D4AF37] group-hover:text-black shrink-0" />
+                <span className="truncate">👑 Admin</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => fillDemoAccount('minh.nguyen@gmail.com', '123456')}
-                className="px-2.5 py-1.5 rounded bg-[#1C1C26] hover:bg-emerald-400 hover:text-black border border-white/10 text-[11px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group"
+                className="px-2 py-1.5 rounded bg-[#1C1C26] hover:bg-amber-400 hover:text-black border border-white/10 text-[10px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group truncate"
+                title="Giám Đốc - Dashboard doanh thu, CRM, VIP"
               >
-                <UserCheck className="w-3 h-3 text-emerald-400 group-hover:text-black" />
-                <span>Khách VIP (minh.nguyen)</span>
+                <ShieldCheck className="w-3 h-3 text-amber-400 group-hover:text-black shrink-0" />
+                <span className="truncate">🏛️ Giám Đốc</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('quanly@luxemotors.com', '123456')}
+                className="px-2 py-1.5 rounded bg-[#1C1C26] hover:bg-blue-400 hover:text-black border border-white/10 text-[10px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group truncate"
+                title="Quản Lý - Kho xe, Thương hiệu, Phân công"
+              >
+                <ShieldCheck className="w-3 h-3 text-blue-400 group-hover:text-black shrink-0" />
+                <span className="truncate">🏢 Quản Lý</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('sales@luxemotors.com', '123456')}
+                className="px-2 py-1.5 rounded bg-[#1C1C26] hover:bg-purple-400 hover:text-black border border-white/10 text-[10px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group truncate"
+                title="Sales - Lead scoring, Chốt đơn, Tiếp khách"
+              >
+                <UserCheck className="w-3 h-3 text-purple-400 group-hover:text-black shrink-0" />
+                <span className="truncate">💼 Sales</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('cskh@luxemotors.com', '123456')}
+                className="px-2 py-1.5 rounded bg-[#1C1C26] hover:bg-pink-400 hover:text-black border border-white/10 text-[10px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group truncate"
+                title="CSKH - Hỗ trợ khách hàng, Chăm sóc leads"
+              >
+                <UserCheck className="w-3 h-3 text-pink-400 group-hover:text-black shrink-0" />
+                <span className="truncate">🎧 CSKH</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('khachvip@gmail.com', '123456')}
+                className="px-2 py-1.5 rounded bg-[#1C1C26] hover:bg-emerald-400 hover:text-black border border-white/10 text-[10px] font-mono-lux text-slate-200 transition-all flex items-center gap-1 group truncate"
+                title="Khách VIP - Đặt lịch lái thử, Đặt cọc mua xe"
+              >
+                <UserCheck className="w-3 h-3 text-emerald-400 group-hover:text-black shrink-0" />
+                <span className="truncate">⭐ Khách VIP</span>
               </button>
             </div>
           </div>
