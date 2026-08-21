@@ -322,5 +322,7 @@ module.exports = {
   updateContactStatus,
   deleteContact,
   seedContacts,
+  replyToContact,
 };
+
 
