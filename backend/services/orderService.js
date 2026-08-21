@@ -643,8 +643,6 @@ const cancelOrder = async (
   }
 
   return order;
-
-  return order;
 };
 
 // ===================================

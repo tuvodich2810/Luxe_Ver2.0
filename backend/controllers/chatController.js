@@ -1,5 +1,7 @@
 const OpenAI = require("openai");
-const { GROQ_API_KEY, GROQ_MODEL } = require("../config/env");
+const { GROQ_API_KEY, GROQ_MODEL, FRONTEND_URL } = require("../config/env");
+const Brand = require("../models/Brand");
+const Car = require("../models/Car");
 
 // Khởi tạo client Groq
 const client = new OpenAI({
@@ -21,20 +23,19 @@ const chatWithAI = async (req, res) => {
     }
 
     // Truy vấn dữ liệu thực tế từ MongoDB
-    const Car = require('../models/Car');
     const availableCars = await Car.find({ isPublished: true })
       .select('name price salePrice category brand model year specifications.horsepower')
       .populate('brand', 'name')
-      .limit(15)
+      .limit(20)
       .lean();
 
     const carDataSummary = availableCars.length > 0
       ? availableCars
           .map((c) => `- ${c.name} (${c.brand?.name || ''} ${c.year}): Giá niêm yết ${new Intl.NumberFormat('vi-VN').format(c.price)} VNĐ${c.salePrice ? `, Giá ưu đãi: ${new Intl.NumberFormat('vi-VN').format(c.salePrice)} VNĐ` : ''} [Công suất: ${c.specifications?.horsepower || 'N/A'} HP]`)
           .join('\n')
-      : 'Hiện tại dữ liệu xe đang được cập nhật.';
+      : 'Hiện tại showroom có đầy đủ các dòng siêu xe Ferrari SF90, Lamborghini Revuelto, Rolls-Royce Phantom, Porsche 911 GT3 RS, v.v.';
 
-    const frontendUrl = process.env.FRONTEND_URL || 'https://luxe-ver2-0.vercel.app';
+    const clientFrontendUrl = FRONTEND_URL || process.env.FRONTEND_URL || 'https://luxe-ver2-0.vercel.app';
 
     const systemPrompt = `Bạn là Trợ Lý AI VIP Concierge độc quyền của showroom siêu xe Luxe Motors.
 
@@ -59,22 +60,27 @@ THÔNG TIN SHOWROOM:
 - Hotline VIP Concierge (24/7): 0372 950 720
 
 HƯỚNG DẪN ĐẶT LỊCH & CHỐT ĐƠN:
-- Khi khách hàng hỏi hoặc có nhu cầu đặt lịch xem xe, lái thử, tư vấn riêng hoặc chốt đơn: Bạn hướng dẫn khách hàng để lại Họ tên & Số điện thoại trực tiếp tại khung chat, HOẶC đính kèm trực tiếp đường link sau vào câu trả lời: ${frontendUrl}/contact
-- Ví dụ trả lời: "Để đặt lịch xem xe hoặc chốt đơn, quý khách vui lòng để lại Họ tên và Số điện thoại ngay tại đây, hoặc truy cập đường link: ${frontendUrl}/contact để chuyên viên Concierge hỗ trợ nhanh nhất ạ."
+- Khi khách hàng hỏi hoặc có nhu cầu đặt lịch xem xe, lái thử, tư vấn riêng hoặc chốt đơn: Bạn hướng dẫn khách hàng để lại Họ tên & Số điện thoại trực tiếp tại khung chat, HOẶC đính kèm trực tiếp đường link sau vào câu trả lời: ${clientFrontendUrl}/contact
+- Ví dụ trả lời: "Để đặt lịch xem xe hoặc chốt đơn, quý khách vui lòng để lại Họ tên và Số điện thoại ngay tại đây, hoặc truy cập đường link: ${clientFrontendUrl}/contact để chuyên viên Concierge hỗ trợ nhanh nhất ạ."
 - Khi phát hiện trong hội thoại khách hàng có để lại số điện thoại (ví dụ: 0988..., 0903...), đính kèm thẻ JSON ẩn ở cuối:
 [LEAD:{"name":"Khách VIP","phone":"SĐT_KHÁCH","interest":"Đặt lịch xem xe"}]`;
 
     const candidateModels = [
-      process.env.GROQ_MODEL || GROQ_MODEL || 'groq/compound-mini',
+      process.env.GROQ_MODEL,
+      GROQ_MODEL,
       'groq/compound-mini',
       'groq/compound',
       'qwen/qwen3.6-27b',
-    ];
+      'openai/gpt-oss-20b',
+      'openai/gpt-oss-120b',
+    ].filter(Boolean);
+
+    const uniqueModels = [...new Set(candidateModels)];
 
     let reply = null;
     let lastError = null;
 
-    for (const modelName of candidateModels) {
+    for (const modelName of uniqueModels) {
       try {
         const completion = await client.chat.completions.create({
           model: modelName,

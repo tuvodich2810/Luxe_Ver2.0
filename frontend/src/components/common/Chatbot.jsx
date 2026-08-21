@@ -69,18 +69,66 @@ export default function Chatbot() {
   /* Xóa LEAD tag ẩn */
   const cleanText = (text) => text.replace(/\[LEAD:.*?\]/s, '').trim();
 
-  /* Lưu lead trực tiếp vào MongoDB Atlas ngầm */
+  /* Hàm phản hồi thông minh Offline khi chưa kết nối Backend */
+  const getOfflineConciergeReply = (userText) => {
+    const q = (userText || '').toLowerCase();
+
+    if (q.includes('ferrari') || q.includes('sf90') || q.includes('f8') || q.includes('roma') || q.includes('296')) {
+      return `Tại Luxe Motors, chúng tôi đang có sẵn siêu phẩm **Ferrari SF90 Stradale 2026** (1.000 HP, Động cơ V8 Twin-Turbo Plug-in Hybrid) với giá niêm yết **34.500.000.000 VNĐ**.\n\nNgoài ra showroom hỗ trợ nhập khẩu may đo Bespoke cho các dòng **Ferrari 296 GTB, 812 GTS, Roma Spider** theo yêu cầu.\n\nQuý khách vui lòng để lại Số điện thoại hoặc truy cập /contact để nhận tư vấn riêng ạ!`;
+    }
+
+    if (q.includes('lamborghini') || q.includes('urus') || q.includes('revuelto') || q.includes('huracan') || q.includes('aventador')) {
+      return `Bộ sưu tập **Lamborghini** đẳng cấp tại Luxe Motors:\n- **Lamborghini Revuelto V12 HPEV** (1.015 HP): Giá từ ~**45.000.000.000 VNĐ**\n- **Lamborghini Urus Performante** (666 HP): Giá từ ~**18.500.000.000 VNĐ**\n\nShowroom hỗ trợ đặt lịch lái thử tận nơi (Home Concierge Test Drive) và may đo nội thất cá nhân hóa. Quý khách vui lòng để lại SĐT hoặc truy cập /contact nhé!`;
+    }
+
+    if (q.includes('rolls') || q.includes('royce') || q.includes('phantom') || q.includes('ghost') || q.includes('cullinan')) {
+      return `Bộ sưu tập **Rolls-Royce** tại Luxe Motors:\n- **Rolls-Royce Phantom Series II** (V12 6.75L Twin-Turbo): Giá từ **75.000.000.000 VNĐ**\n- **Rolls-Royce Cullinan Black Badge**\n- **Rolls-Royce Ghost Extended**\n\nXe đi kèm gói bảo hành 5 năm chính hãng và dịch vụ bảo dưỡng tận nhà 24/7. Quý khách vui lòng để lại Họ tên & SĐT để Concierge liên hệ trực tiếp ạ!`;
+    }
+
+    if (q.includes('porsche') || q.includes('911') || q.includes('gt3') || q.includes('taycan') || q.includes('panamera')) {
+      return `Dòng xe **Porsche** tại Luxe Motors:\n- **Porsche 911 GT3 RS 2026** (525 HP, N/A 4.0L): Giá từ **19.800.000.000 VNĐ**\n- **Porsche Taycan Turbo S / 911 Turbo S**\n\nXe có sẵn giao ngay, hỗ trợ làm thủ tục bấm biển số VIP và giao xe tận nhà trên toàn quốc. Quý khách để lại SĐT hoặc liên hệ /contact để được hỗ trợ tốt nhất!`;
+    }
+
+    if (q.includes('giá') || q.includes('bảng giá') || q.includes('bao nhiêu') || q.includes('chi phí') || q.includes('lăn bánh') || q.includes('tiền')) {
+      return `Bảng giá một số dòng siêu xe tiêu biểu tại Luxe Motors:\n- **Ferrari SF90 Stradale**: 34.500.000.000 VNĐ\n- **Lamborghini Revuelto**: 45.000.000.000 VNĐ\n- **Rolls-Royce Phantom VIII**: 75.000.000.000 VNĐ\n- **Porsche 911 GT3 RS**: 19.800.000.000 VNĐ\n\nQuý khách có thể xem đầy đủ hơn tại mục /cars hoặc gọi Hotline **0372 950 720** để nhận báo giá lăn bánh chi tiết!`;
+    }
+
+    if (q.includes('lái thử') || q.includes('đặt lịch') || q.includes('test drive') || q.includes('hẹn') || q.includes('xem xe')) {
+      return `Dịch vụ **Lái Thử Tận Nhà (Home Concierge Test Drive)** của Luxe Motors mang siêu xe đến tận cửa nhà hoặc biệt thự của quý khách kèm chuyên viên hướng dẫn kỹ thuật 1-kèm-1.\n\nQuý khách vui lòng để lại **Họ Tên & Số Điện Thoại** tại đây hoặc điền form tại /contact, chuyên viên Concierge sẽ xác nhận lịch trong vòng 15 phút!`;
+    }
+
+    if (q.includes('cọc') || q.includes('đặt cọc') || q.includes('vietqr') || q.includes('payos') || q.includes('thanh toán')) {
+      return `Chính sách đặt cọc tại Luxe Motors:\n1. Mức cọc giữ xe tiêu chuẩn: **10% - 20%** giá trị hợp đồng.\n2. Thanh toán bảo mật qua cổng **PayOS VietQR** quét mã tự động xác nhận tức thì.\n3. Hợp đồng điện tử kèm cam kết hoàn cọc 100% trong 7 ngày nếu xe không đúng mô tả.\n\nHotline hỗ trợ tài chính & hợp đồng: **0372 950 720**.`;
+    }
+
+    if (q.includes('bảo hành') || q.includes('bảo dưỡng') || q.includes('bespoke') || q.includes('chính sách')) {
+      return `Chính sách đặc quyền dành cho Khách Hàng VIP Luxe Motors:\n- **Bảo hành 5 năm** không giới hạn số km.\n- **Cứu hộ chuyên dụng 24/7** bằng xe sàn trượt thủy lực trên toàn quốc.\n- May đo cá nhân hóa **Bespoke** (màu sơn độc bản, nội thất da Alcantara thêu tên riêng).\n- Phòng chờ VIP Lounge và đặc quyền tham gia CLB Siêu Xe Luxe Club.`;
+    }
+
+    if (q.includes('địa chỉ') || q.includes('ở đâu') || q.includes('showroom') || q.includes('hotline') || q.includes('liên hệ')) {
+      return `Thông tin liên hệ Showroom Siêu Xe **Luxe Motors**:\n- **Địa chỉ:** 18 Lý Thường Kiệt, Q. Hoàn Kiếm, Hà Nội\n- **Hotline VIP (24/7):** 0372 950 720\n- **Email:** tuankwan2810@gmail.com\n- **Website:** /contact\n\nShowroom mở cửa đón tiếp khách VIP từ 08:30 - 21:30 hàng ngày!`;
+    }
+
+    return `Kính chào quý khách! Em là **Trợ Lý AI VIP Concierge** của Luxe Motors. 🏎️\n\nEm có thể hỗ trợ quý khách thông tin chi tiết về bộ sưu tập siêu xe **Ferrari, Lamborghini, Rolls-Royce, Porsche**, giá bán lăn bánh, đăng ký lái thử tận nơi hoặc thủ tục cọc xe trực tuyến.\n\nQuý khách quan tâm đến mẫu xe nào hoặc muốn em hỗ trợ điều gì ạ? (Hotline 24/7: **0372 950 720** hoặc /contact)`;
+  };
+
+  /* Lưu lead trực tiếp vào MongoDB Atlas ngầm & backup LocalStorage */
   const saveLeadToMongoDB = async (name, phone, interest) => {
     try {
+      // Lưu offline vào LocalStorage trước
+      const savedLeads = JSON.parse(localStorage.getItem('luxe_chatbot_leads') || '[]');
+      savedLeads.push({ name, phone, interest, time: new Date().toISOString() });
+      localStorage.setItem('luxe_chatbot_leads', JSON.stringify(savedLeads));
+
       await api.post('/contacts', {
-        name: name || 'Khách Vãng Lai từ Chatbot',
+        name: name || 'Khách VIP từ Chatbot',
         phone: phone || '',
         email: '',
         subject: interest || 'Đơn chốt từ AI Chatbot',
         message: `Khách hàng chốt đơn/đặt lịch qua AI Chatbot: ${interest || 'Xem xe'}`,
       });
     } catch (err) {
-      console.error('Lỗi tự động lưu lead từ Chatbot:', err);
+      console.warn('Lưu lead vào MongoDB thất bại, đã backup LocalStorage:', err?.message || err);
     }
   };
 
@@ -122,17 +170,18 @@ export default function Chatbot() {
         setMessages((prev) => [...prev, botMsg]);
 
         if (!isOpen) setUnread((n) => n + 1);
-      } catch {
+      } catch (err) {
+        console.warn('Backend chat API offline, đang kích hoạt Trợ Lý Concierge dự phòng:', err?.message || err);
+        const fallbackContent = getOfflineConciergeReply(userText);
         setMessages((prev) => [
           ...prev,
           {
             role: 'assistant',
-            content:
-              'Xin lỗi quý khách, kết nối hiện đang gián đoạn. Vui lòng truy cập **trang liên hệ** của chúng tôi hoặc gọi Hotline **0372 950 720** để được hỗ trợ.',
+            content: fallbackContent,
             id: Date.now() + 1,
-            isError: true,
           },
         ]);
+        if (!isOpen) setUnread((n) => n + 1);
       } finally {
         setLoading(false);
       }

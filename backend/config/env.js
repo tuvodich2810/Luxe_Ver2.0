@@ -49,7 +49,7 @@ module.exports = {
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
 
   GROQ_API_KEY: process.env.GROQ_API_KEY,
-  GROQ_MODEL: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  GROQ_MODEL: process.env.GROQ_MODEL || 'groq/compound-mini',
 
   PAYOS_CLIENT_ID: process.env.PAYOS_CLIENT_ID || '',
   PAYOS_API_KEY: process.env.PAYOS_API_KEY || '',
