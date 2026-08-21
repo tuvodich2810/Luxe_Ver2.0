@@ -62,44 +62,18 @@ app.use(
 );
 
 // ===================================
-// CORS Configuration (Cho phép mọi phương thức GET, POST, PUT, PATCH, DELETE, OPTIONS)
+// CORS Configuration (Cho phép mọi phương thức GET, POST, PUT, PATCH, DELETE, OPTIONS và mọi domain Vercel/Localhost)
 // ===================================
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175',
-  'http://localhost:3000',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
-  'https://luxe-ver2-0.vercel.app',
-  ...(FRONTEND_URL ? [FRONTEND_URL.replace(/\/$/, '')] : []),
-];
-
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Cho phép requests không có origin (Postman, mobile app, server-to-server)
-      if (!origin) return callback(null, true);
-      
-      const cleanOrigin = origin.replace(/\/$/, '');
-
-      // Cho phép mọi port localhost, các domain trong allowedOrigins, hoặc BẤT KỲ domain Vercel / Render nào
-      if (
-        allowedOrigins.includes(cleanOrigin) ||
-        cleanOrigin.endsWith('.vercel.app') ||
-        cleanOrigin.includes('vercel.app') ||
-        cleanOrigin.endsWith('.onrender.com') ||
-        cleanOrigin.includes('localhost') ||
-        cleanOrigin.includes('127.0.0.1') ||
-        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(cleanOrigin)
-      ) {
-        return callback(null, true);
-      }
-      callback(new Error(`CORS blocked: ${origin}`));
+      // Cho phép tất cả origins (Postman, Vercel mọi subdomain, Localhost, Render, v.v.)
+      return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Set-Cookie'],
   })
 );
 
