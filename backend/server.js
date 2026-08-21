@@ -71,7 +71,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
-  ...(FRONTEND_URL ? [FRONTEND_URL] : []),
+  'https://luxe-ver2-0.vercel.app',
+  ...(FRONTEND_URL ? [FRONTEND_URL.replace(/\/$/, '')] : []),
 ];
 
 app.use(
@@ -79,10 +80,18 @@ app.use(
     origin: (origin, callback) => {
       // Cho phép requests không có origin (Postman, mobile app, server-to-server)
       if (!origin) return callback(null, true);
-      // Cho phép mọi port localhost / 127.0.0.1 hoặc các domain trong whitelist
+      
+      const cleanOrigin = origin.replace(/\/$/, '');
+
+      // Cho phép mọi port localhost, các domain trong allowedOrigins, hoặc BẤT KỲ domain Vercel / Render nào
       if (
-        allowedOrigins.includes(origin) ||
-        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.endsWith('.vercel.app') ||
+        cleanOrigin.includes('vercel.app') ||
+        cleanOrigin.endsWith('.onrender.com') ||
+        cleanOrigin.includes('localhost') ||
+        cleanOrigin.includes('127.0.0.1') ||
+        /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(cleanOrigin)
       ) {
         return callback(null, true);
       }

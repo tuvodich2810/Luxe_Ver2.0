@@ -9,7 +9,7 @@ echo  Frontend : http://localhost:5173
 echo  Backend  : http://localhost:5000/api
 echo.
 echo  [TAI KHOAN DEMO]
-echo  - Admin    : admin@luxemotors.com   / 123456
+echo  - Admin    : admin@luxemotors.com   / 1234568
 echo  - Giam Doc : minh.nguyen@gmail.com  / 123456
 echo  - Quan Ly  : quanly@luxemotors.com  / 123456
 echo  - Sales    : sales@luxemotors.com   / 123456

@@ -1,8 +1,15 @@
 import axios from 'axios';
 
+// Backend Render URL dự phòng khi build trên Vercel
+const RENDER_BACKEND_API = 'https://luxe-ver2-0.onrender.com/api';
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? RENDER_BACKEND_API : 'http://localhost:5000/api');
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 15000,
+  baseURL: API_BASE_URL,
+  timeout: 60000, // 60s cho Render Free tier khởi động
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
@@ -65,7 +72,7 @@ api.interceptors.response.use(
 
       try {
         const refreshRes = await axios.post(
-          `${import.meta.env.VITE_API_URL || '/api'}/auth/refresh`,
+          `${API_BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );
