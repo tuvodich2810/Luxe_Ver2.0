@@ -59,6 +59,7 @@ export default function AdminContacts() {
   const [selectedScoreLead, setSelectedScoreLead] = useState(null);
   const [selectedEmailLead, setSelectedEmailLead] = useState(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [isSendingReply, setIsSendingReply] = useState(false);
 
   const generatePersonalizedEmail = (lead) => {
     const name = lead?.name || 'Quý khách';
@@ -819,7 +820,7 @@ LUXE MOTORS AUTOMOBILES
                       {copiedEmail ? '✅ Đã sao chép vào bộ nhớ tạm!' : '💡 Bấm sao chép để dán vào Outlook / Gmail'}
                     </span>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <button
                         onClick={() => {
                           const fullEmail = `Tiêu đề: ${emailData.subject}\n\n${emailData.body}`;
@@ -827,23 +828,49 @@ LUXE MOTORS AUTOMOBILES
                           setCopiedEmail(true);
                           setTimeout(() => setCopiedEmail(false), 3000);
                         }}
-                        className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded text-xs font-mono-lux transition-colors"
+                        className="px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white rounded text-xs font-mono-lux transition-colors"
                       >
-                        {copiedEmail ? '✓ Đã Sao Chép' : '📋 Sao Chép Email'}
+                        {copiedEmail ? '✓ Đã Sao Chép' : '📋 Sao Chép'}
                       </button>
 
                       {selectedEmailLead.email && (
-                        <a
-                          href={`mailto:${selectedEmailLead.email}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`}
-                          onClick={() => {
-                            handleUpdateStatus(selectedEmailLead._id, 'contacted');
-                            setSelectedEmailLead(null);
-                          }}
-                          className="btn-lux-gold px-4 py-2 text-xs font-mono-lux font-bold flex items-center gap-1.5"
-                        >
-                          <Mail className="w-3.5 h-3.5" />
-                          Gửi Qua Email &amp; Cập Nhật CRM
-                        </a>
+                        <>
+                          <a
+                            href={`mailto:${selectedEmailLead.email}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`}
+                            onClick={() => {
+                              handleUpdateStatus(selectedEmailLead._id, 'contacted');
+                              setSelectedEmailLead(null);
+                            }}
+                            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-mono-lux flex items-center gap-1.5 border border-white/10"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            Mở Ứng Dụng Mail
+                          </a>
+
+                          <button
+                            onClick={async () => {
+                              setIsSendingReply(true);
+                              try {
+                                await api.post(`/contacts/${selectedEmailLead._id}/reply`, {
+                                  subject: emailData.subject,
+                                  replyMessage: emailData.body,
+                                });
+                                alert(`🎉 Đã gửi email phản hồi thành công qua máy chủ Gmail tới: ${selectedEmailLead.email}`);
+                                setSelectedEmailLead(null);
+                                fetchContacts();
+                              } catch (err) {
+                                alert('❌ Không thể gửi email: ' + (err?.response?.data?.message || err.message));
+                              } finally {
+                                setIsSendingReply(false);
+                              }
+                            }}
+                            disabled={isSendingReply}
+                            className="btn-lux-gold px-4 py-2 text-xs font-mono-lux font-bold flex items-center gap-1.5 disabled:opacity-50"
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                            {isSendingReply ? 'Đang Gửi Gmail...' : 'Gửi Gmail Trực Tiếp (SMTP)'}
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>

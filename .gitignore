@@ -25,9 +25,12 @@ yarn-error.log*
 # OS & IDE files
 .DS_Store
 Thumbs.db
+~$*
 .vscode/
 .idea/
 .claude/
+.agents/
 __pycache__/
 *.pyc
+
 

@@ -1,5 +1,6 @@
 const expressAsyncHandler = require('express-async-handler');
 const Contact = require('../models/Contact');
+const emailService = require('../services/emailService');
 const { created, ok, badRequest, notFound } = require('../utils/apiResponse');
 
 // POST /api/contacts
@@ -23,7 +24,60 @@ const createContact = expressAsyncHandler(async (req, res) => {
     car: car || '',
     status: 'new',
   });
+
+  // TỰ ĐỘNG GỬI EMAIL XÁC NHẬN CHO KHÁCH HÀNG (NẾU CÓ EMAIL)
+  if (email) {
+    setImmediate(async () => {
+      try {
+        await emailService.sendContactReceivedEmail(contact);
+      } catch (err) {
+        console.error('❌ Lỗi gửi email xác nhận tiếp nhận liên hệ:', err.message);
+      }
+    });
+  }
+
   return created(res, 'Liên hệ của bạn đã được gửi thành công.', contact);
+});
+
+// POST /api/contacts/:id/reply [Admin/Staff]
+// Gửi Gmail phản hồi trực tiếp cho khách hàng
+const replyToContact = expressAsyncHandler(async (req, res) => {
+  const { replyMessage, subject } = req.body;
+
+  if (!replyMessage || !replyMessage.trim()) {
+    return badRequest(res, 'Vui lòng nhập nội dung thư phản hồi');
+  }
+
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    return notFound(res, 'Không tìm thấy thông tin liên hệ này');
+  }
+
+  if (!contact.email) {
+    return badRequest(res, 'Khách hàng này không cung cấp địa chỉ email');
+  }
+
+  const staffName = req.user?.fullName || 'Chuyên viên VIP Concierge';
+
+  const sendResult = await emailService.sendContactReplyEmail({
+    toEmail: contact.email,
+    customerName: contact.name,
+    subject: subject || `[Luxe Motors Concierge] Thư Phản Hồi Tư Vấn Gửi ${contact.name}`,
+    replyMessage: replyMessage.trim(),
+    originalMessage: contact.message,
+    staffName,
+  });
+
+  if (!sendResult) {
+    return badRequest(res, 'Không thể gửi email qua máy chủ SMTP. Vui lòng kiểm tra lại cấu hình Gmail.');
+  }
+
+  // Cập nhật trạng thái liên hệ sang contacted
+  contact.status = 'contacted';
+  contact.notes = (contact.notes ? contact.notes + '\n\n' : '') + `[${new Date().toLocaleString('vi-VN')}] Đã gửi email phản hồi bởi ${staffName}:\n${replyMessage}`;
+  await contact.save();
+
+  return ok(res, `Đã gửi email phản hồi thành công đến ${contact.email}!`, contact);
 });
 
 // GET /api/contacts [Admin]
@@ -41,10 +95,14 @@ const getContactById = expressAsyncHandler(async (req, res) => {
 
 // PUT /api/contacts/:id [Admin]
 const updateContactStatus = expressAsyncHandler(async (req, res) => {
-  const { status } = req.body;
+  const { status, notes } = req.body;
+  const updateData = {};
+  if (status) updateData.status = status;
+  if (notes !== undefined) updateData.notes = notes;
+
   const contact = await Contact.findByIdAndUpdate(
     req.params.id,
-    { status },
+    updateData,
     { new: true, runValidators: true }
   );
 

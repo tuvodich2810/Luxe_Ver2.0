@@ -600,6 +600,204 @@ const sendAppointmentConfirmation = async (appointment, toEmail, userName, oldSt
   });
 };
 
+/**
+ * 7. Email Tự động xác nhận tiếp nhận liên hệ / phản hồi của khách hàng
+ */
+const sendContactReceivedEmail = async (contact) => {
+  const toEmail = contact.email;
+  if (!toEmail) return false;
+
+  const customerName = contact.name || 'Quý khách VIP';
+  const topic = contact.subject || contact.interest || 'Tư vấn siêu xe';
+  const carName = contact.car ? ` - Mẫu xe: ${contact.car}` : '';
+  const subject = `[Luxe Motors] Đã tiếp nhận yêu cầu liên hệ: ${topic}`;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${subject}</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f4f5f7; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f5f7; padding: 40px 10px;">
+        <tr>
+          <td align="center">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 620px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
+              
+              <!-- HEADER LUXURY -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #0b0f19 0%, #1a233a 100%); padding: 35px 30px; text-align: center; border-bottom: 3px solid #D4AF37;">
+                  <h1 style="color: #D4AF37; font-size: 26px; margin: 0; font-weight: 800; letter-spacing: 3px; font-family: Georgia, serif;">LUXE MOTORS</h1>
+                  <p style="color: #cbd5e1; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin: 6px 0 0 0; font-weight: 600;">VIP CONCIERGE & CUSTOMER CARE</p>
+                </td>
+              </tr>
+
+              <!-- BODY -->
+              <tr>
+                <td style="padding: 30px 35px 15px 35px; color: #1e293b;">
+                  <h2 style="color: #0f172a; font-size: 19px; margin: 0 0 10px 0; font-weight: 700;">CẢM ƠN QUÝ KHÁCH ĐÃ LIÊN HỆ</h2>
+                  <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0;">
+                    Kính gửi <strong>${customerName}</strong>,<br>
+                    Luxe Motors xin trân trọng cảm ơn Quý khách đã gửi yêu cầu thông tin đến phòng Dịch vụ Khách hàng VIP. Chúng tôi đã ghi nhận nội dung liên hệ của Quý khách trên hệ thống.
+                  </p>
+                </td>
+              </tr>
+
+              <!-- DETAIL BOX -->
+              <tr>
+                <td style="padding: 0 35px 25px 35px;">
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0; padding: 18px 20px;">
+                    <tr>
+                      <td style="padding: 6px 0; font-size: 13px; color: #64748b; border-bottom: 1px dashed #e2e8f0;">Chủ đề yêu cầu:</td>
+                      <td style="padding: 6px 0; font-size: 13px; font-weight: 700; color: #0f172a; text-align: right; border-bottom: 1px dashed #e2e8f0;">${topic}${carName}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0; font-size: 13px; color: #64748b; border-bottom: 1px dashed #e2e8f0;">Số điện thoại:</td>
+                      <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #334155; text-align: right; border-bottom: 1px dashed #e2e8f0;">${contact.phone || 'Chưa cung cấp'}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2" style="padding: 10px 0 4px 0; font-size: 12px; color: #64748b;">Nội dung tin nhắn:</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 13px; color: #334155; line-height: 1.5; font-style: italic;">
+                        "${contact.message}"
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- NOTICE -->
+              <tr>
+                <td style="padding: 0 35px 25px 35px;">
+                  <div style="background-color: #f0fdf4; border-radius: 12px; border: 1px solid #bbf7d0; padding: 14px; color: #166534; font-size: 12px; line-height: 1.5;">
+                    ⏱️ Chuyên viên Quản lý Khách hàng VIP sẽ liên hệ trực tiếp qua điện thoại hoặc email trong vòng <strong>15 - 30 phút</strong> để giải đáp chi tiết nhất.
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FOOTER -->
+              <tr>
+                <td style="background-color: #fafafa; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                  <p style="color: #64748b; font-size: 11px; margin: 0; line-height: 1.5;">
+                    Luxe Motors Flagship Showroom · Hotline VIP Concierge: <strong>0372 950 720</strong><br>
+                    📍 18 Lý Thường Kiệt, Q. Hoàn Kiếm, Hà Nội | 88 Nguyễn Huệ, Q. 1, TP. HCM
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  return sendMailGeneric({
+    toEmail,
+    subject,
+    htmlContent,
+    eventType: 'CONTACT_RECEIVED',
+    orderId: null,
+    userId: null,
+  });
+};
+
+/**
+ * 8. Email Chuyên viên CSKH / Sales phản hồi trực tiếp cho khách hàng
+ */
+const sendContactReplyEmail = async ({ toEmail, customerName, subject, replyMessage, originalMessage, staffName }) => {
+  if (!toEmail) return false;
+
+  const emailSubject = subject || `[Luxe Motors] Phản hồi từ Bộ phận VIP Concierge gửi ${customerName || 'Quý khách'}`;
+  const senderTitle = staffName ? `${staffName} - Chuyên viên VIP Concierge` : 'Bộ phận Quản lý Khách hàng VIP Luxe Motors';
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${emailSubject}</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f4f5f7; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f5f7; padding: 40px 10px;">
+        <tr>
+          <td align="center">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 620px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
+              
+              <!-- HEADER LUXURY -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #0b0f19 0%, #1a233a 100%); padding: 35px 30px; text-align: center; border-bottom: 3px solid #D4AF37;">
+                  <h1 style="color: #D4AF37; font-size: 26px; margin: 0; font-weight: 800; letter-spacing: 3px; font-family: Georgia, serif;">LUXE MOTORS</h1>
+                  <p style="color: #cbd5e1; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin: 6px 0 0 0; font-weight: 600;">VIP CONCIERGE RESPONSE</p>
+                </td>
+              </tr>
+
+              <!-- GREETING -->
+              <tr>
+                <td style="padding: 30px 35px 15px 35px; color: #1e293b;">
+                  <p style="font-size: 15px; line-height: 1.6; color: #0f172a; margin: 0 0 15px 0;">
+                    Kính gửi Quý khách <strong>${customerName || 'Quý khách VIP'}</strong>,
+                  </p>
+                  <p style="font-size: 14px; line-height: 1.7; color: #334155; margin: 0; white-space: pre-wrap;">
+${replyMessage}
+                  </p>
+                </td>
+              </tr>
+
+              ${originalMessage ? `
+              <!-- ORIGINAL MESSAGE QUOTE -->
+              <tr>
+                <td style="padding: 10px 35px 25px 35px;">
+                  <div style="background-color: #f8fafc; border-left: 4px solid #D4AF37; padding: 14px 16px; border-radius: 0 8px 8px 0;">
+                    <p style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin: 0 0 6px 0;">Nội dung Quý khách đã gửi trước đó:</p>
+                    <p style="font-size: 12px; color: #475569; font-style: italic; margin: 0; line-height: 1.5;">"${originalMessage}"</p>
+                  </div>
+                </td>
+              </tr>` : ''}
+
+              <!-- SIGNATURE -->
+              <tr>
+                <td style="padding: 10px 35px 30px 35px;">
+                  <div style="border-top: 1px solid #e2e8f0; padding-top: 16px;">
+                    <p style="font-size: 13px; font-weight: 700; color: #0f172a; margin: 0;">${senderTitle}</p>
+                    <p style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;">LUXE MOTORS AUTOMOBILES SHOWROOM</p>
+                    <p style="font-size: 12px; color: #b45309; margin: 4px 0 0 0;">📞 Hotline VIP: 0372 950 720 · 🌐 <a href="${FRONTEND_URL}" style="color: #b45309; text-decoration: none;">${FRONTEND_URL}</a></p>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- FOOTER -->
+              <tr>
+                <td style="background-color: #fafafa; padding: 18px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                  <p style="color: #94a3b8; font-size: 11px; margin: 0;">
+                    Đây là thư điện tử chính thức từ Hệ thống Quản trị Showroom Luxe Motors Ver 2.0.
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  return sendMailGeneric({
+    toEmail,
+    subject: emailSubject,
+    htmlContent,
+    eventType: 'CONTACT_REPLY',
+    orderId: null,
+    userId: null,
+  });
+};
+
 module.exports = {
   sendOrderCreatedEmail,
   sendDepositSuccessEmail,
@@ -609,4 +807,7 @@ module.exports = {
   sendAppointmentConfirmation,
   sendAppointmentUpdatedEmail: sendAppointmentConfirmation,
   sendOrderConfirmation: sendOrderCreatedEmail, // Backward compatibility alias
+  sendContactReceivedEmail,
+  sendContactReplyEmail,
 };
+

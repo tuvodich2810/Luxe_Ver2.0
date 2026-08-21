@@ -24,6 +24,8 @@ const notificationLogSchema = new mongoose.Schema(
         'RESERVATION_EXPIRING',
         'APPOINTMENT_CREATED',
         'APPOINTMENT_UPDATED',
+        'CONTACT_RECEIVED',
+        'CONTACT_REPLY',
       ],
       index: true,
     },
