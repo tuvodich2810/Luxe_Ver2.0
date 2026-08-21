@@ -43,6 +43,10 @@ module.exports = {
   PAYOS_API_KEY: process.env.PAYOS_API_KEY || '',
   PAYOS_CHECKSUM_KEY: process.env.PAYOS_CHECKSUM_KEY || '',
 
+  // HTTPS Email API (Dành riêng cho Render Free Cloud qua Port 443 không bao giờ bị chặn)
+  RESEND_API_KEY: process.env.RESEND_API_KEY || '',
+  BREVO_API_KEY: process.env.BREVO_API_KEY || '',
+
   // Cấu hình Ngân hàng & Mã QR VietQR cá nhân
   BANK_CODE: process.env.BANK_CODE || 'MB',
   BANK_NAME: process.env.BANK_NAME || 'MBBank (Ngân hàng Quân Đội)',

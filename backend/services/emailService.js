@@ -1,3 +1,4 @@
+const https = require('https');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const NotificationLog = require('../models/NotificationLog');
@@ -14,7 +15,98 @@ const {
   BANK_ACCOUNT_NO,
   BANK_ACCOUNT_NAME,
   STATIC_QR_URL,
+  RESEND_API_KEY,
+  BREVO_API_KEY,
 } = require('../config/env');
+
+/**
+ * Gửi email qua Brevo HTTPS REST API (Port 443 - Không bao giờ bị chặn trên Render Cloud)
+ */
+const sendViaBrevoHttps = async ({ toEmail, subject, htmlContent, recipientName }) => {
+  const apiKey = process.env.BREVO_API_KEY || BREVO_API_KEY;
+  if (!apiKey) return false;
+
+  const payload = JSON.stringify({
+    sender: {
+      name: FROM_NAME || 'Luxe Motors Showroom',
+      email: FROM_EMAIL || 'tuankwan2810@gmail.com',
+    },
+    to: [{ email: toEmail, name: recipientName || 'Quý khách VIP' }],
+    subject,
+    htmlContent,
+  });
+
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'api.brevo.com',
+      port: 443,
+      path: '/v3/smtp/email',
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload),
+      },
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(true);
+        } else {
+          reject(new Error(`Brevo HTTP ${res.statusCode}: ${data}`));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+};
+
+/**
+ * Gửi email qua Resend HTTPS REST API (Port 443 - Chuẩn Cloud)
+ */
+const sendViaResendHttps = async ({ toEmail, subject, htmlContent }) => {
+  const apiKey = process.env.RESEND_API_KEY || RESEND_API_KEY;
+  if (!apiKey) return false;
+
+  const payload = JSON.stringify({
+    from: `${FROM_NAME || 'Luxe Motors'} <onboarding@resend.dev>`,
+    to: [toEmail],
+    subject,
+    html: htmlContent,
+  });
+
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'api.resend.com',
+      port: 443,
+      path: '/emails',
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload),
+      },
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(true);
+        } else {
+          reject(new Error(`Resend HTTP ${res.statusCode}: ${data}`));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+};
 
 const createTransporter = () => {
   const user = SMTP_USER || process.env.EMAIL_USER || process.env.SMTP_USER || 'tuankwan2810@gmail.com';
@@ -22,7 +114,6 @@ const createTransporter = () => {
 
   console.log(`✉️ [EMAIL SERVICE] Khởi tạo SMTP Transporter SSL Port 465 cho tài khoản: ${user}`);
   
-  // Dùng trực tiếp host smtp.gmail.com cổng 465 SSL để tránh lỗi STARTTLS Connection Timeout trên Render Cloud
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -55,22 +146,16 @@ const logNotification = async (payload) => {
 };
 
 /**
- * Send Email Generic Wrapper
+ * Send Email Generic Wrapper - Hỗ trợ đa tầng: HTTPS API (Port 443) -> SMTP -> Simulation
  */
-const sendMailGeneric = async ({ toEmail, subject, htmlContent, eventType, orderId, userId }) => {
+const sendMailGeneric = async ({ toEmail, subject, htmlContent, eventType, orderId, userId, recipientName }) => {
   if (!toEmail) return false;
 
-  const mailOptions = {
-    from: `"${FROM_NAME || 'Luxe Motors Showroom'}" <${FROM_EMAIL || 'no-reply@luxemotors.com'}>`,
-    to: toEmail,
-    subject,
-    html: htmlContent,
-  };
-
-  if (transporter) {
+  // 1. ƯU TIÊN 1: Gửi qua HTTPS API (Port 443 - Không bao giờ bị Render Cloud chặn)
+  if (process.env.BREVO_API_KEY || BREVO_API_KEY) {
     try {
-      await transporter.sendMail(mailOptions);
-      console.log(`✉️ [EMAIL SUCCESS] Sent to: ${toEmail} | Subject: ${subject}`);
+      await sendViaBrevoHttps({ toEmail, subject, htmlContent, recipientName });
+      console.log(`✉️ [HTTPS BREVO SUCCESS] Sent to: ${toEmail} | Subject: ${subject}`);
       await logNotification({
         order: orderId,
         user: userId,
@@ -83,7 +168,53 @@ const sendMailGeneric = async ({ toEmail, subject, htmlContent, eventType, order
       });
       return true;
     } catch (err) {
-      console.error(`❌ [EMAIL FAILED] To: ${toEmail} | Error:`, err.message);
+      console.error(`⚠️ [BREVO HTTPS FAILED, FALLBACK TO NEXT]:`, err.message);
+    }
+  }
+
+  if (process.env.RESEND_API_KEY || RESEND_API_KEY) {
+    try {
+      await sendViaResendHttps({ toEmail, subject, htmlContent });
+      console.log(`✉️ [HTTPS RESEND SUCCESS] Sent to: ${toEmail} | Subject: ${subject}`);
+      await logNotification({
+        order: orderId,
+        user: userId,
+        eventType,
+        channel: 'email',
+        recipient: toEmail,
+        status: 'success',
+        subject,
+        messageContent: htmlContent.substring(0, 300) + '...',
+      });
+      return true;
+    } catch (err) {
+      console.error(`⚠️ [RESEND HTTPS FAILED, FALLBACK TO NEXT]:`, err.message);
+    }
+  }
+
+  // 2. ƯU TIÊN 2: Gửi qua SMTP (Localhost / Paid Cloud Servers)
+  if (transporter) {
+    try {
+      await transporter.sendMail({
+        from: `"${FROM_NAME || 'Luxe Motors Showroom'}" <${FROM_EMAIL || 'tuankwan2810@gmail.com'}>`,
+        to: toEmail,
+        subject,
+        html: htmlContent,
+      });
+      console.log(`✉️ [SMTP SUCCESS] Sent to: ${toEmail} | Subject: ${subject}`);
+      await logNotification({
+        order: orderId,
+        user: userId,
+        eventType,
+        channel: 'email',
+        recipient: toEmail,
+        status: 'success',
+        subject,
+        messageContent: htmlContent.substring(0, 300) + '...',
+      });
+      return true;
+    } catch (err) {
+      console.error(`❌ [SMTP FAILED] To: ${toEmail} | Error:`, err.message);
       await logNotification({
         order: orderId,
         user: userId,
@@ -96,20 +227,21 @@ const sendMailGeneric = async ({ toEmail, subject, htmlContent, eventType, order
       });
       return false;
     }
-  } else {
-    console.log(`\n[EMAIL SIMULATION] To: ${toEmail} | Subject: ${subject}`);
-    await logNotification({
-      order: orderId,
-      user: userId,
-      eventType,
-      channel: 'email',
-      recipient: toEmail,
-      status: 'simulated',
-      subject,
-      messageContent: 'Email simulation (SMTP not configured).',
-    });
-    return true;
   }
+
+  // 3. Chế độ Mô phỏng nếu không có cấu hình nào
+  console.log(`\n[EMAIL SIMULATION] To: ${toEmail} | Subject: ${subject}`);
+  await logNotification({
+    order: orderId,
+    user: userId,
+    eventType,
+    channel: 'email',
+    recipient: toEmail,
+    status: 'simulated',
+    subject,
+    messageContent: 'Email simulation.',
+  });
+  return true;
 };
 
 /**
